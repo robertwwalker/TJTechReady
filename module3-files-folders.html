@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 3 — Files &amp; Folders</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #120a0e;
+    --surface: #1e1018;
+    --surface2: #281520;
+    --border: #3a2030;
+    --accent: #f04880;
+    --accent2: #f090c0;
+    --accent3: #f0c050;
+    --text: #f0e4ea;
+    --muted: #906878;
+    --correct: #50f0a0;
+    --wrong: #f06050;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; overflow-x: hidden; }
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image: radial-gradient(ellipse at 10% 50%, rgba(240,72,128,0.07) 0%, transparent 60%), radial-gradient(ellipse at 90% 20%, rgba(240,144,192,0.05) 0%, transparent 50%);
+    pointer-events: none; z-index: 0;
+  }
+  .app { position: relative; z-index: 1; }
+  header { border-bottom: 1px solid var(--border); padding: 18px 40px; display: flex; align-items: center; justify-content: space-between; background: rgba(18,10,14,0.92); backdrop-filter: blur(12px); position: sticky; top: 0; z-index: 100; }
+  .logo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.1rem; display: flex; align-items: center; gap: 10px; }
+  .logo-chip { background: var(--accent); color: #fff; font-size: 0.65rem; padding: 3px 8px; border-radius: 4px; font-weight: 700; letter-spacing: 0.05em; }
+  .module-tag { font-family: 'DM Mono', monospace; font-size: 0.7rem; color: var(--accent); border: 1px solid rgba(240,72,128,0.3); padding: 4px 12px; border-radius: 20px; }
+  .main { max-width: 920px; margin: 0 auto; padding: 52px 40px; }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+  .fade-up { animation: fadeUp 0.5s ease forwards; }
+  .hero { margin-bottom: 52px; }
+  .hero-eyebrow { font-family: 'DM Mono', monospace; font-size: 0.68rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--accent); margin-bottom: 16px; }
+  h1 { font-family: 'Syne', sans-serif; font-weight: 800; font-size: clamp(2.2rem,5vw,3.4rem); line-height: 1.06; letter-spacing: -0.03em; margin-bottom: 18px; }
+  h1 em { font-style: normal; color: var(--accent); }
+  .hero-sub { font-size: 1rem; color: var(--muted); max-width: 540px; line-height: 1.75; }
+  .section { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 36px; margin-bottom: 24px; }
+  .section-label { font-family: 'DM Mono', monospace; font-size: 0.63rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--accent); margin-bottom: 12px; }
+  .section h2 { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1.5rem; letter-spacing: -0.02em; margin-bottom: 14px; }
+  .section p { color: #c8a8b8; line-height: 1.82; margin-bottom: 14px; font-size: 0.93rem; }
+  .section p:last-child { margin-bottom: 0; }
+  strong { color: var(--text); }
+  code { background: var(--surface2); border: 1px solid var(--border); padding: 2px 7px; border-radius: 4px; font-family: 'DM Mono', monospace; font-size: 0.82em; color: var(--accent2); }
+  /* PATH DECODER */
+  .path-decoder { background: var(--surface2); border: 1px solid var(--border); border-radius: 12px; padding: 24px; margin: 20px 0; }
+  .path-line { display: flex; align-items: center; flex-wrap: wrap; gap: 2px; background: #0a0508; border-radius: 8px; padding: 14px 18px; font-family: 'DM Mono', monospace; font-size: 0.88rem; margin-bottom: 20px; }
+  .path-seg { padding: 3px 8px; border-radius: 5px; cursor: pointer; transition: all 0.2s; border: 1px solid transparent; position: relative; }
+  .path-seg:hover { border-color: var(--accent); }
+  .path-seg.active { background: rgba(240,72,128,0.12); border-color: var(--accent); }
+  .path-sep { color: var(--muted); padding: 0 1px; user-select: none; }
+  .path-info { min-height: 64px; background: rgba(240,72,128,0.06); border: 1px solid rgba(240,72,128,0.2); border-radius: 8px; padding: 14px 18px; font-size: 0.88rem; color: #c8a8b8; line-height: 1.65; display: none; }
+  .path-info.visible { display: block; animation: fadeUp 0.25s ease; }
+  .path-info-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.9rem; color: var(--accent); margin-bottom: 6px; }
+  /* EXT GRID */
+  .ext-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 10px; margin: 16px 0; }
+  .ext-card { background: var(--surface2); border: 1px solid var(--border); border-radius: 9px; padding: 14px; text-align: center; transition: border-color 0.2s; }
+  .ext-card:hover { border-color: var(--accent); }
+  .ext-icon { font-size: 1.6rem; margin-bottom: 6px; }
+  .ext-code { font-family: 'DM Mono', monospace; font-size: 0.72rem; color: var(--accent); margin-bottom: 4px; }
+  .ext-name { font-size: 0.82rem; font-weight: 600; margin-bottom: 3px; }
+  .ext-app { font-size: 0.75rem; color: var(--muted); }
+  /* STORAGE TYPES */
+  .storage-cards { display: flex; flex-direction: column; gap: 12px; margin: 16px 0; }
+  .storage-card { display: flex; gap: 16px; background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 18px; align-items: flex-start; }
+  .storage-icon { font-size: 2rem; flex-shrink: 0; }
+  .storage-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.95rem; margin-bottom: 6px; }
+  .storage-text { font-size: 0.85rem; color: var(--muted); line-height: 1.65; }
+  .storage-pros { display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
+  .pro-tag { font-family: 'DM Mono', monospace; font-size: 0.65rem; padding: 2px 8px; border-radius: 4px; }
+  .pro { background: rgba(80,240,160,0.1); color: var(--correct); border: 1px solid rgba(80,240,160,0.2); }
+  .con { background: rgba(240,96,80,0.1); color: var(--wrong); border: 1px solid rgba(240,96,80,0.2); }
+  /* ANALOGY */
+  .analogy { background: var(--surface2); border-left: 3px solid var(--accent); border-radius: 0 10px 10px 0; padding: 18px 22px; margin: 16px 0; }
+  .analogy-label { font-family: 'DM Mono', monospace; font-size: 0.62rem; color: var(--accent); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px; }
+  .analogy-text { font-size: 0.9rem; color: #c8a8b8; line-height: 1.75; }
+  /* SCENARIO */
+  .scenario { background: rgba(240,72,128,0.05); border: 1px solid rgba(240,72,128,0.18); border-radius: 10px; padding: 18px 22px; margin: 14px 0; }
+  .scenario-label { font-family: 'DM Mono', monospace; font-size: 0.62rem; color: var(--accent); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px; }
+  .scenario-text { font-size: 0.88rem; color: #c8a8b8; line-height: 1.75; }
+  /* TABS */
+  .tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--border); margin-bottom: 22px; overflow-x: auto; }
+  .tab { padding: 9px 16px; cursor: pointer; font-size: 0.82rem; font-family: 'DM Mono', monospace; color: var(--muted); border-bottom: 2px solid transparent; margin-bottom: -1px; transition: all 0.2s; white-space: nowrap; }
+  .tab:hover { color: var(--text); }
+  .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+  .tab-pane { display: none; }
+  .tab-pane.active { display: block; animation: fadeUp 0.3s ease; }
+  /* COMPARE TABLE */
+  .compare-table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 0.87rem; }
+  .compare-table th { font-family: 'DM Mono', monospace; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent); text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--border); }
+  .compare-table td { padding: 10px 14px; border-bottom: 1px solid var(--border); color: #c8a8b8; vertical-align: top; }
+  .compare-table tr:last-child td { border-bottom: none; }
+  .compare-table tr:hover td { background: var(--surface2); }
+  /* QUIZ */
+  .quiz-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 36px; margin-top: 32px; }
+  .quiz-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 28px; }
+  .quiz-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1.25rem; }
+  .q-counter { font-family: 'DM Mono', monospace; font-size: 0.78rem; color: var(--muted); }
+  .q-progress { height: 3px; background: var(--border); border-radius: 2px; margin-bottom: 28px; overflow: hidden; }
+  .q-progress-fill { height: 100%; background: var(--accent); border-radius: 2px; transition: width 0.4s ease; }
+  .q-text { font-size: 1.02rem; font-weight: 500; line-height: 1.6; margin-bottom: 22px; }
+  .answers { display: grid; grid-template-columns: 1fr 1fr; gap: 11px; margin-bottom: 22px; }
+  .ans-btn { background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 13px 16px; color: var(--text); cursor: pointer; text-align: left; font-family: 'DM Sans', sans-serif; font-size: 0.88rem; line-height: 1.45; transition: all 0.2s; }
+  .ans-btn:hover:not(:disabled) { border-color: var(--accent); background: rgba(240,72,128,0.07); }
+  .ans-btn.correct { border-color: var(--correct); background: rgba(80,240,160,0.1); color: var(--correct); }
+  .ans-btn.wrong { border-color: var(--wrong); background: rgba(240,96,80,0.1); color: var(--wrong); }
+  .ans-btn:disabled { cursor: not-allowed; }
+  .feedback { padding: 15px 20px; border-radius: 10px; font-size: 0.88rem; line-height: 1.65; margin-bottom: 18px; display: none; }
+  .feedback.correct { background: rgba(80,240,160,0.08); border: 1px solid rgba(80,240,160,0.3); color: #80f0b8; display: block; }
+  .feedback.wrong { background: rgba(240,96,80,0.08); border: 1px solid rgba(240,96,80,0.3); color: #f09090; display: block; }
+  .next-btn { background: var(--accent); color: #fff; border: none; padding: 11px 26px; border-radius: 8px; font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.88rem; cursor: pointer; transition: all 0.2s; display: none; }
+  .next-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 22px rgba(240,72,128,0.3); }
+  .next-btn.show { display: inline-block; }
+  .score-screen { text-align: center; padding: 60px 20px; animation: fadeUp 0.5s ease; }
+  .score-ring { width: 130px; height: 130px; border-radius: 50%; border: 4px solid var(--accent); display: flex; align-items: center; justify-content: center; margin: 0 auto 28px; font-family: 'Syne', sans-serif; font-weight: 800; font-size: 2.2rem; color: var(--accent); }
+  .score-headline { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1.6rem; margin-bottom: 10px; }
+  .score-sub { color: var(--muted); margin-bottom: 32px; font-size: 0.92rem; }
+  .score-btns { display: flex; gap: 12px; justify-content: center; }
+  .btn-primary { background: var(--accent); color: #fff; border: none; padding: 11px 26px; border-radius: 8px; font-family: 'Syne', sans-serif; font-weight: 700; cursor: pointer; transition: all 0.2s; }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 22px rgba(240,72,128,0.3); }
+  .btn-ghost { background: transparent; color: var(--text); border: 1px solid var(--border); padding: 11px 26px; border-radius: 8px; font-family: 'Syne', sans-serif; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+  .btn-ghost:hover { border-color: var(--accent); }
+  @media(max-width:600px) { .main{padding:28px 18px;} header{padding:14px 18px;} .answers{grid-template-columns:1fr;} .path-line{font-size:0.75rem;} }
+</style>
+</head>
+<body>
+<div class="app">
+<header>
+  <div class="logo"><div class="logo-chip">MOD 03</div>Files &amp; Folders</div>
+  <div class="module-tag">TechReady Series</div>
+</header>
+<div class="main">
+  <div class="hero fade-up">
+    <div class="hero-eyebrow">Module 03 of 05</div>
+    <h1>Files &amp;<br><em>Folders</em></h1>
+    <p class="hero-sub">Knowing where your files live, how to navigate folder structures, and what different file types mean is essential for workplace productivity and preventing data loss.</p>
+  </div>
+
+  <div class="section fade-up">
+    <div class="section-label">Core Concept</div>
+    <h2>Files, Folders, and File Systems</h2>
+    <p>Every piece of data on a computer is stored as a <strong>file</strong> — a named container holding data (text, images, code, video). Files are organized into <strong>folders</strong> (also called directories), which can contain other folders, creating a tree-like hierarchy. This entire structure is managed by the <strong>file system</strong> (NTFS on Windows, APFS on Mac).</p>
+    <p>Understanding this hierarchy means you always know where to find your work and can communicate clearly about file locations — critical when sharing documents with colleagues or troubleshooting with IT.</p>
+    <div class="analogy">
+      <div class="analogy-label">Analogy</div>
+      <div class="analogy-text">Think of a <strong>filing cabinet</strong>. The cabinet itself is your hard drive. Drawers are top-level folders. Within each drawer are hanging folders (sub-folders). Inside those are individual documents (files). A file path is like the address: "Cabinet A → Drawer: Finance → Folder: Q3 2024 → Document: Budget.xlsx"</div>
+    </div>
+  </div>
+
+  <div class="section fade-up">
+    <div class="section-label">Interactive — Click to Decode</div>
+    <h2>Reading a File Path</h2>
+    <p>A file path is the complete address of a file on your computer. Click each segment of the paths below to learn what it means.</p>
+
+    <div class="path-decoder">
+      <p style="font-size:0.8rem;color:var(--muted);margin-bottom:12px;font-family:'DM Mono',monospace;">WINDOWS PATH:</p>
+      <div class="path-line" id="winPath">
+        <span class="path-seg" data-info="win-drive" style="color:var(--accent)">C:</span>
+        <span class="path-sep">\</span>
+        <span class="path-seg" data-info="win-users">Users</span>
+        <span class="path-sep">\</span>
+        <span class="path-seg" data-info="win-name" style="color:var(--accent2)">JohnSmith</span>
+        <span class="path-sep">\</span>
+        <span class="path-seg" data-info="win-docs">Documents</span>
+        <span class="path-sep">\</span>
+        <span class="path-seg" data-info="win-sub">Acme_Corp</span>
+        <span class="path-sep">\</span>
+        <span class="path-seg" data-info="win-file" style="color:var(--accent3)">Q3_Report.xlsx</span>
+      </div>
+      <p style="font-size:0.8rem;color:var(--muted);margin-bottom:12px;font-family:'DM Mono',monospace;">MAC / LINUX PATH:</p>
+      <div class="path-line" id="macPath">
+        <span class="path-seg" data-info="mac-root" style="color:var(--accent)">/</span>
+        <span class="path-sep"></span>
+        <span class="path-seg" data-info="mac-users">Users</span>
+        <span class="path-sep">/</span>
+        <span class="path-seg" data-info="mac-name" style="color:var(--accent2)">jsmith</span>
+        <span class="path-sep">/</span>
+        <span class="path-seg" data-info="mac-desktop">Desktop</span>
+        <span class="path-sep">/</span>
+        <span class="path-seg" data-info="mac-file" style="color:var(--accent3)">Presentation.pptx</span>
+      </div>
+      <div class="path-info" id="pathInfo"></div>
+    </div>
+  </div>
+
+  <div class="section fade-up">
+    <div class="section-label">File Extensions</div>
+    <h2>What does the file extension tell you?</h2>
+    <p>The letters after the final dot in a filename (<code>.docx</code>, <code>.pdf</code>, <code>.jpg</code>) are the <strong>extension</strong>. They tell the OS what type of data the file contains and which app should open it. Knowing extensions prevents confusion and helps you share files in the right format.</p>
+    <div class="ext-grid">
+      <div class="ext-card"><div class="ext-icon">📄</div><div class="ext-code">.docx</div><div class="ext-name">Word Document</div><div class="ext-app">Microsoft Word</div></div>
+      <div class="ext-card"><div class="ext-icon">📊</div><div class="ext-code">.xlsx</div><div class="ext-name">Spreadsheet</div><div class="ext-app">Microsoft Excel</div></div>
+      <div class="ext-card"><div class="ext-icon">📑</div><div class="ext-code">.pptx</div><div class="ext-name">Presentation</div><div class="ext-app">PowerPoint</div></div>
+      <div class="ext-card"><div class="ext-icon">📕</div><div class="ext-code">.pdf</div><div class="ext-name">PDF Document</div><div class="ext-app">Acrobat / Browser</div></div>
+      <div class="ext-card"><div class="ext-icon">🖼️</div><div class="ext-code">.jpg .png</div><div class="ext-name">Image File</div><div class="ext-app">Photos / Paint</div></div>
+      <div class="ext-card"><div class="ext-icon">🎬</div><div class="ext-code">.mp4 .mov</div><div class="ext-name">Video File</div><div class="ext-app">Media Player</div></div>
+      <div class="ext-card"><div class="ext-icon">🎵</div><div class="ext-code">.mp3 .wav</div><div class="ext-name">Audio File</div><div class="ext-app">Music Player</div></div>
+      <div class="ext-card"><div class="ext-icon">🗜️</div><div class="ext-code">.zip .7z</div><div class="ext-name">Compressed Folder</div><div class="ext-app">Needs extracting</div></div>
+      <div class="ext-card"><div class="ext-icon">📋</div><div class="ext-code">.csv</div><div class="ext-name">Data Table</div><div class="ext-app">Excel / Sheets</div></div>
+      <div class="ext-card"><div class="ext-icon">📝</div><div class="ext-code">.txt</div><div class="ext-name">Plain Text</div><div class="ext-app">Notepad / TextEdit</div></div>
+      <div class="ext-card"><div class="ext-icon">🌐</div><div class="ext-code">.html</div><div class="ext-name">Web Page</div><div class="ext-app">Browser</div></div>
+      <div class="ext-card"><div class="ext-icon">⚙️</div><div class="ext-code">.exe .msi</div><div class="ext-name">Program Installer</div><div class="ext-app">Run with caution</div></div>
+    </div>
+    <p><strong>Important:</strong> Windows hides file extensions by default. To show them: open File Explorer → View → Show → File name extensions. This helps you verify what type of file something actually is — crucial for security (a virus might be named <code>invoice.pdf.exe</code>).</p>
+  </div>
+
+  <div class="section fade-up">
+    <div class="section-label">Where Files Live</div>
+    <h2>Local, Network, and Cloud Storage</h2>
+    <div class="storage-cards">
+      <div class="storage-card">
+        <div class="storage-icon">💻</div>
+        <div>
+          <div class="storage-title">Local Storage (Your Computer)</div>
+          <div class="storage-text">Files saved directly to your hard drive or SSD. Fast access, works without internet. Located in C:\Users\YourName\ (Windows) or /Users/yourname/ (Mac). Risk: if your computer fails or is stolen without backup, files can be lost.</div>
+          <div class="storage-pros"><span class="pro pro-tag">Fast</span><span class="pro pro-tag">Works offline</span><span class="con con-tag">Lost if computer fails</span><span class="con con-tag">Not accessible elsewhere</span></div>
+        </div>
+      </div>
+      <div class="storage-card">
+        <div class="storage-icon">🏢</div>
+        <div>
+          <div class="storage-title">Network Drive (Company Server)</div>
+          <div class="storage-text">Files stored on a central company server. Often appears as a drive letter like Z: or \\server\share. Multiple people can access and edit the same files. Requires connection to the company network or VPN. IT manages backups. Common in enterprises.</div>
+          <div class="storage-pros"><span class="pro pro-tag">Shared access</span><span class="pro pro-tag">IT-managed backups</span><span class="con con-tag">Needs VPN/network</span><span class="con con-tag">Can be slower</span></div>
+        </div>
+      </div>
+      <div class="storage-card">
+        <div class="storage-icon">☁️</div>
+        <div>
+          <div class="storage-title">Cloud Storage</div>
+          <div class="storage-text">Files stored on remote servers, accessed via internet. Examples: OneDrive (Microsoft), Google Drive, Dropbox, SharePoint. Files sync across all your devices. Accessible anywhere. Most workplaces use cloud storage for collaboration. Often a folder on your computer syncs automatically to the cloud.</div>
+          <div class="storage-pros"><span class="pro pro-tag">Access anywhere</span><span class="pro pro-tag">Auto-sync</span><span class="pro pro-tag">Team collaboration</span><span class="con con-tag">Needs internet</span><span class="con con-tag">Privacy considerations</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section fade-up">
+    <div class="section-label">Practical Skills</div>
+    <h2>Finding lost files &amp; good practices</h2>
+    <div class="tabs">
+      <div class="tab active" data-tab="f1">Finding lost files</div>
+      <div class="tab" data-tab="f2">Naming conventions</div>
+      <div class="tab" data-tab="f3">Version control</div>
+      <div class="tab" data-tab="f4">Backup strategy</div>
+    </div>
+    <div class="tab-pane active" id="f1">
+      <p><strong>Windows:</strong> Use the search box in File Explorer (top right). You can also press Win+S to search the entire computer. Filter by date modified, file type, or size. Check the <strong>Recent</strong> items list in most apps (File → Recent).</p>
+      <p><strong>Mac:</strong> Use Spotlight (Cmd+Space) and type the filename. Or in Finder, press Cmd+F to search within a specific folder. Check Recents in the Finder sidebar.</p>
+      <p><strong>If you accidentally deleted a file:</strong> Check the Recycle Bin (Windows) or Trash (Mac) before panicking — files go there first. Right-click → Restore.</p>
+    </div>
+    <div class="tab-pane" id="f2">
+      <p>Good file naming prevents confusion, especially in shared drives. Use <strong>dates in filenames</strong> for version tracking: <code>2024-03-15_Budget_Final.xlsx</code> (YYYY-MM-DD sorts chronologically). Avoid spaces — use underscores or hyphens. Avoid special characters (<code>/ \ : * ? " &lt; &gt; |</code>) as they cause issues across systems. Be specific: <code>Smith_Contract_Signed.pdf</code> not <code>Document1.pdf</code>.</p>
+    </div>
+    <div class="tab-pane" id="f3">
+      <p>When multiple versions of a file exist, naming matters: <code>Report_v1.docx</code>, <code>Report_v2_FINAL.docx</code>, <code>Report_v2_FINAL_JSmithEdits.docx</code>. This gets unwieldy. Better: use cloud tools like Google Docs or SharePoint that have <strong>built-in version history</strong> — you can see every change ever made and restore any previous version. Check: File → Version History in Google Docs or Microsoft Office 365.</p>
+    </div>
+    <div class="tab-pane" id="f4">
+      <p>The <strong>3-2-1 backup rule</strong>: keep 3 copies of important data, on 2 different types of storage, with 1 copy offsite (or in cloud). For most workers: your files on your computer (1), synced to cloud storage like OneDrive (2, offsite), and optionally on a USB drive or network drive (3). Most companies handle backup automatically — but verify with IT what's actually backed up vs. what's only on your local drive.</p>
+    </div>
+  </div>
+
+  <div class="section fade-up">
+    <div class="section-label">Workplace Scenarios</div>
+    <h2>File and folder situations at work</h2>
+    <div class="tabs">
+      <div class="tab active" data-tab="sc1">Lost file</div>
+      <div class="tab" data-tab="sc2">Wrong format</div>
+      <div class="tab" data-tab="sc3">Shared drive</div>
+      <div class="tab" data-tab="sc4">Emailing files</div>
+    </div>
+    <div class="tab-pane active" id="sc1">
+      <div class="scenario"><div class="scenario-label">Scenario</div><div class="scenario-text">You saved a report yesterday but can't find it today. You search your Desktop and Documents — nothing.</div></div>
+      <p><strong>Systematic approach:</strong> (1) Check the app's Recent Files (File → Recent). (2) Search by filename in File Explorer or Spotlight. (3) Search by date — you know you saved it yesterday. (4) Check if you were working in a cloud folder (OneDrive, Google Drive) — it may have synced to the cloud. (5) Check Downloads folder — sometimes files default there.</p>
+    </div>
+    <div class="tab-pane" id="sc2">
+      <div class="scenario"><div class="scenario-label">Scenario</div><div class="scenario-text">A client asks you to send them a document as a PDF, but you only have the .docx Word file.</div></div>
+      <p><strong>Convert to PDF:</strong> In Microsoft Word, go to File → Save As (or Export) → choose PDF as the format. Or File → Print → choose "Microsoft Print to PDF" as the printer. On Mac: File → Print → PDF → Save as PDF. PDFs preserve formatting across all devices and can't be accidentally edited by the recipient — that's why they're preferred for final documents.</p>
+    </div>
+    <div class="tab-pane" id="sc3">
+      <div class="scenario"><div class="scenario-label">Scenario</div><div class="scenario-text">Your manager says "put the final version in the shared drive, in the Projects folder." You're not sure where the shared drive is.</div></div>
+      <p>On Windows, look in File Explorer's left sidebar for a mapped drive letter (Z:, S:, etc.) or a network location. On Mac, check Finder's sidebar under "Network." If you can't find it, ask your manager for the exact path (e.g., <code>\\server\Projects</code>) or if it's in a cloud service like SharePoint, they'll send you a link. Never assume you've found the right location — confirm before replacing important files.</p>
+    </div>
+    <div class="tab-pane" id="sc4">
+      <div class="scenario"><div class="scenario-label">Scenario</div><div class="scenario-text">You need to email someone a folder containing 30 files. Your email rejects the attachment because it's too large.</div></div>
+      <p>Options: (1) <strong>Compress the folder</strong> — right-click the folder → "Compress" (Mac) or "Send to → Compressed zip folder" (Windows). This creates a single .zip file, often 30-60% smaller. (2) <strong>Share via cloud link</strong> — upload to Google Drive, OneDrive, or Dropbox, then share the link. This is better for large files and keeps them editable. (3) Use a service like WeTransfer for very large files.</p>
+    </div>
+  </div>
+
+  <div class="quiz-wrap" id="quizWrap">
+    <div id="quizInner"></div>
+  </div>
+</div>
+</div>
+
+<script>
+const pathInfoData = {
+  'win-drive': { title: 'Drive Letter: C:', text: 'In Windows, physical storage drives are assigned letters. C: is almost always the main hard drive where Windows is installed and where your files live. D:, E:, etc. are additional drives, USB drives, or network drives. The colon is required — C: not just C.' },
+  'win-users': { title: 'System Folder: Users', text: 'The Users folder is a standard Windows system folder containing the personal folders of all user accounts on this computer. You\'ll also see folders here for other users if they share the computer, but you typically can\'t access theirs.' },
+  'win-name': { title: 'User Account: JohnSmith', text: 'This is the username — the specific account\'s personal space. Your name here is whatever was set when the account was created. This is where all your personal files live: Desktop, Documents, Downloads, Pictures, etc.' },
+  'win-docs': { title: 'Standard Folder: Documents', text: 'Documents is a standard Windows user folder, also called "My Documents." It\'s the default save location for many applications. Other standard folders include Desktop, Downloads, Pictures, Videos, and Music.' },
+  'win-sub': { title: 'Sub-folder: Acme_Corp', text: 'A custom folder the user created to organize their work. You can create folders anywhere to organize files. Good practice: organize by client, project, year, or topic.' },
+  'win-file': { title: 'File: Q3_Report.xlsx', text: '.xlsx is the extension for Microsoft Excel spreadsheets. The filename is Q3_Report, the extension is .xlsx. This file would be found in C:\\Users\\JohnSmith\\Documents\\Acme_Corp\\ — you can type this path directly in the File Explorer address bar to navigate there.' },
+  'mac-root': { title: 'Root Directory: /', text: 'On Mac and Linux, the single forward slash / represents the root — the very top of the file system hierarchy. Everything on the computer lives under /. Unlike Windows (which uses drive letters), Mac uses a single unified tree starting from /.' },
+  'mac-users': { title: 'System Folder: Users', text: 'Same concept as Windows: the Users folder contains personal directories for each user account. On Mac, your home directory is /Users/yourname — often abbreviated as ~ (tilde) in terminal.' },
+  'mac-name': { title: 'User Account: jsmith', text: 'Mac usernames are typically lowercase and without spaces. Your home folder is here. The ~ symbol is a shortcut for /Users/yourname — so ~/Documents means /Users/jsmith/Documents.' },
+  'mac-desktop': { title: 'Standard Folder: Desktop', text: 'The Desktop is a real folder on your computer — items you see on your desktop are actually stored in /Users/jsmith/Desktop/. Files saved here are easy to find but clutter accumulates fast. Good practice: use it as a temporary space, not permanent storage.' },
+  'mac-file': { title: 'File: Presentation.pptx', text: '.pptx is a Microsoft PowerPoint presentation file. It works on Mac too (via PowerPoint for Mac or Keynote). Note Mac uses forward slashes (/) in paths, while Windows uses backslashes (\\). This trips people up when sharing file paths between systems.' },
+};
+
+document.querySelectorAll('.path-seg').forEach(seg => {
+  seg.addEventListener('click', () => {
+    document.querySelectorAll('.path-seg').forEach(s => s.classList.remove('active'));
+    seg.classList.add('active');
+    const info = pathInfoData[seg.dataset.info];
+    if (info) {
+      const pi = document.getElementById('pathInfo');
+      pi.innerHTML = `<div class="path-info-title">${info.title}</div>${info.text}`;
+      pi.classList.add('visible');
+    }
+  });
+});
+
+const quizData = [
+  { q: "What does the file path C:\\Users\\Maria\\Documents\\Report.pdf tell you?", a: ["A website address for Maria's report","The file Report.pdf is in Maria's Documents folder on drive C:","An email attachment from Maria","A program installed on drive C:"], c: 1, e: "This is a Windows file path. Breaking it down: C: = main hard drive, Users = system folder for all accounts, Maria = her user account, Documents = standard folder, Report.pdf = the file. You could type this exact path into File Explorer's address bar to navigate directly there." },
+  { q: "A coworker sends you a file called 'Invoice.pdf.exe'. You should:", a: ["Open it immediately — it's an invoice PDF","Be very suspicious — the real extension is .exe, not .pdf","Rename it to remove the .exe","Print it right away"], c: 1, e: "Malware often disguises itself by adding a misleading extension before the real one. The actual file type here is .exe (a program), not .pdf. Running it could install malware. This is a classic phishing/malware trick — always verify extensions, especially on emailed attachments." },
+  { q: "You accidentally delete a file on Windows. The BEST first step is:", a: ["Immediately call IT and report data loss","Check the Recycle Bin and restore from there","Restart the computer","Buy data recovery software immediately"], c: 1, e: "When you delete a file on Windows, it goes to the Recycle Bin first — it's not permanently deleted yet. Right-click the Recycle Bin → Open, find your file, right-click → Restore. On Mac, it's the Trash. Only after emptying the bin is the file actually gone." },
+  { q: "Your boss asks you to send the contract as a PDF instead of a Word document. The best way is:", a: ["Tell them you can't — you only have .docx","Screenshot every page of the Word document","In Word, use File → Save As (or Export) → PDF format","Email them the .docx and hope they can convert it"], c: 2, e: "Microsoft Word (and most Office apps) can export directly to PDF via File → Save As → change file type to PDF, or File → Export → Create PDF. PDFs preserve exact formatting across all devices and prevent accidental editing — that's why they're preferred for final documents." },
+  { q: "The '3-2-1 backup rule' means:", a: ["Back up every 3 days, 2 times a week, 1 time a month","3 copies of data, on 2 types of storage, with 1 copy offsite or in cloud","3 files per folder, 2 folders per drive, 1 backup drive","Make 3 copies of the 2 most important files, 1 time per year"], c: 1, e: "The 3-2-1 rule is the gold standard for backup: 3 total copies of data, stored on 2 different types of media (e.g., local drive + USB), with 1 copy offsite (cloud or different physical location). This protects against hardware failure, theft, fire, and ransomware." },
+  { q: "A file extension (.docx, .jpg, .pdf) tells you:", a: ["When the file was created","What type of data the file contains and which app opens it","How large the file is","Who created the file"], c: 1, e: "File extensions identify the file type and determine which application opens it. Without extensions, your OS wouldn't know whether to open a file in Word, a browser, or a media player. Hiding extensions (Windows default) can be a security risk — always show them." },
+  { q: "What is the difference between saving a file locally vs. in cloud storage?", a: ["Cloud storage is only for images; local is for documents","Local files are on your computer's hard drive; cloud files are on remote servers accessible via internet","Local files are permanent; cloud files disappear when you log out","There is no difference — both save to the same place"], c: 1, e: "Local files live on your computer's physical drive — fast, private, offline-accessible, but lost if the computer fails. Cloud files (OneDrive, Google Drive) live on remote servers — accessible anywhere with internet, auto-synced across devices, backed up by the provider, and shareable with colleagues." },
+  { q: "Your company has a 'mapped network drive' appearing as Z: in File Explorer. This is:", a: ["A backup copy of your C: drive","A folder on a company server that appears as a drive letter","A USB drive you plugged in","A virtual drive that only exists in the cloud"], c: 1, e: "Network drives are shared folders on a company server that are 'mapped' (assigned a drive letter) so they appear in File Explorer like a local drive. Multiple employees can access the same Z: drive. They require connection to the company network or VPN to access." },
+  { q: "What does it mean when Windows says 'Your disk is almost full'?", a: ["Your RAM is overloaded","Your hard drive / SSD has little remaining storage space","Your internet bandwidth is being used up","Your computer's CPU is overheating"], c: 1, e: "Disk/storage warnings refer to your hard drive or SSD running out of space — the permanent storage that holds your files and OS. Delete unneeded files, empty the Recycle Bin, or move files to cloud/external storage. Low disk space causes slowdowns and prevents saving new files." },
+  { q: "Good file naming practice for a work document would be:", a: ["doc1.docx","final_FINAL_v3_use_this_one.docx","2024-03-15_ClientProposal_v2.docx","My Document (copy).docx"], c: 2, e: "Good file names: include the date in YYYY-MM-DD format (sorts correctly), describe the content specifically, include version number if needed, avoid spaces (use underscores or hyphens), and avoid vague words like 'final' or 'copy'. The name should tell someone exactly what the file is without opening it." },
+];
+
+let cur = 0, score = 0, answered = false;
+function renderQuiz() {
+  const q = quizData[cur];
+  document.getElementById('quizInner').innerHTML = `
+    <div class="quiz-header"><div class="quiz-title">Knowledge Check</div><div class="q-counter">Question ${cur+1} of ${quizData.length}</div></div>
+    <div class="q-progress"><div class="q-progress-fill" style="width:${(cur/quizData.length)*100}%"></div></div>
+    <div class="q-text">${q.q}</div>
+    <div class="answers">${q.a.map((a,i)=>`<button class="ans-btn" data-i="${i}">${a}</button>`).join('')}</div>
+    <div class="feedback" id="fb"></div>
+    <button class="next-btn" id="nb">${cur<quizData.length-1?'Next Question →':'See Results →'}</button>`;
+  answered = false;
+  document.querySelectorAll('.ans-btn').forEach(b=>b.addEventListener('click',()=>handleAnswer(parseInt(b.dataset.i))));
+  document.getElementById('nb').addEventListener('click',nextQ);
+}
+function handleAnswer(i) {
+  if(answered)return; answered=true;
+  const q=quizData[cur]; if(i===q.c)score++;
+  document.querySelectorAll('.ans-btn').forEach((b,idx)=>{ b.disabled=true; if(idx===q.c)b.classList.add('correct'); if(idx===i&&i!==q.c)b.classList.add('wrong'); });
+  const fb=document.getElementById('fb'); fb.className='feedback '+(i===q.c?'correct':'wrong'); fb.innerHTML=(i===q.c?'✓ Correct! ':'✗ Not quite. ')+q.e;
+  document.getElementById('nb').classList.add('show');
+}
+function nextQ(){if(cur<quizData.length-1){cur++;renderQuiz();}else showScore();}
+function showScore(){
+  const pct=Math.round(score/quizData.length*100);
+  const msgs=[[90,'🏆 Expert Level!','Exceptional file system knowledge.'],[70,'⭐ Solid Work','Good grasp — review any gaps.'],[50,'📚 Getting There','Re-read the lessons and retry.'],[0,'🔄 Keep Going','Review and try again.']];
+  const[,t,s]=msgs.find(([th])=>pct>=th);
+  document.getElementById('quizInner').innerHTML=`<div class="score-screen"><div class="score-ring">${pct}%</div><div class="score-headline">${t}</div><p class="score-sub">${score}/${quizData.length} correct — ${s}</p><div class="score-btns"><button class="btn-primary" id="retryBtn">Try Again</button><button class="btn-ghost" onclick="window.scrollTo({top:0,behavior:'smooth'})">Review Lesson ↑</button></div></div>`;
+  document.getElementById('retryBtn').addEventListener('click',()=>{cur=0;score=0;renderQuiz();});
+}
+document.querySelectorAll('.tab').forEach(t=>{ t.addEventListener('click',()=>{ const section=t.closest('.section'); section.querySelectorAll('.tab').forEach(x=>x.classList.remove('active')); section.querySelectorAll('.tab-pane').forEach(x=>x.classList.remove('active')); t.classList.add('active'); document.getElementById(t.dataset.tab).classList.add('active'); }); });
+renderQuiz();
+</script>
+</body>
+</html>
