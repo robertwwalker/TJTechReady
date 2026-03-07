@@ -1,535 +1,305 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Module 1 — Hardware vs. Software</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
-<style>
-  :root {
-    --bg: #0d0f14;
-    --surface: #161920;
-    --surface2: #1e2229;
-    --border: #2a2f3a;
-    --accent: #f0c040;
-    --accent2: #f08040;
-    --accent3: #f0e040;
-    --text: #e8eaf0;
-    --muted: #7a8090;
-    --correct: #4df0a0;
-    --wrong: #f04d7a;
-  }
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; overflow-x: hidden; }
-  body::before {
-    content: '';
-    position: fixed; inset: 0;
-    background-image: linear-gradient(rgba(240,192,64,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(240,192,64,0.04) 1px, transparent 1px);
-    background-size: 44px 44px;
-    pointer-events: none; z-index: 0;
-  }
-  .app { position: relative; z-index: 1; }
-  header {
-    border-bottom: 1px solid var(--border);
-    padding: 18px 40px;
-    display: flex; align-items: center; justify-content: space-between;
-    background: rgba(13,15,20,0.92); backdrop-filter: blur(12px);
-    position: sticky; top: 0; z-index: 100;
-  }
-  .logo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.1rem; display: flex; align-items: center; gap: 10px; }
-  .logo-chip { background: var(--accent); color: #000; font-size: 0.65rem; padding: 3px 8px; border-radius: 4px; font-weight: 700; letter-spacing: 0.05em; }
-  .module-tag { font-family: 'DM Mono', monospace; font-size: 0.7rem; color: var(--accent); border: 1px solid rgba(240,192,64,0.3); padding: 4px 12px; border-radius: 20px; }
-  .main { max-width: 920px; margin: 0 auto; padding: 52px 40px; }
-  @keyframes fadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
-  .fade-up { animation: fadeUp 0.5s ease forwards; }
-  .hero { margin-bottom: 52px; }
-  .hero-eyebrow { font-family: 'DM Mono', monospace; font-size: 0.68rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--accent); margin-bottom: 16px; }
-  h1 { font-family: 'Syne', sans-serif; font-weight: 800; font-size: clamp(2.2rem,5vw,3.4rem); line-height: 1.06; letter-spacing: -0.03em; margin-bottom: 18px; }
-  h1 em { font-style: normal; color: var(--accent); }
-  .hero-sub { font-size: 1rem; color: var(--muted); max-width: 540px; line-height: 1.75; }
-  .section { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 36px; margin-bottom: 24px; }
-  .section-label { font-family: 'DM Mono', monospace; font-size: 0.63rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--accent); margin-bottom: 12px; }
-  .section h2 { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1.5rem; letter-spacing: -0.02em; margin-bottom: 14px; }
-  .section p { color: #b0b8c8; line-height: 1.82; margin-bottom: 14px; font-size: 0.93rem; }
-  .section p:last-child { margin-bottom: 0; }
-  strong { color: var(--text); }
-  /* HW SW SPLIT */
-  .split { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 20px 0; }
-  .split-side { border-radius: 12px; padding: 22px; }
-  .hw { background: rgba(240,192,64,0.07); border: 1px solid rgba(240,192,64,0.22); }
-  .sw { background: rgba(77,240,160,0.07); border: 1px solid rgba(77,240,160,0.22); }
-  .split-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1rem; margin-bottom: 14px; }
-  .hw .split-title { color: var(--accent); }
-  .sw .split-title { color: var(--correct); }
-  .item-row { display: flex; align-items: flex-start; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 0.85rem; }
-  .item-row:last-child { border-bottom: none; }
-  .item-row .dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; margin-top: 5px; }
-  .item-row .name { color: var(--text); font-weight: 500; }
-  .item-row .def { color: var(--muted); font-size: 0.8rem; margin-top: 2px; }
-  /* CLICKABLE PARTS */
-  .parts-explorer { margin: 16px 0; }
-  .parts-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-bottom: 16px; }
-  .part-btn { background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 14px 8px; cursor: pointer; text-align: center; transition: all 0.22s; }
-  .part-btn:hover { border-color: var(--accent); background: rgba(240,192,64,0.07); }
-  .part-btn.active { border-color: var(--accent); background: rgba(240,192,64,0.1); }
-  .part-icon { font-size: 1.6rem; margin-bottom: 6px; }
-  .part-label { font-family: 'DM Mono', monospace; font-size: 0.65rem; color: var(--muted); text-transform: uppercase; }
-  .part-detail { background: rgba(240,192,64,0.06); border: 1px solid rgba(240,192,64,0.25); border-radius: 10px; padding: 20px; display: none; animation: fadeUp 0.3s ease; }
-  .part-detail.visible { display: block; }
-  .part-detail-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1rem; color: var(--accent); margin-bottom: 8px; }
-  .part-detail-text { font-size: 0.88rem; color: #b0b8c8; line-height: 1.75; }
-  /* ANALOGY BOX */
-  .analogy { background: var(--surface2); border-left: 3px solid var(--accent); border-radius: 0 10px 10px 0; padding: 18px 22px; margin: 16px 0; }
-  .analogy-label { font-family: 'DM Mono', monospace; font-size: 0.62rem; color: var(--accent); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px; }
-  .analogy-text { font-size: 0.9rem; color: #b0b8c8; line-height: 1.75; }
-  /* SCENARIO */
-  .scenario { background: rgba(240,128,64,0.06); border: 1px solid rgba(240,128,64,0.2); border-radius: 10px; padding: 18px 22px; margin: 14px 0; }
-  .scenario-label { font-family: 'DM Mono', monospace; font-size: 0.62rem; color: var(--accent2); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px; }
-  .scenario-text { font-size: 0.88rem; color: #b0b8c8; line-height: 1.75; }
-  /* COMPARE TABLE */
-  .compare-table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 0.87rem; }
-  .compare-table th { font-family: 'DM Mono', monospace; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent); text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--border); }
-  .compare-table td { padding: 10px 14px; border-bottom: 1px solid var(--border); color: #b0b8c8; vertical-align: top; }
-  .compare-table tr:last-child td { border-bottom: none; }
-  .compare-table tr:hover td { background: var(--surface2); }
-  /* QUIZ */
-  .quiz-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 36px; margin-top: 32px; }
-  .quiz-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 28px; }
-  .quiz-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1.25rem; }
-  .q-counter { font-family: 'DM Mono', monospace; font-size: 0.78rem; color: var(--muted); }
-  .q-progress { height: 3px; background: var(--border); border-radius: 2px; margin-bottom: 28px; overflow: hidden; }
-  .q-progress-fill { height: 100%; background: var(--accent); border-radius: 2px; transition: width 0.4s ease; }
-  .q-text { font-size: 1.02rem; font-weight: 500; line-height: 1.6; margin-bottom: 22px; }
-  .answers { display: grid; grid-template-columns: 1fr 1fr; gap: 11px; margin-bottom: 22px; }
-  .ans-btn { background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 13px 16px; color: var(--text); cursor: pointer; text-align: left; font-family: 'DM Sans', sans-serif; font-size: 0.88rem; line-height: 1.45; transition: all 0.2s; }
-  .ans-btn:hover:not(:disabled) { border-color: var(--accent); background: rgba(240,192,64,0.07); }
-  .ans-btn.correct { border-color: var(--correct); background: rgba(77,240,160,0.1); color: var(--correct); }
-  .ans-btn.wrong { border-color: var(--wrong); background: rgba(240,77,122,0.1); color: var(--wrong); }
-  .ans-btn:disabled { cursor: not-allowed; }
-  .feedback { padding: 15px 20px; border-radius: 10px; font-size: 0.88rem; line-height: 1.65; margin-bottom: 18px; display: none; }
-  .feedback.correct { background: rgba(77,240,160,0.08); border: 1px solid rgba(77,240,160,0.3); color: #7af0c0; display: block; }
-  .feedback.wrong { background: rgba(240,77,122,0.08); border: 1px solid rgba(240,77,122,0.3); color: #f09090; display: block; }
-  .next-btn { background: var(--accent); color: #000; border: none; padding: 11px 26px; border-radius: 8px; font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.88rem; cursor: pointer; transition: all 0.2s; display: none; }
-  .next-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 22px rgba(240,192,64,0.28); }
-  .next-btn.show { display: inline-block; }
-  /* SCORE */
-  .score-screen { text-align: center; padding: 60px 20px; animation: fadeUp 0.5s ease; }
-  .score-ring { width: 130px; height: 130px; border-radius: 50%; border: 4px solid var(--accent); display: flex; align-items: center; justify-content: center; margin: 0 auto 28px; font-family: 'Syne', sans-serif; font-weight: 800; font-size: 2.2rem; color: var(--accent); }
-  .score-headline { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1.6rem; margin-bottom: 10px; }
-  .score-sub { color: var(--muted); margin-bottom: 32px; font-size: 0.92rem; }
-  .score-btns { display: flex; gap: 12px; justify-content: center; }
-  .btn-primary { background: var(--accent); color: #000; border: none; padding: 11px 26px; border-radius: 8px; font-family: 'Syne', sans-serif; font-weight: 700; cursor: pointer; transition: all 0.2s; }
-  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 22px rgba(240,192,64,0.28); }
-  .btn-ghost { background: transparent; color: var(--text); border: 1px solid var(--border); padding: 11px 26px; border-radius: 8px; font-family: 'Syne', sans-serif; font-weight: 600; cursor: pointer; transition: all 0.2s; }
-  .btn-ghost:hover { border-color: var(--accent); }
-  /* TABS */
-  .tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--border); margin-bottom: 22px; overflow-x: auto; }
-  .tab { padding: 9px 16px; cursor: pointer; font-size: 0.82rem; font-family: 'DM Mono', monospace; color: var(--muted); border-bottom: 2px solid transparent; margin-bottom: -1px; transition: all 0.2s; white-space: nowrap; }
-  .tab:hover { color: var(--text); }
-  .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
-  .tab-pane { display: none; }
-  .tab-pane.active { display: block; animation: fadeUp 0.3s ease; }
-  @media(max-width:600px) { .main{padding:28px 18px;} header{padding:14px 18px;} .split{grid-template-columns:1fr;} .parts-grid{grid-template-columns:repeat(3,1fr);} .answers{grid-template-columns:1fr;} }
-
-  /* ── AGSM branding ───────────────────────────────────── */
-  .nav-logo-img {
-    height: 36px; width: 36px;
-    object-fit: contain;
-    background: #fff;
-    border-radius: 6px;
-    padding: 3px;
-    flex-shrink: 0;
-  }
-  .nav-divider {
-    width: 1px; height: 28px;
-    background: var(--border, #2a2f3a);
-    flex-shrink: 0;
-  }
-  .nav-wordmark {
-    display: flex; flex-direction: column; gap: 1px;
-  }
-  .nav-wordmark-top {
-    font-family: 'DM Mono', monospace;
-    font-size: 0.58rem;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--muted, #7a8090);
-    line-height: 1;
-  }
-  .nav-wordmark-bottom {
-    font-family: 'Syne', sans-serif;
-    font-weight: 700;
-    font-size: 0.78rem;
-    letter-spacing: -0.01em;
-    color: var(--text, #e8eaf0);
-    line-height: 1;
-  }
-  .nav-home-link {
-    font-family: 'DM Mono', monospace;
-    font-size: 0.65rem;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--muted, #7a8090);
-    text-decoration: none;
-    padding: 5px 12px;
-    border: 1px solid var(--border, #2a2f3a);
-    border-radius: 20px;
-    transition: all 0.2s;
-  }
-  .nav-home-link:hover {
-    color: var(--text, #e8eaf0);
-    border-color: var(--muted, #7a8090);
-  }
-
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Module 1 — Hardware vs. Software | TechReady</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<div class="app">
-<header>
-  <a href="./index.html" style="display:flex;align-items:center;gap:12px;text-decoration:none"><img class="nav-logo-img" src="./AGSMlogo.jpeg" alt="Atkinson Graduate School of Management"><div class="nav-divider"></div><div class="nav-wordmark"><span class="nav-wordmark-top">TechReady Series</span><span class="nav-wordmark-bottom">Hardware vs. Software</span></div></a>
-  <div style="display:flex;align-items:center;gap:10px">
-    <div style="font-family:'DM Mono',monospace;font-size:0.62rem;letter-spacing:0.1em;padding:4px 11px;border-radius:5px;background:var(--accent);color:#000;font-weight:700">MOD 01</div>
-    <a class="nav-home-link" href="./index.html">← Home</a>
-  </div>
-</header>
 
-<div class="main">
-  <div class="hero fade-up">
-    <div class="hero-eyebrow">Module 01 of 05</div>
-    <h1>Hardware<br>vs. <em>Software</em></h1>
-    <p class="hero-sub">Every computer is made of physical components and the programs that run on them. Mastering this distinction is the foundation of all tech literacy.</p>
+<nav class="top-nav" aria-label="Main navigation">
+  <div class="top-nav-inner">
+    <a href="index.html" class="nav-brand">
+      <img src="./AGSMlogo.jpeg" alt="AGSM Logo">
+      <span>TechReady Series</span>
+    </a>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="overview.html">Overview</a>
+      <a href="module1-hardware-software.html" class="active">Mod 1</a>
+      <a href="module2-operating-systems.html">Mod 2</a>
+      <a href="module3-files-folders.html">Mod 3</a>
+      <a href="module4-internet-cloud.html">Mod 4</a>
+      <a href="module5-cybersecurity.html">Mod 5</a>
+      <a href="conclusion.html">Wrap-Up</a>
+    </div>
+  </div>
+</nav>
+
+<div class="progress-strip">
+  <div class="progress-strip-inner">
+    <span class="progress-text">0 / 5 complete</span>
+    <div class="progress-bar-bg"><div class="progress-bar-fill" style="width:0%"></div></div>
+  </div>
+</div>
+
+<div class="page-container">
+
+  <!-- Header -->
+  <div class="module-header">
+    <div class="module-badge">Module 01 of 05</div>
+    <h1>Hardware vs. <em>Software</em></h1>
+    <p class="subtitle">Every computer is made of physical components and the programs that run on them. Mastering this distinction is the foundation of all tech literacy.</p>
   </div>
 
-  <!-- SECTION 1 -->
-  <div class="section fade-up">
-    <div class="section-label">Core Concept</div>
+  <!-- Core Concept -->
+  <div class="content-section">
+    <p class="section-label">Core Concept</p>
     <h2>The Fundamental Divide</h2>
     <p><strong>Hardware</strong> refers to every physical part of a computer — components you can touch, hold, plug in, or replace. If it breaks, you need a technician or a new part. <strong>Software</strong> refers to the programs, applications, and data that run on that hardware. Software has no physical form — it's instructions written in code.</p>
     <p>This distinction matters every day at work: when something goes wrong, knowing whether it's a hardware or software problem helps you describe the issue accurately to IT, attempt the right fix, and set realistic expectations for how long repairs will take.</p>
 
-    <div class="analogy">
+    <div class="analogy-box">
       <div class="analogy-label">Analogy</div>
-      <div class="analogy-text">Think of a <strong>piano</strong>. The piano itself — the keys, strings, frame — is hardware. The music being played, the sheet music, the musical techniques — those are software. You can tune the piano (hardware fix), or learn a new song (software update). One is physical; the other is instruction.</div>
+      <p>Think of a <strong>piano</strong>. The piano itself — the keys, strings, frame — is hardware. The music being played, the sheet music, the musical techniques — those are software. You can tune the piano (hardware fix), or learn a new song (software update). One is physical; the other is instruction.</p>
     </div>
+  </div>
 
-    <div class="split">
-      <div class="split-side hw">
-        <div class="split-title">🔧 Hardware — You can touch it</div>
-        <div class="item-row"><span class="dot" style="background:var(--accent)"></span><div><div class="name">CPU (Processor)</div><div class="def">The "brain" — executes all instructions</div></div></div>
-        <div class="item-row"><span class="dot" style="background:var(--accent)"></span><div><div class="name">RAM</div><div class="def">Short-term memory for running programs</div></div></div>
-        <div class="item-row"><span class="dot" style="background:var(--accent)"></span><div><div class="name">Hard Drive / SSD</div><div class="def">Permanent storage for files and OS</div></div></div>
-        <div class="item-row"><span class="dot" style="background:var(--accent)"></span><div><div class="name">Motherboard</div><div class="def">The main board connecting all components</div></div></div>
-        <div class="item-row"><span class="dot" style="background:var(--accent)"></span><div><div class="name">Monitor, Keyboard, Mouse</div><div class="def">Input/output peripherals</div></div></div>
-        <div class="item-row"><span class="dot" style="background:var(--accent)"></span><div><div class="name">GPU (Graphics Card)</div><div class="def">Renders visuals and video</div></div></div>
-        <div class="item-row"><span class="dot" style="background:var(--accent)"></span><div><div class="name">Network Card / Wi-Fi chip</div><div class="def">Enables internet and network connectivity</div></div></div>
+  <!-- AI Callout -->
+  <div class="ai-callout">
+    <div class="ai-callout-title">🤖 Why This Matters for AI</div>
+    <p>When you run a local LLM and it's slow, it's almost always a <strong>RAM or GPU limitation</strong> — a hardware bottleneck, not a software bug. The GPU (Graphics Processing Unit) is especially critical: it's the chip that handles the massive parallel math operations AI models require. Cloud AI tools like ChatGPT and Claude sidestep this by running on powerful remote servers with specialized GPUs — but understanding the hardware underneath helps you know why some tasks are fast and others aren't.</p>
+  </div>
+
+  <!-- Hardware vs Software Lists -->
+  <div class="content-section">
+    <div class="two-col">
+      <div class="card">
+        <h3>🔧 Hardware — You can touch it</h3>
+        <table class="comp-table">
+          <tr><td><strong>CPU (Processor)</strong></td><td>The "brain" — executes all instructions</td></tr>
+          <tr><td><strong>RAM</strong></td><td>Short-term memory for running programs</td></tr>
+          <tr><td><strong>Hard Drive / SSD</strong></td><td>Permanent storage for files and OS</td></tr>
+          <tr><td><strong>Motherboard</strong></td><td>Main board connecting all components</td></tr>
+          <tr><td><strong>GPU (Graphics Card)</strong></td><td>Renders visuals; central to AI inference</td></tr>
+          <tr><td><strong>Monitor, Keyboard, Mouse</strong></td><td>Input/output peripherals</td></tr>
+          <tr><td><strong>Network Card / Wi-Fi chip</strong></td><td>Enables internet connectivity</td></tr>
+        </table>
       </div>
-      <div class="split-side sw">
-        <div class="split-title">💾 Software — You run it</div>
-        <div class="item-row"><span class="dot" style="background:var(--correct)"></span><div><div class="name">Operating System</div><div class="def">Windows, macOS, Linux — manages everything</div></div></div>
-        <div class="item-row"><span class="dot" style="background:var(--correct)"></span><div><div class="name">Productivity Apps</div><div class="def">Word, Excel, PowerPoint, Google Docs</div></div></div>
-        <div class="item-row"><span class="dot" style="background:var(--correct)"></span><div><div class="name">Web Browsers</div><div class="def">Chrome, Safari, Firefox, Edge</div></div></div>
-        <div class="item-row"><span class="dot" style="background:var(--correct)"></span><div><div class="name">Communication Tools</div><div class="def">Slack, Zoom, Microsoft Teams, email</div></div></div>
-        <div class="item-row"><span class="dot" style="background:var(--correct)"></span><div><div class="name">Drivers</div><div class="def">Software that lets OS talk to hardware</div></div></div>
-        <div class="item-row"><span class="dot" style="background:var(--correct)"></span><div><div class="name">Antivirus / Security</div><div class="def">Software protecting the system from threats</div></div></div>
-        <div class="item-row"><span class="dot" style="background:var(--correct)"></span><div><div class="name">Firmware</div><div class="def">Low-level software baked into hardware chips</div></div></div>
+      <div class="card">
+        <h3>💾 Software — You run it</h3>
+        <table class="comp-table">
+          <tr><td><strong>Operating System</strong></td><td>Windows, macOS, Linux — manages everything</td></tr>
+          <tr><td><strong>Productivity Apps</strong></td><td>Word, Excel, PowerPoint, Google Docs</td></tr>
+          <tr><td><strong>Web Browsers</strong></td><td>Chrome, Safari, Firefox, Edge</td></tr>
+          <tr><td><strong>Communication Tools</strong></td><td>Slack, Zoom, Microsoft Teams</td></tr>
+          <tr><td><strong>Drivers</strong></td><td>Software that lets OS talk to hardware</td></tr>
+          <tr><td><strong>Antivirus / Security</strong></td><td>Protects the system from threats</td></tr>
+          <tr><td><strong>Firmware</strong></td><td>Low-level software baked into hardware chips</td></tr>
+        </table>
       </div>
     </div>
   </div>
 
-  <!-- SECTION 2: COMPONENT EXPLORER -->
-  <div class="section fade-up">
-    <div class="section-label">Interactive Explorer</div>
+  <!-- Interactive Explorer -->
+  <div class="content-section">
+    <p class="section-label">Interactive Explorer</p>
     <h2>What's inside your computer?</h2>
     <p>Click any component to understand what it does, why it matters, and whether it's hardware or software.</p>
-    <div class="parts-explorer">
-      <div class="parts-grid">
-        <div class="part-btn" data-part="cpu"><div class="part-icon">⚡</div><div class="part-label">CPU</div></div>
-        <div class="part-btn" data-part="ram"><div class="part-icon">🧠</div><div class="part-label">RAM</div></div>
-        <div class="part-btn" data-part="ssd"><div class="part-icon">💽</div><div class="part-label">Storage</div></div>
-        <div class="part-btn" data-part="gpu"><div class="part-icon">🖼️</div><div class="part-label">GPU</div></div>
-        <div class="part-btn" data-part="mobo"><div class="part-icon">🔌</div><div class="part-label">Motherboard</div></div>
-        <div class="part-btn" data-part="os"><div class="part-icon">⚙️</div><div class="part-label">OS</div></div>
-        <div class="part-btn" data-part="driver"><div class="part-icon">🔗</div><div class="part-label">Driver</div></div>
-        <div class="part-btn" data-part="app"><div class="part-icon">📱</div><div class="part-label">App</div></div>
-        <div class="part-btn" data-part="firmware"><div class="part-icon">🔧</div><div class="part-label">Firmware</div></div>
-        <div class="part-btn" data-part="peripheral"><div class="part-icon">🖱️</div><div class="part-label">Peripherals</div></div>
+    <div class="icon-grid" data-explorer>
+      <div class="icon-item" data-detail="<strong>CPU (Central Processing Unit)</strong> — <em>Hardware.</em> The processor executes every instruction your computer carries out. Speed is measured in GHz. Modern CPUs have multiple cores for multitasking. When IT says your machine is 'too slow for that software,' the CPU is often the bottleneck.">
+        <div class="icon-emoji">⚡</div>
+        <div class="icon-label">CPU</div>
       </div>
-      <div class="part-detail" id="partDetail"></div>
+      <div class="icon-item" data-detail="<strong>RAM (Random Access Memory)</strong> — <em>Hardware.</em> Temporary, fast memory that holds data for currently running programs. More RAM = more programs running smoothly at once. Typical: 8–32 GB. When your computer slows down with many tabs open, it's often running low on RAM.">
+        <div class="icon-emoji">🧠</div>
+        <div class="icon-label">RAM</div>
+      </div>
+      <div class="icon-item" data-detail="<strong>Storage (HDD / SSD)</strong> — <em>Hardware.</em> Where files, the OS, and applications are permanently saved. SSDs are faster than traditional hard drives. When you see 'not enough disk space,' this is what's full. Typical: 256 GB – 2 TB.">
+        <div class="icon-emoji">💽</div>
+        <div class="icon-label">Storage</div>
+      </div>
+      <div class="icon-item" data-detail="<strong>GPU (Graphics Processing Unit)</strong> — <em>Hardware.</em> Originally built for rendering graphics, GPUs now power AI model training and inference due to their ability to perform thousands of parallel calculations. NVIDIA GPUs are the standard in AI workloads.">
+        <div class="icon-emoji">🖼️</div>
+        <div class="icon-label">GPU</div>
+      </div>
+      <div class="icon-item" data-detail="<strong>Motherboard</strong> — <em>Hardware.</em> The main circuit board connecting CPU, RAM, storage, GPU, and all peripherals. Think of it as the nervous system of your computer. You rarely interact with it directly, but if it fails, everything fails.">
+        <div class="icon-emoji">🔌</div>
+        <div class="icon-label">Motherboard</div>
+      </div>
+      <div class="icon-item" data-detail="<strong>Operating System (OS)</strong> — <em>Software.</em> Windows, macOS, or Linux. The master program that manages all hardware and software. Every app runs on top of the OS. Covered in depth in Module 2.">
+        <div class="icon-emoji">⚙️</div>
+        <div class="icon-label">OS</div>
+      </div>
+      <div class="icon-item" data-detail="<strong>Drivers</strong> — <em>Software.</em> Small programs that let the OS communicate with specific hardware. Your printer, monitor, and Wi-Fi chip each need a driver. When a device 'isn't recognized,' a missing or outdated driver is often the cause.">
+        <div class="icon-emoji">🔗</div>
+        <div class="icon-label">Driver</div>
+      </div>
+      <div class="icon-item" data-detail="<strong>Applications</strong> — <em>Software.</em> Programs you use directly: Word, Chrome, Zoom, Slack. These are the tools you interact with. They run on the OS and use hardware resources (CPU for processing, RAM for multitasking, storage for saving files).">
+        <div class="icon-emoji">📱</div>
+        <div class="icon-label">App</div>
+      </div>
+      <div class="icon-item" data-detail="<strong>Firmware</strong> — <em>The gray area.</em> Software permanently installed on hardware chips. Your computer's BIOS/UEFI, printer firmware, keyboard controller code. It boots before the OS loads. Updating it incorrectly can 'brick' a device.">
+        <div class="icon-emoji">🔧</div>
+        <div class="icon-label">Firmware</div>
+      </div>
+      <div class="icon-item" data-detail="<strong>Peripherals</strong> — <em>Hardware.</em> External devices: monitor, keyboard, mouse, printer, webcam, USB drives. They connect via USB, HDMI, Bluetooth, or Wi-Fi. Each typically needs a driver (software) to function.">
+        <div class="icon-emoji">🖱️</div>
+        <div class="icon-label">Peripherals</div>
+      </div>
     </div>
+    <div class="explorer-detail card" style="display:none; margin-top:0.5rem;"></div>
   </div>
 
-  <!-- SECTION 3: COMPARISON TABLE -->
-  <div class="section fade-up">
-    <div class="section-label">Side-by-Side Comparison</div>
+  <!-- Comparison Table -->
+  <div class="content-section">
+    <p class="section-label">Side-by-Side Comparison</p>
     <h2>Key differences at a glance</h2>
-    <table class="compare-table">
-      <tr><th>Property</th><th>Hardware</th><th>Software</th></tr>
-      <tr><td>Physical form?</td><td>Yes — tangible, touchable</td><td>No — code and data only</td></tr>
-      <tr><td>What if it fails?</td><td>Repair or replace the part</td><td>Reinstall, update, or debug</td></tr>
-      <tr><td>Can you see it?</td><td>Yes (with the case open)</td><td>Not directly — only its interface</td></tr>
-      <tr><td>Examples of problems</td><td>Won't turn on, overheating, broken screen</td><td>Crash, freeze, bug, error message</td></tr>
-      <tr><td>Who fixes it?</td><td>Hardware technician</td><td>IT support, developer, or you (update/restart)</td></tr>
-      <tr><td>Cost to fix?</td><td>Often expensive (parts + labor)</td><td>Often free (update) or moderate (license)</td></tr>
-      <tr><td>Upgrade path</td><td>Buy new parts or new machine</td><td>Download update or new version</td></tr>
+    <table class="comp-table">
+      <thead>
+        <tr><th>Property</th><th>Hardware</th><th>Software</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Physical form?</td><td>Yes — tangible, touchable</td><td>No — code and data only</td></tr>
+        <tr><td>What if it fails?</td><td>Repair or replace the part</td><td>Reinstall, update, or debug</td></tr>
+        <tr><td>Can you see it?</td><td>Yes (with the case open)</td><td>Not directly — only its interface</td></tr>
+        <tr><td>Examples of problems</td><td>Won't turn on, overheating, broken screen</td><td>Crash, freeze, bug, error message</td></tr>
+        <tr><td>Who fixes it?</td><td>Hardware technician</td><td>IT support, developer, or you</td></tr>
+        <tr><td>Cost to fix?</td><td>Often expensive (parts + labor)</td><td>Often free (update) or moderate</td></tr>
+        <tr><td>Upgrade path</td><td>Buy new parts or new machine</td><td>Download update or new version</td></tr>
+      </tbody>
     </table>
   </div>
 
-  <!-- SECTION 4: REAL WORLD SCENARIOS -->
-  <div class="section fade-up">
-    <div class="section-label">Workplace Scenarios</div>
+  <!-- Workplace Scenarios -->
+  <div class="content-section">
+    <p class="section-label">Workplace Scenarios</p>
     <h2>Hardware or software problem?</h2>
-    <p>In a real office, being able to correctly categorize a problem gets you to the right solution faster. Study these common scenarios:</p>
 
-    <div class="tabs">
-      <div class="tab active" data-tab="s1">Scenario 1</div>
-      <div class="tab" data-tab="s2">Scenario 2</div>
-      <div class="tab" data-tab="s3">Scenario 3</div>
-      <div class="tab" data-tab="s4">Scenario 4</div>
-      <div class="tab" data-tab="s5">Scenario 5</div>
-    </div>
-
-    <div class="tab-pane active" id="s1">
-      <div class="scenario"><div class="scenario-label">The situation</div><div class="scenario-text">Your laptop screen goes black and stays black. The power light is on. You can hear the fan. Pressing keys does nothing.</div></div>
-      <p><strong>🔧 Hardware problem.</strong> The display itself (the physical screen panel or its connector cable) has likely failed. The computer is running — the OS and software are working — but the output hardware is broken. You need a technician to inspect the screen hardware.</p>
-    </div>
-    <div class="tab-pane" id="s2">
-      <div class="scenario"><div class="scenario-label">The situation</div><div class="scenario-text">Microsoft Word keeps crashing every time you try to open a specific document. Other documents open fine. Your computer runs normally otherwise.</div></div>
-      <p><strong>💾 Software problem.</strong> The application (Word) or the specific file is corrupted — both are software issues. Try repairing the Word installation, or the file itself may be damaged. No hardware involved.</p>
-    </div>
-    <div class="tab-pane" id="s3">
-      <div class="scenario"><div class="scenario-label">The situation</div><div class="scenario-text">Your computer is running very slowly. It takes 3 minutes to boot up and apps take forever to open.</div></div>
-      <p><strong>Could be either.</strong> Software causes: too many startup programs (software fix: disable them), OS needs updates, or malware is running in the background. Hardware causes: failing hard drive (replace), insufficient RAM (upgrade), or overheating CPU (clean vents). Start with software diagnostics before assuming hardware.</p>
-    </div>
-    <div class="tab-pane" id="s4">
-      <div class="scenario"><div class="scenario-label">The situation</div><div class="scenario-text">You plug in a USB mouse and nothing happens. The computer doesn't recognize it at all.</div></div>
-      <p><strong>Could be either.</strong> First test: try the mouse on another computer. If it works there → hardware problem with your USB port. If it doesn't work anywhere → the mouse hardware is broken. If it worked yesterday → possibly a driver issue (software). Always isolate the variable first.</p>
-    </div>
-    <div class="tab-pane" id="s5">
-      <div class="scenario"><div class="scenario-label">The situation</div><div class="scenario-text">You get an error: "Not enough disk space to save the file." You have a 1TB hard drive.</div></div>
-      <p><strong>Software/data problem.</strong> The physical hard drive exists and works (hardware is fine), but the storage space is full — too many files, downloads, or the OS taking up space. Delete unneeded files, empty the Recycle Bin, or move files to cloud storage. No hardware repair needed.</p>
+    <div data-tabs>
+      <div class="tabs">
+        <button class="tab-btn active" data-target="s1" aria-label="Scenario 1">Scenario 1</button>
+        <button class="tab-btn" data-target="s2" aria-label="Scenario 2">Scenario 2</button>
+        <button class="tab-btn" data-target="s3" aria-label="Scenario 3">Scenario 3</button>
+        <button class="tab-btn" data-target="s4" aria-label="Scenario 4">Scenario 4</button>
+        <button class="tab-btn" data-target="s5" aria-label="Scenario 5">Scenario 5</button>
+      </div>
+      <div id="s1" class="tab-panel active">
+        <div class="scenario-card">
+          <div class="scenario-header">Your laptop screen goes black and stays black. The power light is on. You can hear the fan. Pressing keys does nothing.</div>
+          <div class="answer"><p><strong>🔧 Hardware problem.</strong> The display itself (the physical screen panel or its connector cable) has likely failed. The computer is running — the OS and software are working — but the output hardware is broken. You need a technician to inspect the screen hardware.</p></div>
+        </div>
+      </div>
+      <div id="s2" class="tab-panel">
+        <div class="scenario-card">
+          <div class="scenario-header">Microsoft Word keeps crashing every time you try to open a specific document. Other documents open fine.</div>
+          <div class="answer"><p><strong>💾 Software problem.</strong> The application (Word) or the specific file is corrupted — both are software issues. Try repairing the Word installation, or the file itself may be damaged. No hardware involved.</p></div>
+        </div>
+      </div>
+      <div id="s3" class="tab-panel">
+        <div class="scenario-card">
+          <div class="scenario-header">Your computer is running very slowly. It takes 3 minutes to boot up and apps take forever to open.</div>
+          <div class="answer"><p><strong>Could be either.</strong> Software causes: too many startup programs, OS needs updates, or malware. Hardware causes: failing hard drive, insufficient RAM, or overheating CPU. Start with software diagnostics before assuming hardware.</p></div>
+        </div>
+      </div>
+      <div id="s4" class="tab-panel">
+        <div class="scenario-card">
+          <div class="scenario-header">You plug in a USB mouse and nothing happens. The computer doesn't recognize it at all.</div>
+          <div class="answer"><p><strong>Could be either.</strong> First test: try the mouse on another computer. If it works there → hardware problem with your USB port. If it doesn't work anywhere → the mouse hardware is broken. If it worked yesterday → possibly a driver issue (software). Always isolate the variable.</p></div>
+        </div>
+      </div>
+      <div id="s5" class="tab-panel">
+        <div class="scenario-card">
+          <div class="scenario-header">You get an error: "Not enough disk space to save the file." You have a 1TB hard drive.</div>
+          <div class="answer"><p><strong>Software/data problem.</strong> The physical hard drive exists and works (hardware is fine), but the storage space is full — too many files. Delete unneeded files, empty the Recycle Bin, or move files to cloud storage. No hardware repair needed.</p></div>
+        </div>
+      </div>
     </div>
   </div>
 
-  <!-- SECTION 5: FIRMWARE GRAY AREA -->
-  <div class="section fade-up">
-    <div class="section-label">Advanced Concept</div>
+  <!-- Firmware -->
+  <div class="content-section">
+    <p class="section-label">Advanced Concept</p>
     <h2>The gray area: Firmware</h2>
     <p><strong>Firmware</strong> is software that is permanently (or semi-permanently) installed on hardware chips. It's the lowest level of software — code that tells hardware how to start up before the operating system even loads.</p>
-    <p>Examples: your computer's BIOS/UEFI (the chip that runs when you first power on), the firmware in your printer that controls its basic functions, or the software inside your keyboard that defines what each key does.</p>
-    <p>Firmware updates are released by manufacturers to fix bugs or improve performance. Unlike regular software, updating firmware incorrectly can "brick" (permanently damage) a device — so always follow manufacturer instructions carefully.</p>
+    <p>Examples: your computer's BIOS/UEFI (the chip that runs when you first power on), the firmware in your printer, or the software inside your keyboard. Firmware updates are released by manufacturers to fix bugs or improve performance. Unlike regular software, updating firmware incorrectly can "brick" (permanently damage) a device.</p>
+    <p>If IT says "we're pushing a firmware update to your laptop," they're updating low-level chip software — not your apps. Your files won't be affected, but you'll need to restart, and the update takes longer than normal. Don't interrupt it.</p>
+  </div>
 
-    <div class="analogy">
-      <div class="analogy-label">Why it matters at work</div>
-      <div class="analogy-text">If IT says "we're pushing a firmware update to your laptop," they're updating low-level chip software — not your apps. Your files won't be affected, but you'll need to restart, and the update process takes longer than a normal app update. Don't interrupt it.</div>
+  <!-- Try It Yourself -->
+  <div class="try-it">
+    <div class="try-it-title">🧪 Try It Yourself</div>
+    <p>Do this right now on the device you're reading this on:</p>
+    <ol>
+      <li><strong>Identify three hardware components</strong> you can see or touch (hint: screen, keyboard, and...?)</li>
+      <li><strong>Identify three software programs</strong> currently running (hint: your web browser is one)</li>
+      <li>Open your computer's system info — on Windows press <code style="background:var(--bg-primary);padding:0.1rem 0.3rem;border-radius:3px;font-family:var(--font-mono);font-size:0.85rem;">Win+Pause</code>, on Mac go to Apple menu → About This Mac. Note your RAM and storage amounts.</li>
+      <li>Think about a tech problem you've had recently. Was it hardware, software, or could it have been either?</li>
+    </ol>
+  </div>
+
+  <!-- Quiz -->
+  <div class="quiz-section" data-module="1">
+    <p class="section-label" style="text-align:center;">Check Your Understanding</p>
+    <h2>Module 1 Quiz</h2>
+    <p class="quiz-intro">Answer all questions to complete this module. 60%+ correct marks it as complete.</p>
+
+    <div class="quiz-question">
+      <p class="q-text">1. Your laptop fan is spinning loudly and the bottom is very hot, but all software is running normally. Is this a hardware or software issue?</p>
+      <div class="quiz-options">
+        <button class="quiz-option" data-correct="true" data-explanation="Correct! Overheating and loud fans are physical symptoms — the cooling system (hardware) is struggling. Software is running fine, so the issue is mechanical."><span class="marker">A</span> Hardware — the cooling system is struggling</button>
+        <button class="quiz-option" data-correct="false" data-explanation="Not quite. Since the issue is physical (heat, fan noise) and software is running fine, this is a hardware problem with the cooling system."><span class="marker">B</span> Software — a program is overworking the CPU</button>
+        <button class="quiz-option" data-correct="false" data-explanation="While a runaway program could cause heat, the question says 'all software is running normally.' The cooling hardware itself is the issue."><span class="marker">C</span> Could be either — need more info</button>
+      </div>
+      <div class="quiz-feedback"></div>
+    </div>
+
+    <div class="quiz-question">
+      <p class="q-text">2. What is the GPU's relevance to AI?</p>
+      <div class="quiz-options">
+        <button class="quiz-option" data-correct="false" data-explanation="GPUs do render graphics, but their AI relevance is about parallel computation — they can run thousands of math operations simultaneously, which is exactly what AI models need."><span class="marker">A</span> It displays the AI tool's user interface on screen</button>
+        <button class="quiz-option" data-correct="true" data-explanation="Correct! GPUs perform thousands of parallel calculations simultaneously, making them ideal for the massive math operations that AI model training and inference require."><span class="marker">B</span> It handles the parallel math operations AI models require</button>
+        <button class="quiz-option" data-correct="false" data-explanation="GPUs are hardware, not software. They're physical chips (often by NVIDIA) that specialize in parallel computation."><span class="marker">C</span> It's a type of software that optimizes AI performance</button>
+      </div>
+      <div class="quiz-feedback"></div>
+    </div>
+
+    <div class="quiz-question">
+      <p class="q-text">3. What is firmware?</p>
+      <div class="quiz-options">
+        <button class="quiz-option" data-correct="false" data-explanation="Firmware isn't a physical component — it's software. But it's a special kind permanently installed on hardware chips."><span class="marker">A</span> A physical component inside the computer case</button>
+        <button class="quiz-option" data-correct="true" data-explanation="Correct! Firmware is low-level software permanently installed on hardware chips. It tells hardware how to start up before the OS even loads — like the BIOS/UEFI in your computer."><span class="marker">B</span> Low-level software baked into hardware chips</button>
+        <button class="quiz-option" data-correct="false" data-explanation="That describes standard applications. Firmware is much lower-level — it's baked into hardware chips and runs before the OS loads."><span class="marker">C</span> A regular program you can install and uninstall</button>
+      </div>
+      <div class="quiz-feedback"></div>
+    </div>
+
+    <div class="quiz-question">
+      <p class="q-text">4. A colleague says "my computer won't turn on at all — no lights, no fan, nothing." What type of problem is this?</p>
+      <div class="quiz-options">
+        <button class="quiz-option" data-correct="true" data-explanation="Correct! No power at all (no lights, no fan) is definitively hardware — the power supply, motherboard, or power cable has failed. Software can't cause a complete power failure."><span class="marker">A</span> Hardware — no power means a physical failure</button>
+        <button class="quiz-option" data-correct="false" data-explanation="If the computer won't power on at all (no lights, no fan), software can't be the cause — the physical power system has failed."><span class="marker">B</span> Software — the OS crashed during shutdown</button>
+        <button class="quiz-option" data-correct="false" data-explanation="This one is clear-cut. Zero power (no lights, no fan) is always hardware — power supply, cable, or motherboard."><span class="marker">C</span> Could be either</button>
+      </div>
+      <div class="quiz-feedback"></div>
+    </div>
+
+    <div class="quiz-score">
+      <div class="score-num"></div>
+      <p class="score-msg"></p>
     </div>
   </div>
 
-  <!-- AI READINESS: GPU STRESS TEST -->
-  <div class="section fade-up">
-    <div class="section-label">AI Readiness — New</div>
-    <h2>🤖 Can your hardware run local AI?</h2>
-    <p>Many modern AI tools (like running a local language model, image generator, or transcription engine) require significant GPU power. Understanding your hardware's capabilities determines whether you can run AI locally or need to use cloud-based APIs instead.</p>
-
-    <div style="background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:24px;margin:18px 0">
-      <div class="section-label" style="margin-bottom:14px">GPU Capability Tiers for Local AI</div>
-      <div style="display:flex;flex-direction:column;gap:10px">
-        <div style="background:rgba(77,240,160,0.07);border:1px solid rgba(77,240,160,0.2);border-radius:9px;padding:16px;display:flex;gap:14px;align-items:flex-start">
-          <div style="font-size:1.4rem;flex-shrink:0">🟢</div>
-          <div>
-            <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:0.9rem;color:var(--correct);margin-bottom:5px">CAPABLE — Dedicated GPU with 8GB+ VRAM</div>
-            <div style="font-size:0.83rem;color:var(--muted);line-height:1.65">Examples: NVIDIA RTX 3070/4060/4070, AMD RX 6700 XT. Can run mid-size language models (7B–13B parameters), local image generation (Stable Diffusion), and real-time transcription. Suitable for serious AI development work.</div>
-          </div>
-        </div>
-        <div style="background:rgba(240,192,64,0.07);border:1px solid rgba(240,192,64,0.2);border-radius:9px;padding:16px;display:flex;gap:14px;align-items:flex-start">
-          <div style="font-size:1.4rem;flex-shrink:0">🟡</div>
-          <div>
-            <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:0.9rem;color:var(--accent);margin-bottom:5px">LIMITED — Integrated GPU or older dedicated GPU (4GB VRAM)</div>
-            <div style="font-size:0.83rem;color:var(--muted);line-height:1.65">Examples: Intel Iris Xe, NVIDIA GTX 1050, Apple M1 integrated. Can run small models (1B–3B parameters) slowly, or quantized (compressed) versions of larger models. Good for learning but bottlenecked for production AI tasks.</div>
-          </div>
-        </div>
-        <div style="background:rgba(240,77,122,0.07);border:1px solid rgba(240,77,122,0.2);border-radius:9px;padding:16px;display:flex;gap:14px;align-items:flex-start">
-          <div style="font-size:1.4rem;flex-shrink:0">🔴</div>
-          <div>
-            <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:0.9rem;color:var(--wrong);margin-bottom:5px">CPU-ONLY / NO DEDICATED GPU</div>
-            <div style="font-size:0.83rem;color:var(--muted);line-height:1.65">Local AI inference on CPU only is extremely slow — a task taking 2 seconds on GPU may take 5–10 minutes on CPU. For learning and API-based work this is fine, but running local models will be impractical. Cloud-based AI APIs (OpenAI, Anthropic, Google) are the right approach here.</div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="section-label" style="margin:22px 0 12px">How to check your GPU — step by step</div>
-    <div class="tabs">
-      <div class="tab active" data-tab="gpu-win">Windows</div>
-      <div class="tab" data-tab="gpu-mac">macOS</div>
-      <div class="tab" data-tab="gpu-lin">Linux</div>
-      <div class="tab" data-tab="gpu-ram">RAM Check</div>
-    </div>
-    <div class="tab-pane active" id="gpu-win">
-      <p><strong>Method 1 — Task Manager:</strong> Press <code>Ctrl+Shift+Esc</code> → Performance tab → Click "GPU 0" (and GPU 1 if you have two). You'll see the GPU name, current usage, and critically: <strong>Dedicated GPU Memory</strong> (VRAM). This is the key number for AI tasks.</p>
-      <p><strong>Method 2 — Device Manager:</strong> Press <code>Win+X</code> → Device Manager → Display Adapters. This shows your GPU model name. Search that name online to find its VRAM specs.</p>
-      <p><strong>VRAM threshold:</strong> 8GB+ VRAM = capable for most local models. 4GB = limited. Under 4GB = use cloud APIs.</p>
-    </div>
-    <div class="tab-pane" id="gpu-mac">
-      <p><strong>Apple Silicon (M1/M2/M3/M4):</strong> Click Apple menu → About This Mac. Apple Silicon chips use unified memory shared between CPU and GPU — there's no separate VRAM figure. An M1 with 16GB unified memory performs comparably to a dedicated GPU with ~8GB VRAM for many AI tasks. M2/M3/M4 chips are significantly faster.</p>
-      <p><strong>Intel Mac with AMD GPU:</strong> Apple menu → About This Mac → System Report → Graphics/Displays. Look for "VRAM (Dynamic, Max)." Many older Intel MacBooks have only 1.5–2GB which limits local AI tasks to very small models.</p>
-    </div>
-    <div class="tab-pane" id="gpu-lin">
-      <p><strong>NVIDIA GPU:</strong> Open Terminal and run <code>nvidia-smi</code>. This shows GPU model, total VRAM, currently used VRAM, and GPU utilization. If nvidia-smi isn't installed: <code>sudo apt install nvidia-utils-xxx</code> (replace xxx with your driver version).</p>
-      <p><strong>AMD GPU:</strong> Run <code>lspci | grep -i vga</code> to see your GPU model, then <code>glxinfo | grep "Video memory"</code> for VRAM. Alternatively <code>sudo apt install radeontop</code> for AMD monitoring.</p>
-      <p><strong>Any GPU:</strong> <code>lshw -C display</code> shows display hardware details including memory size.</p>
-    </div>
-    <div class="tab-pane" id="gpu-ram">
-      <p>AI models also require substantial system RAM (not VRAM). A 7B parameter model typically needs 8–16GB of system RAM minimum. Check your RAM:</p>
-      <p><strong>Windows:</strong> <code>Ctrl+Shift+Esc</code> → Performance → Memory. Look at "Installed memory" and "Speed."</p>
-      <p><strong>Mac:</strong> Apple menu → About This Mac → shows Memory directly.</p>
-      <p><strong>Linux:</strong> Run <code>free -h</code> in Terminal.</p>
-      <p><strong>Minimum for local AI:</strong> 16GB RAM recommended. 8GB is workable for small models. Under 8GB, use cloud-based AI APIs — trying to run local models will cause your system to freeze.</p>
-    </div>
-
-    <div style="background:rgba(240,128,64,0.07);border:1px solid rgba(240,128,64,0.2);border-radius:10px;padding:16px 20px;margin-top:18px">
-      <div style="font-family:'DM Mono',monospace;font-size:0.63rem;color:var(--accent2);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:8px">Key Takeaway</div>
-      <div style="font-size:0.88rem;color:#c8b090;line-height:1.75">If your hardware doesn't meet local AI requirements, <strong style="color:var(--text)">that's completely fine</strong> — cloud-based AI APIs (OpenAI, Anthropic, Google Gemini) let you access powerful models without local GPU requirements. Understanding your hardware simply tells you which approach to use. Module 4 covers cloud/API basics.</div>
-    </div>
+  <!-- Module Navigation -->
+  <div class="module-nav">
+    <a href="index.html" class="prev">
+      <div class="nav-dir">← Back</div>
+      <div class="nav-title">Home</div>
+    </a>
+    <a href="module2-operating-systems.html" class="next">
+      <div class="nav-dir">Next Module →</div>
+      <div class="nav-title">Operating Systems</div>
+    </a>
   </div>
 
-  <!-- SECURITY SNAPSHOT -->
-  <div class="section fade-up" style="border-color:rgba(240,77,122,0.25)">
-    <div class="section-label" style="color:#f04d7a">🔒 Security Snapshot</div>
-    <h2>Hardware risks you need to know</h2>
-    <p>Even if you skip the full Cybersecurity module, these hardware-related security concepts are essential for anyone working with AI tools and sensitive data.</p>
-    <div style="display:flex;flex-direction:column;gap:10px;margin-top:16px">
-      <div style="background:rgba(240,77,122,0.06);border:1px solid rgba(240,77,122,0.18);border-radius:9px;padding:16px 18px">
-        <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:0.88rem;color:#f08090;margin-bottom:6px">⚠️ Unknown USB drives are a malware vector</div>
-        <div style="font-size:0.83rem;color:var(--muted);line-height:1.65">Never plug in a USB drive you found, received unexpectedly, or can't verify. Malicious USBs can install malware the moment they're connected — before any software runs. This is a real attack technique called "USB drop attack." Only use USB drives from trusted, known sources.</div>
-      </div>
-      <div style="background:rgba(240,77,122,0.06);border:1px solid rgba(240,77,122,0.18);border-radius:9px;padding:16px 18px">
-        <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:0.88rem;color:#f08090;margin-bottom:6px">⚠️ Hardware can leak data even when "off"</div>
-        <div style="font-size:0.83rem;color:var(--muted);line-height:1.65">Hard drives store data even after deletion until overwritten. Disposing of old computers without proper disk wiping (not just reformatting) leaves sensitive data recoverable. Use full-disk encryption (BitLocker on Windows, FileVault on Mac) so that if a device is lost or stolen, the data is unreadable.</div>
-      </div>
-      <div style="background:rgba(240,77,122,0.06);border:1px solid rgba(240,77,122,0.18);border-radius:9px;padding:16px 18px">
-        <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:0.88rem;color:#f08090;margin-bottom:6px">⚠️ AI model weights can contain embedded malware</div>
-        <div style="font-size:0.83rem;color:var(--muted);line-height:1.65">When downloading local AI models (e.g., from Hugging Face), only use models from verified, reputable sources. Malicious actors have published model files containing embedded malicious code. Stick to well-known model providers and check community verification badges before downloading.</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- QUIZ -->
-  <div class="quiz-wrap" id="quizWrap">
-    <div id="quizInner"></div>
-  </div>
-</div>
 </div>
 
-<script>
-const parts = {
-  cpu: { title: '⚡ CPU — Central Processing Unit', type: '🔧 Hardware', text: 'The brain of the computer. Every calculation, every instruction from every program flows through the CPU. Modern CPUs have multiple "cores" — think of each core as a separate brain. More cores and higher speed = more processing power. When your CPU is maxed out, everything slows down. You\'ll feel this when running many programs at once.' },
-  ram: { title: '🧠 RAM — Random Access Memory', type: '🔧 Hardware', text: 'RAM is your computer\'s short-term, working memory. When you open an app, it gets loaded into RAM so the CPU can access it quickly. More RAM means you can have more apps open simultaneously without slowdowns. Unlike your hard drive, RAM is wiped completely when the computer powers off — it\'s temporary by design.' },
-  ssd: { title: '💽 Storage — SSD / Hard Drive', type: '🔧 Hardware', text: 'Long-term permanent storage. Your OS, all apps, and all your files live here. An SSD (Solid State Drive) uses flash chips — fast, silent, no moving parts. An HDD (Hard Disk Drive) uses spinning magnetic platters — slower but often cheaper per gigabyte. Most modern laptops use SSDs. When storage is full, your computer slows dramatically.' },
-  gpu: { title: '🖼️ GPU — Graphics Processing Unit', type: '🔧 Hardware', text: 'Handles all visual rendering — turning code into pixels on your screen. "Integrated" GPUs are built into the CPU chip (fine for office work). "Dedicated" GPUs are separate powerful cards (needed for video editing, design software, or gaming). If your screen has display artifacts or glitches, the GPU or its connection may be failing.' },
-  mobo: { title: '🔌 Motherboard', type: '🔧 Hardware', text: 'The main circuit board that everything plugs into. The CPU, RAM, storage, and GPU all connect to the motherboard. It also contains the BIOS/UEFI firmware chip. If the motherboard fails, nothing works. Motherboard problems are often serious and expensive to repair — sometimes cheaper to replace the whole computer.' },
-  os: { title: '⚙️ Operating System', type: '💾 Software', text: 'The master software managing all hardware and providing a platform for all other software. It handles memory allocation, file systems, user accounts, security, networking, and the visual interface you interact with. Without an OS, hardware is useless. Common workplace OSes: Windows 10/11, macOS Ventura/Sonoma. The OS is installed on the storage drive.' },
-  driver: { title: '🔗 Device Driver', type: '💾 Software', text: 'A small software program that acts as a translator between the OS and a piece of hardware. When you plug in a printer, the driver tells Windows exactly how to send print jobs to that specific model. Missing or outdated drivers cause hardware to malfunction even if the hardware itself is fine. IT often installs updated drivers when devices behave unexpectedly.' },
-  app: { title: '📱 Application (App)', type: '💾 Software', text: 'Any program designed for a specific purpose that runs on top of the OS. Apps can be installed (Word, Zoom), web-based (Google Docs in a browser), or mobile (on your phone). Apps can be updated, uninstalled, and reinstalled without affecting hardware. When an app crashes, it\'s a software issue — try restarting the app first, then the computer.' },
-  firmware: { title: '🔧 Firmware', type: '⚡ Software (embedded in hardware)', text: 'Low-level software stored permanently on hardware chips. Your laptop\'s BIOS/UEFI firmware runs before Windows even loads. Firmware also lives in printers, routers, and cameras. It\'s updated less frequently than apps but manufacturers release firmware updates to fix bugs. Important: never interrupt a firmware update — it can permanently damage the device.' },
-  peripheral: { title: '🖱️ Peripherals', type: '🔧 Hardware', text: 'External devices connected to your computer: keyboard, mouse, monitor, printer, webcam, external drive, headset. They connect via USB, Bluetooth, HDMI, or other ports. Each peripheral needs a driver (software) to function. If a peripheral stops working, first check the physical connection, then check if the driver needs updating.' },
-};
+<footer class="site-footer">
+  <strong>TechReady Series for Tim</strong> · Module 1 of 5<br>
+  Spec'd by Tim Johnson · Built by Claude · Atkinson Graduate School of Management · Willamette University
+</footer>
 
-const quizData = [
-  { q: "Your computer won't turn on at all. The power button does nothing. This is most likely:", a: ["A software bug in the OS","A hardware problem (power supply, battery, or motherboard)","A virus blocking startup","A corrupted Word document"], c: 1, e: "If pressing the power button produces absolutely nothing — no lights, no sound, no fan — it's a hardware failure. The power supply, battery, or motherboard may have failed. Software can't run if the machine can't even power on." },
-  { q: "Microsoft Excel crashes every time you try to open it. Other apps work fine. This is:", a: ["Hardware failure — your CPU is broken","A software problem with the Excel installation","A network connectivity issue","A display driver problem"], c: 1, e: "When a single app crashes consistently but everything else works, it's a software issue with that specific application. Try repairing or reinstalling Excel. Hardware failures tend to affect many things at once, not one specific app." },
-  { q: "RAM is best described as:", a: ["Where your files are permanently saved","Temporary working memory that holds running programs","The physical screen that displays your work","The software that manages your computer"], c: 1, e: "RAM (Random Access Memory) holds programs and data only while they're actively being used. It's fast but temporary — when you shut down, RAM clears. Your files are saved to the hard drive/SSD, which is permanent storage." },
-  { q: "A 'driver' is:", a: ["A hardware component inside the CPU","Software that lets the OS communicate with hardware","The person who repairs your computer","A type of file format"], c: 1, e: "Drivers are small software programs that translate between the OS and hardware. Without the right driver, hardware can't function — even if the physical component is working perfectly. IT often installs driver updates when devices misbehave." },
-  { q: "Which of the following is an example of SOFTWARE?", a: ["The keyboard","The RAM chip on the motherboard","The Windows 11 operating system","The hard drive storing your files"], c: 2, e: "Windows 11 is software — a program (the OS) that runs on hardware. The keyboard, RAM chip, and hard drive are all physical hardware components you could hold in your hand." },
-  { q: "Firmware is:", a: ["A type of firewall hardware","Low-level software embedded in hardware chips","The firmware is the same as the operating system","A backup copy of your hard drive"], c: 1, e: "Firmware is software stored on chips inside hardware — it runs before the OS loads. Examples: your laptop's BIOS, your printer's internal software. It's more permanent than regular apps and must be updated carefully." },
-  { q: "Your colleague says 'the software crashed.' What should you do first?", a: ["Buy a new computer immediately","Call a hardware repair shop","Try restarting the application or the computer","Replace the hard drive"], c: 2, e: "A software crash means a program stopped unexpectedly. The first and simplest fix is to restart the application. If that fails, restart the computer. Only escalate to IT if basic restarts don't solve it — no hardware is broken." },
-  { q: "A computer with 16GB of RAM vs. one with 4GB of RAM will:", a: ["Store four times as many files permanently","Run more programs simultaneously without slowing down","Have a faster internet connection","Display better graphics automatically"], c: 1, e: "More RAM means the computer can hold more programs in active working memory at once. With 4GB, opening Chrome, Word, and Zoom may cause slowdowns. With 16GB, all three run comfortably. RAM doesn't affect file storage capacity (that's the hard drive)." },
-  { q: "If a peripheral (like a USB mouse) suddenly stops working, what should you check FIRST?", a: ["Replace the motherboard","Check the physical connection and try another USB port","Reinstall the entire operating system","Assume the CPU is failing"], c: 1, e: "Always start with the simplest physical check: is the cable plugged in firmly? Try a different USB port. Then test the mouse on another computer. If it works elsewhere, the problem may be a driver issue (software). Methodical troubleshooting saves time and money." },
-  { q: "Which scenario is MOST LIKELY a hardware problem, not a software problem?", a: ["An app displays an error message on screen","Files are saved in the wrong folder","The computer overheats and shuts itself down repeatedly","A document has formatting issues"], c: 2, e: "Repeated overheating shutdowns indicate a physical problem — either the cooling fan has failed, vents are clogged with dust, or thermal paste on the CPU has dried out. These are hardware issues requiring physical cleaning or component replacement. The other options are all software/user issues." },
-];
-
-let cur = 0, score = 0, answered = false;
-
-function renderQuiz() {
-  const q = quizData[cur];
-  document.getElementById('quizInner').innerHTML = `
-    <div class="quiz-header">
-      <div class="quiz-title">Knowledge Check</div>
-      <div class="q-counter">Question ${cur+1} of ${quizData.length}</div>
-    </div>
-    <div class="q-progress"><div class="q-progress-fill" style="width:${((cur)/quizData.length)*100}%"></div></div>
-    <div class="q-text">${q.q}</div>
-    <div class="answers">
-      ${q.a.map((a,i)=>`<button class="ans-btn" data-i="${i}">${a}</button>`).join('')}
-    </div>
-    <div class="feedback" id="fb"></div>
-    <button class="next-btn" id="nb">${cur < quizData.length-1 ? 'Next Question →' : 'See Results →'}</button>`;
-  answered = false;
-  document.querySelectorAll('.ans-btn').forEach(b => b.addEventListener('click', () => handleAnswer(parseInt(b.dataset.i))));
-  document.getElementById('nb').addEventListener('click', nextQ);
-}
-
-function handleAnswer(i) {
-  if (answered) return;
-  answered = true;
-  const q = quizData[cur];
-  if (i === q.c) score++;
-  document.querySelectorAll('.ans-btn').forEach((b,idx) => {
-    b.disabled = true;
-    if (idx === q.c) b.classList.add('correct');
-    if (idx === i && i !== q.c) b.classList.add('wrong');
-  });
-  const fb = document.getElementById('fb');
-  fb.className = 'feedback ' + (i === q.c ? 'correct' : 'wrong');
-  fb.innerHTML = (i === q.c ? '✓ Correct! ' : '✗ Not quite. ') + q.e;
-  document.getElementById('nb').classList.add('show');
-}
-
-function nextQ() {
-  if (cur < quizData.length - 1) { cur++; renderQuiz(); }
-  else showScore();
-}
-
-function showScore() {
-  const pct = Math.round(score/quizData.length*100);
-  const msgs = [[90,'🏆 Expert Level!','You have a strong grasp of hardware vs. software.'],[70,'⭐ Solid Understanding','Good work — review the missed questions to fill gaps.'],[50,'📚 Getting There','Re-read the lesson sections and try again.'],[0,'🔄 Keep Practicing','Don\'t worry — this takes time. Review and retry.']];
-  const [,t,s] = msgs.find(([th])=>pct>=th);
-  document.getElementById('quizInner').innerHTML = `
-    <div class="score-screen">
-      <div class="score-ring">${pct}%</div>
-      <div class="score-headline">${t}</div>
-      <p class="score-sub">${score}/${quizData.length} correct — ${s}</p>
-      <div class="score-btns">
-        <button class="btn-primary" id="retryBtn">Try Again</button>
-        <button class="btn-ghost" onclick="window.scrollTo({top:0,behavior:'smooth'})">Review Lesson ↑</button>
-      </div>
-    </div>`;
-  document.getElementById('retryBtn').addEventListener('click', () => { cur=0; score=0; renderQuiz(); });
-}
-
-// Parts explorer
-document.querySelectorAll('.part-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('.part-btn').forEach(b=>b.classList.remove('active'));
-    btn.classList.add('active');
-    const d = parts[btn.dataset.part];
-    const pd = document.getElementById('partDetail');
-    pd.innerHTML = `<div class="part-detail-title">${d.title} <span style="font-size:0.75rem;font-weight:400;color:var(--muted);margin-left:8px">${d.type}</span></div><div class="part-detail-text">${d.text}</div>`;
-    pd.classList.add('visible');
-  });
-});
-
-// Tabs
-document.querySelectorAll('.tab').forEach(t => {
-  t.addEventListener('click', () => {
-    const sec = t.closest('.section') || t.closest('.tabs').parentElement;
-    sec.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
-    sec.querySelectorAll('.tab-pane').forEach(x=>x.classList.remove('active'));
-    t.classList.add('active');
-    document.getElementById(t.dataset.tab).classList.add('active');
-  });
-});
-
-renderQuiz();
-</script>
+<script src="app.js"></script>
 </body>
 </html>

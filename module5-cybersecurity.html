@@ -1,574 +1,358 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Module 5 — Data Privacy &amp; Cybersecurity</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
-<style>
-  :root {
-    --bg: #050f0a;
-    --surface: #0a1a10;
-    --surface2: #102018;
-    --border: #183028;
-    --accent: #20e870;
-    --accent2: #20c8a0;
-    --accent3: #f0d040;
-    --text: #d8f0e0;
-    --muted: #508068;
-    --correct: #20f080;
-    --wrong: #f04858;
-    --warn: #f09020;
-  }
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; overflow-x: hidden; }
-  body::before {
-    content: '';
-    position: fixed; inset: 0;
-    background-image: radial-gradient(ellipse at 0% 0%, rgba(32,232,112,0.08) 0%, transparent 50%), radial-gradient(ellipse at 100% 100%, rgba(32,200,160,0.06) 0%, transparent 50%);
-    pointer-events: none; z-index: 0;
-  }
-  .app { position: relative; z-index: 1; }
-  header { border-bottom: 1px solid var(--border); padding: 18px 40px; display: flex; align-items: center; justify-content: space-between; background: rgba(5,15,10,0.94); backdrop-filter: blur(12px); position: sticky; top: 0; z-index: 100; }
-  .logo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.1rem; display: flex; align-items: center; gap: 10px; }
-  .logo-chip { background: var(--accent); color: #000; font-size: 0.65rem; padding: 3px 8px; border-radius: 4px; font-weight: 700; letter-spacing: 0.05em; }
-  .module-tag { font-family: 'DM Mono', monospace; font-size: 0.7rem; color: var(--accent); border: 1px solid rgba(32,232,112,0.3); padding: 4px 12px; border-radius: 20px; }
-  .main { max-width: 920px; margin: 0 auto; padding: 52px 40px; }
-  @keyframes fadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
-  .fade-up { animation: fadeUp 0.5s ease forwards; }
-  .hero { margin-bottom: 52px; }
-  .hero-eyebrow { font-family: 'DM Mono', monospace; font-size: 0.68rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--accent); margin-bottom: 16px; }
-  h1 { font-family: 'Syne', sans-serif; font-weight: 800; font-size: clamp(2.2rem,5vw,3.4rem); line-height: 1.06; letter-spacing: -0.03em; margin-bottom: 18px; }
-  h1 em { font-style: normal; color: var(--accent); }
-  .hero-sub { font-size: 1rem; color: var(--muted); max-width: 540px; line-height: 1.75; }
-  .section { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 36px; margin-bottom: 24px; }
-  .section-label { font-family: 'DM Mono', monospace; font-size: 0.63rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--accent); margin-bottom: 12px; }
-  .section h2 { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1.5rem; letter-spacing: -0.02em; margin-bottom: 14px; }
-  .section p { color: #90c0a8; line-height: 1.82; margin-bottom: 14px; font-size: 0.93rem; }
-  .section p:last-child { margin-bottom: 0; }
-  strong { color: var(--text); }
-  code { background: var(--surface2); border: 1px solid var(--border); padding: 2px 7px; border-radius: 4px; font-family: 'DM Mono', monospace; font-size: 0.82em; color: var(--accent); }
-  /* THREAT CARDS */
-  .threat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; margin: 16px 0; }
-  .threat-card { background: var(--surface2); border: 1px solid var(--border); border-radius: 12px; padding: 22px; cursor: pointer; transition: all 0.22s; }
-  .threat-card:hover, .threat-card.active { border-color: var(--accent); background: rgba(32,232,112,0.05); }
-  .threat-icon { font-size: 1.8rem; margin-bottom: 10px; }
-  .threat-name { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.95rem; color: var(--accent); margin-bottom: 6px; }
-  .threat-blurb { font-size: 0.82rem; color: var(--muted); line-height: 1.6; }
-  .threat-detail { background: rgba(32,232,112,0.05); border: 1px solid rgba(32,232,112,0.2); border-radius: 10px; padding: 20px; margin-top: 14px; display: none; animation: fadeUp 0.3s ease; }
-  .threat-detail.visible { display: block; }
-  .threat-detail-title { font-family: 'Syne', sans-serif; font-weight: 700; color: var(--accent); margin-bottom: 8px; font-size: 0.95rem; }
-  .threat-detail-text { font-size: 0.88rem; color: #90c0a8; line-height: 1.75; }
-  /* PASSWORD METER */
-  .pw-demo { background: var(--surface2); border: 1px solid var(--border); border-radius: 12px; padding: 24px; margin: 16px 0; }
-  .pw-input-wrap { display: flex; gap: 10px; margin-bottom: 16px; }
-  .pw-input { flex: 1; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; color: var(--text); font-family: 'DM Mono', monospace; font-size: 0.9rem; outline: none; transition: border-color 0.2s; }
-  .pw-input:focus { border-color: var(--accent); }
-  .pw-meter { height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; margin-bottom: 10px; }
-  .pw-meter-fill { height: 100%; border-radius: 3px; transition: all 0.3s; }
-  .pw-score-text { font-family: 'DM Mono', monospace; font-size: 0.78rem; color: var(--muted); margin-bottom: 10px; }
-  .pw-tips { font-size: 0.83rem; color: #90c0a8; line-height: 1.7; }
-  /* ALERT LEVELS */
-  .alert-strip { border-radius: 10px; padding: 16px 20px; margin: 10px 0; display: flex; gap: 14px; align-items: flex-start; }
-  .alert-danger { background: rgba(240,72,88,0.08); border: 1px solid rgba(240,72,88,0.25); }
-  .alert-warn { background: rgba(240,144,32,0.08); border: 1px solid rgba(240,144,32,0.25); }
-  .alert-safe { background: rgba(32,232,112,0.08); border: 1px solid rgba(32,232,112,0.25); }
-  .alert-icon { font-size: 1.3rem; flex-shrink: 0; margin-top: 2px; }
-  .alert-text { font-size: 0.87rem; line-height: 1.7; }
-  .alert-danger .alert-text { color: #f0a0a8; }
-  .alert-warn .alert-text { color: #f0c080; }
-  .alert-safe .alert-text { color: #80f0b0; }
-  /* CHECKLIST */
-  .checklist { display: flex; flex-direction: column; gap: 10px; margin: 16px 0; }
-  .check-item { display: flex; gap: 12px; background: var(--surface2); border: 1px solid var(--border); border-radius: 9px; padding: 14px 16px; align-items: flex-start; cursor: pointer; transition: all 0.2s; }
-  .check-item:hover { border-color: var(--accent); }
-  .check-item.done { border-color: rgba(32,232,112,0.3); background: rgba(32,232,112,0.04); }
-  .check-box { width: 20px; height: 20px; border-radius: 4px; border: 2px solid var(--border); flex-shrink: 0; display: flex; align-items: center; justify-content: center; margin-top: 1px; transition: all 0.2s; }
-  .check-item.done .check-box { background: var(--accent); border-color: var(--accent); color: #000; font-size: 0.7rem; }
-  .check-text { font-size: 0.88rem; line-height: 1.6; color: #90c0a8; }
-  .check-item.done .check-text { color: var(--muted); }
-  /* ANALOGY */
-  .analogy { background: var(--surface2); border-left: 3px solid var(--accent); border-radius: 0 10px 10px 0; padding: 18px 22px; margin: 16px 0; }
-  .analogy-label { font-family: 'DM Mono', monospace; font-size: 0.62rem; color: var(--accent); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px; }
-  .analogy-text { font-size: 0.9rem; color: #90c0a8; line-height: 1.75; }
-  /* TABS */
-  .tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--border); margin-bottom: 22px; overflow-x: auto; }
-  .tab { padding: 9px 16px; cursor: pointer; font-size: 0.82rem; font-family: 'DM Mono', monospace; color: var(--muted); border-bottom: 2px solid transparent; margin-bottom: -1px; transition: all 0.2s; white-space: nowrap; }
-  .tab:hover { color: var(--text); }
-  .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
-  .tab-pane { display: none; }
-  .tab-pane.active { display: block; animation: fadeUp 0.3s ease; }
-  /* SCENARIO */
-  .scenario { background: rgba(32,232,112,0.04); border: 1px solid rgba(32,232,112,0.15); border-radius: 10px; padding: 18px 22px; margin: 14px 0; }
-  .scenario-label { font-family: 'DM Mono', monospace; font-size: 0.62rem; color: var(--accent); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px; }
-  .scenario-text { font-size: 0.88rem; color: #90c0a8; line-height: 1.75; }
-  /* QUIZ */
-  .quiz-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 36px; margin-top: 32px; }
-  .quiz-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 28px; }
-  .quiz-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1.25rem; }
-  .q-counter { font-family: 'DM Mono', monospace; font-size: 0.78rem; color: var(--muted); }
-  .q-progress { height: 3px; background: var(--border); border-radius: 2px; margin-bottom: 28px; overflow: hidden; }
-  .q-progress-fill { height: 100%; background: var(--accent); border-radius: 2px; transition: width 0.4s ease; }
-  .q-text { font-size: 1.02rem; font-weight: 500; line-height: 1.6; margin-bottom: 22px; }
-  .answers { display: grid; grid-template-columns: 1fr 1fr; gap: 11px; margin-bottom: 22px; }
-  .ans-btn { background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 13px 16px; color: var(--text); cursor: pointer; text-align: left; font-family: 'DM Sans', sans-serif; font-size: 0.88rem; line-height: 1.45; transition: all 0.2s; }
-  .ans-btn:hover:not(:disabled) { border-color: var(--accent); background: rgba(32,232,112,0.07); }
-  .ans-btn.correct { border-color: var(--correct); background: rgba(32,240,128,0.1); color: var(--correct); }
-  .ans-btn.wrong { border-color: var(--wrong); background: rgba(240,72,88,0.1); color: var(--wrong); }
-  .ans-btn:disabled { cursor: not-allowed; }
-  .feedback { padding: 15px 20px; border-radius: 10px; font-size: 0.88rem; line-height: 1.65; margin-bottom: 18px; display: none; }
-  .feedback.correct { background: rgba(32,240,128,0.08); border: 1px solid rgba(32,240,128,0.3); color: #80f0b0; display: block; }
-  .feedback.wrong { background: rgba(240,72,88,0.08); border: 1px solid rgba(240,72,88,0.3); color: #f09090; display: block; }
-  .next-btn { background: var(--accent); color: #000; border: none; padding: 11px 26px; border-radius: 8px; font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.88rem; cursor: pointer; transition: all 0.2s; display: none; }
-  .next-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 22px rgba(32,232,112,0.3); }
-  .next-btn.show { display: inline-block; }
-  .score-screen { text-align: center; padding: 60px 20px; animation: fadeUp 0.5s ease; }
-  .score-ring { width: 130px; height: 130px; border-radius: 50%; border: 4px solid var(--accent); display: flex; align-items: center; justify-content: center; margin: 0 auto 28px; font-family: 'Syne', sans-serif; font-weight: 800; font-size: 2.2rem; color: var(--accent); }
-  .score-headline { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1.6rem; margin-bottom: 10px; }
-  .score-sub { color: var(--muted); margin-bottom: 32px; font-size: 0.92rem; }
-  .score-btns { display: flex; gap: 12px; justify-content: center; }
-  .btn-primary { background: var(--accent); color: #000; border: none; padding: 11px 26px; border-radius: 8px; font-family: 'Syne', sans-serif; font-weight: 700; cursor: pointer; transition: all 0.2s; }
-  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 22px rgba(32,232,112,0.3); }
-  .btn-ghost { background: transparent; color: var(--text); border: 1px solid var(--border); padding: 11px 26px; border-radius: 8px; font-family: 'Syne', sans-serif; font-weight: 600; cursor: pointer; transition: all 0.2s; }
-  .btn-ghost:hover { border-color: var(--accent); }
-  @media(max-width:600px) { .main{padding:28px 18px;} header{padding:14px 18px;} .threat-grid{grid-template-columns:1fr;} .answers{grid-template-columns:1fr;} }
-
-  /* ── AGSM branding ───────────────────────────────────── */
-  .nav-logo-img {
-    height: 36px; width: 36px;
-    object-fit: contain;
-    background: #fff;
-    border-radius: 6px;
-    padding: 3px;
-    flex-shrink: 0;
-  }
-  .nav-divider {
-    width: 1px; height: 28px;
-    background: var(--border, #2a2f3a);
-    flex-shrink: 0;
-  }
-  .nav-wordmark {
-    display: flex; flex-direction: column; gap: 1px;
-  }
-  .nav-wordmark-top {
-    font-family: 'DM Mono', monospace;
-    font-size: 0.58rem;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--muted, #7a8090);
-    line-height: 1;
-  }
-  .nav-wordmark-bottom {
-    font-family: 'Syne', sans-serif;
-    font-weight: 700;
-    font-size: 0.78rem;
-    letter-spacing: -0.01em;
-    color: var(--text, #e8eaf0);
-    line-height: 1;
-  }
-  .nav-home-link {
-    font-family: 'DM Mono', monospace;
-    font-size: 0.65rem;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--muted, #7a8090);
-    text-decoration: none;
-    padding: 5px 12px;
-    border: 1px solid var(--border, #2a2f3a);
-    border-radius: 20px;
-    transition: all 0.2s;
-  }
-  .nav-home-link:hover {
-    color: var(--text, #e8eaf0);
-    border-color: var(--muted, #7a8090);
-  }
-
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Module 5 — Data Privacy & Cybersecurity | TechReady</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<div class="app">
-<header>
-  <a href="./index.html" style="display:flex;align-items:center;gap:12px;text-decoration:none"><img class="nav-logo-img" src="./AGSMlogo.jpeg" alt="Atkinson Graduate School of Management"><div class="nav-divider"></div><div class="nav-wordmark"><span class="nav-wordmark-top">TechReady Series</span><span class="nav-wordmark-bottom">Privacy &amp; Security</span></div></a>
-  <div style="display:flex;align-items:center;gap:10px">
-    <div style="font-family:'DM Mono',monospace;font-size:0.62rem;letter-spacing:0.1em;padding:4px 11px;border-radius:5px;background:var(--accent);color:#000;font-weight:700">MOD 05</div>
-    <a class="nav-home-link" href="./index.html">← Home</a>
+
+<nav class="top-nav" aria-label="Main navigation">
+  <div class="top-nav-inner">
+    <a href="index.html" class="nav-brand"><img src="./AGSMlogo.jpeg" alt="AGSM Logo"><span>TechReady Series</span></a>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="overview.html">Overview</a>
+      <a href="module1-hardware-software.html">Mod 1</a>
+      <a href="module2-operating-systems.html">Mod 2</a>
+      <a href="module3-files-folders.html">Mod 3</a>
+      <a href="module4-internet-cloud.html">Mod 4</a>
+      <a href="module5-cybersecurity.html" class="active">Mod 5</a>
+      <a href="conclusion.html">Wrap-Up</a>
+    </div>
   </div>
-</header>
-<div class="main">
-  <div class="hero fade-up">
-    <div class="hero-eyebrow">Module 05 of 05</div>
-    <h1>Data Privacy &amp;<br><em>Cybersecurity</em></h1>
-    <p class="hero-sub">Cyberattacks cost organizations billions annually — and most breaches start with human error. This module gives you the knowledge to protect yourself and your workplace.</p>
+</nav>
+
+<div class="progress-strip">
+  <div class="progress-strip-inner">
+    <span class="progress-text">0 / 5 complete</span>
+    <div class="progress-bar-bg"><div class="progress-bar-fill" style="width:0%"></div></div>
+  </div>
+</div>
+
+<div class="page-container">
+
+  <div class="module-header">
+    <div class="module-badge">Module 05 of 05 · Standalone</div>
+    <h1>Data Privacy & <em>Cybersecurity</em></h1>
+    <p class="subtitle">Cyberattacks cost organizations billions annually — and most breaches start with human error. This module gives you the knowledge to protect yourself and your workplace.</p>
   </div>
 
-  <div class="section fade-up">
-    <div class="section-label">Why This Matters</div>
+  <!-- Why It Matters -->
+  <div class="content-section">
+    <p class="section-label">Why This Matters</p>
     <h2>You are the first line of defense</h2>
-    <p>Organizations spend millions on firewalls and antivirus software, but the most common entry point for attackers is a <strong>person clicking the wrong link</strong>. According to cybersecurity reports, over 90% of successful cyberattacks start with phishing — a deceptive email or message tricking someone into taking a harmful action.</p>
+    <p>Organizations spend millions on firewalls and antivirus software, but the most common entry point for attackers is a <strong>person clicking the wrong link</strong>. Over 90% of successful cyberattacks start with phishing — a deceptive email or message tricking someone into taking a harmful action.</p>
     <p>This isn't about blaming employees. Attackers are sophisticated and their methods are increasingly convincing. The goal is to build habits that make you a harder target and know what to do when something seems wrong.</p>
-    <div class="analogy">
+
+    <div class="analogy-box">
       <div class="analogy-label">Analogy</div>
-      <div class="analogy-text">Think of cybersecurity like office building security. The company has locks, security cameras, and a reception desk (technical controls). But if an employee holds the door open for someone without a badge because they seem friendly, all that technical security is bypassed instantly. <strong>Human behavior is the security perimeter.</strong></div>
+      <p>Think of cybersecurity like office building security. The company has locks, security cameras, and a reception desk (technical controls). But if an employee holds the door open for someone without a badge because they seem friendly, all that technical security is bypassed instantly. <strong>Human behavior is the security perimeter.</strong></p>
     </div>
   </div>
 
-  <div class="section fade-up">
-    <div class="section-label">Common Threats — Click to Learn</div>
+  <!-- AI Callout -->
+  <div class="ai-callout">
+    <div class="ai-callout-title">🤖 Why This Matters for AI</div>
+    <p>AI tools introduce <strong>new attack surfaces</strong>: prompt injection (tricking an AI into revealing data), data leakage (pasting confidential info into ChatGPT), oversharing sensitive documents with cloud models, and shadow IT risks when employees use unapproved AI services. Every prompt you type is sent to remote servers. This module builds the awareness to use AI responsibly — knowing what data to share and what to keep offline.</p>
+  </div>
+
+  <!-- Common Threats -->
+  <div class="content-section">
+    <p class="section-label">Common Threats — Click to Learn</p>
     <h2>Know your adversaries</h2>
-    <p>Click any threat type to understand how it works and how to defend against it.</p>
-    <div class="threat-grid" id="threatGrid">
-      <div class="threat-card" data-threat="phishing"><div class="threat-icon">🎣</div><div class="threat-name">Phishing</div><div class="threat-blurb">Deceptive emails/messages designed to steal credentials or install malware</div></div>
-      <div class="threat-card" data-threat="ransomware"><div class="threat-icon">🔒</div><div class="threat-name">Ransomware</div><div class="threat-blurb">Malware that encrypts your files and demands payment to restore them</div></div>
-      <div class="threat-card" data-threat="social"><div class="threat-icon">🎭</div><div class="threat-name">Social Engineering</div><div class="threat-blurb">Psychological manipulation to get you to reveal info or take actions</div></div>
-      <div class="threat-card" data-threat="malware"><div class="threat-icon">🦠</div><div class="threat-name">Malware</div><div class="threat-blurb">Malicious software including viruses, spyware, and trojans</div></div>
-      <div class="threat-card" data-threat="mfa"><div class="threat-icon">📱</div><div class="threat-name">MFA Bypass Attacks</div><div class="threat-blurb">Tricks to get past multi-factor authentication</div></div>
-      <div class="threat-card" data-threat="insider"><div class="threat-icon">👤</div><div class="threat-name">Insider Threats</div><div class="threat-blurb">Risks from people inside the organization with access to systems</div></div>
-    </div>
-    <div class="threat-detail" id="threatDetail"></div>
-  </div>
-
-  <div class="section fade-up">
-    <div class="section-label">Passwords</div>
-    <h2>Strong passwords &amp; why they matter</h2>
-    <p>Weak passwords are one of the leading causes of account compromises. "123456" is still the most common password in data breaches. A strong password protects your accounts even if someone has your email address.</p>
-
-    <div class="pw-demo">
-      <p style="font-size:0.85rem;color:var(--muted);margin-bottom:14px;font-family:'DM Mono',monospace;">TEST YOUR PASSWORD STRENGTH:</p>
-      <div class="pw-input-wrap">
-        <input type="text" class="pw-input" id="pwInput" placeholder="Type a password to test...">
+    <div class="icon-grid" style="grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));" data-explorer>
+      <div class="icon-item" data-detail="<strong>Phishing</strong> — Deceptive emails, texts, or messages that impersonate trusted entities (your bank, IT department, a colleague) to steal credentials or install malware. The most common attack vector — covered in detail below.">
+        <div class="icon-emoji">🎣</div><div class="icon-label">Phishing</div><div class="icon-sub">Deceptive messages</div>
       </div>
-      <div class="pw-meter"><div class="pw-meter-fill" id="pwFill" style="width:0%;background:var(--wrong)"></div></div>
-      <div class="pw-score-text" id="pwScoreText">Enter a password above to see its strength</div>
-      <div class="pw-tips" id="pwTips"></div>
+      <div class="icon-item" data-detail="<strong>Ransomware</strong> — Malware that encrypts all your files and demands payment (often cryptocurrency) to decrypt them. Spreads through phishing emails or unpatched vulnerabilities. Prevention: keep OS updated, don't open suspicious attachments, maintain backups.">
+        <div class="icon-emoji">🔒</div><div class="icon-label">Ransomware</div><div class="icon-sub">Encrypts your files</div>
+      </div>
+      <div class="icon-item" data-detail="<strong>Social Engineering</strong> — Psychological manipulation to get you to reveal information or take actions. A caller claiming to be IT asking for your password, or someone tailgating into a secure building by acting like they belong.">
+        <div class="icon-emoji">🎭</div><div class="icon-label">Social Engineering</div><div class="icon-sub">Manipulation tactics</div>
+      </div>
+      <div class="icon-item" data-detail="<strong>Malware</strong> — Malicious software including viruses (spread by infecting other files), spyware (monitors your activity), trojans (disguised as legitimate software), and worms (self-replicating across networks). Enters through downloads, email attachments, or infected websites.">
+        <div class="icon-emoji">🦠</div><div class="icon-label">Malware</div><div class="icon-sub">Viruses, spyware, trojans</div>
+      </div>
+      <div class="icon-item" data-detail="<strong>MFA Bypass Attacks</strong> — Tricks to defeat multi-factor authentication: real-time phishing (capturing your MFA code as you enter it), MFA fatigue (bombarding you with push notifications until you approve), or SIM-swapping (hijacking your phone number).">
+        <div class="icon-emoji">📱</div><div class="icon-label">MFA Bypass</div><div class="icon-sub">Defeating 2FA</div>
+      </div>
+      <div class="icon-item" data-detail="<strong>Insider Threats</strong> — Risks from people inside the organization: disgruntled employees stealing data, accidental data exposure by careless staff, or compromised accounts used by external attackers. Not all threats come from outside.">
+        <div class="icon-emoji">👤</div><div class="icon-label">Insider Threats</div><div class="icon-sub">Internal risks</div>
+      </div>
     </div>
-
-    <div class="alert-strip alert-danger"><div class="alert-icon">❌</div><div class="alert-text"><strong>Never use:</strong> Your name, birthday, pet's name, company name, "password", "123456", or any single dictionary word. These are cracked in seconds by automated tools.</div></div>
-    <div class="alert-strip alert-warn"><div class="alert-icon">⚠️</div><div class="alert-text"><strong>Avoid:</strong> Reusing the same password across multiple sites. If one site is breached, attackers try your password on every other site (credential stuffing).</div></div>
-    <div class="alert-strip alert-safe"><div class="alert-icon">✅</div><div class="alert-text"><strong>Best practice:</strong> Use a <strong>password manager</strong> (Bitwarden, 1Password, LastPass). It generates and stores unique, complex passwords for every site. You only remember one master password.</div></div>
+    <div class="explorer-detail card" style="display:none; margin-top:0.5rem;"></div>
   </div>
 
-  <div class="section fade-up">
-    <div class="section-label">Multi-Factor Authentication</div>
+  <!-- Passwords -->
+  <div class="content-section">
+    <p class="section-label">Passwords</p>
+    <h2>Strong passwords & why they matter</h2>
+    <p>Weak passwords are one of the leading causes of account compromises. "123456" is still the most common password in data breaches.</p>
+
+    <div class="card">
+      <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:0.5rem;">TEST YOUR PASSWORD STRENGTH:</p>
+      <input type="text" id="pw-test-input" class="pw-input" placeholder="Enter a test password (don't use a real one)" autocomplete="off">
+      <div class="pw-strength-bar"><div class="pw-strength-fill" style="width:0%"></div></div>
+      <p id="pw-strength-label" style="font-size:0.82rem;font-weight:600;margin-top:0.3rem;"></p>
+    </div>
+
+    <div class="card" style="margin-top:0.75rem;">
+      <p><span style="color:var(--accent-red);">❌ Never use:</span> Your name, birthday, pet's name, company name, "password", "123456", or any single dictionary word.</p>
+      <p><span style="color:var(--accent-orange);">⚠️ Avoid:</span> Reusing the same password across sites. If one site is breached, attackers try your password everywhere (credential stuffing).</p>
+      <p><span style="color:var(--accent-green);">✅ Best practice:</span> Use a <strong>password manager</strong> (Bitwarden, 1Password, LastPass). It generates and stores unique, complex passwords for every site. You only remember one master password.</p>
+    </div>
+  </div>
+
+  <!-- MFA -->
+  <div class="content-section">
+    <p class="section-label">Multi-Factor Authentication</p>
     <h2>MFA — Your most powerful account protection</h2>
-    <p><strong>Multi-Factor Authentication (MFA)</strong> requires two or more forms of verification to log in: something you <em>know</em> (password) + something you <em>have</em> (phone/authenticator app) or something you <em>are</em> (fingerprint). Even if someone steals your password, they still can't log in without your second factor.</p>
-    <p>Microsoft reports that MFA blocks <strong>99.9% of automated account attacks</strong>. It's the single most impactful thing you can do for account security. Always enable MFA on work accounts, email, and any service containing sensitive information.</p>
-    <div class="tabs">
-      <div class="tab active" data-tab="m1">Authenticator App</div>
-      <div class="tab" data-tab="m2">SMS Text Code</div>
-      <div class="tab" data-tab="m3">Physical Key</div>
-      <div class="tab" data-tab="m4">Biometrics</div>
-    </div>
-    <div class="tab-pane active" id="m1">
-      <p><strong>Most secure and recommended.</strong> Apps like Microsoft Authenticator, Google Authenticator, or Authy generate a 6-digit code that changes every 30 seconds. Even if attackers capture the code, it expires in half a minute. No SIM card required — works offline.</p>
-    </div>
-    <div class="tab-pane" id="m2">
-      <p><strong>Better than nothing, but not ideal.</strong> A text message with a code sent to your phone. Vulnerable to SIM-swapping attacks (where criminals convince your phone carrier to transfer your number to their SIM). Also vulnerable to phishing pages that ask for your SMS code in real-time. Still far better than password-only login.</p>
-    </div>
-    <div class="tab-pane" id="m3">
-      <p><strong>Strongest option for high-security accounts.</strong> A physical USB device (like a YubiKey) that you plug in to confirm your identity. Cannot be phished remotely — the attacker would need to physically have the key. Used by journalists, executives, and anyone with very high-security needs.</p>
-    </div>
-    <div class="tab-pane" id="m4">
-      <p><strong>Convenient and increasingly common.</strong> Fingerprint readers, Face ID, and Windows Hello use physical characteristics. Very hard to steal remotely. Used as the second factor on phones and modern laptops. Combine with a PIN (not just biometric alone) for best security.</p>
+    <p><strong>Multi-Factor Authentication (MFA)</strong> requires two or more forms of verification: something you <em>know</em> (password) + something you <em>have</em> (phone/authenticator) or something you <em>are</em> (fingerprint). Even if someone steals your password, they still can't log in without your second factor. Microsoft reports that MFA blocks <strong>99.9% of automated account attacks</strong>.</p>
+
+    <div data-tabs>
+      <div class="tabs">
+        <button class="tab-btn active" data-target="mfa1" aria-label="Authenticator App">Authenticator App</button>
+        <button class="tab-btn" data-target="mfa2" aria-label="SMS Code">SMS Code</button>
+        <button class="tab-btn" data-target="mfa3" aria-label="Physical Key">Physical Key</button>
+        <button class="tab-btn" data-target="mfa4" aria-label="Biometrics">Biometrics</button>
+      </div>
+      <div id="mfa1" class="tab-panel active">
+        <div class="card"><p><strong>Most secure and recommended.</strong> Apps like Microsoft Authenticator, Google Authenticator, or Authy generate a 6-digit code that changes every 30 seconds. Even if attackers capture the code, it expires in half a minute. No SIM card required — works offline.</p></div>
+      </div>
+      <div id="mfa2" class="tab-panel">
+        <div class="card"><p><strong>Better than nothing, but not ideal.</strong> A text with a code sent to your phone. Vulnerable to SIM-swapping attacks (criminals convince your carrier to transfer your number). Also vulnerable to real-time phishing. Still far better than password-only login.</p></div>
+      </div>
+      <div id="mfa3" class="tab-panel">
+        <div class="card"><p><strong>Strongest option for high-security accounts.</strong> A physical USB device (like a YubiKey) that you plug in to confirm identity. Cannot be phished remotely — the attacker needs the physical key. Used by journalists, executives, and high-security roles.</p></div>
+      </div>
+      <div id="mfa4" class="tab-panel">
+        <div class="card"><p><strong>Convenient and increasingly common.</strong> Fingerprint readers, Face ID, and Windows Hello use physical characteristics. Very hard to steal remotely. Combine with a PIN for best security.</p></div>
+      </div>
     </div>
   </div>
 
-  <div class="section fade-up">
-    <div class="section-label">Recognizing Phishing</div>
-    <h2>Red flags in emails and messages</h2>
-    <p>Phishing attacks have become sophisticated — some are nearly indistinguishable from real emails. But most still have telltale signs.</p>
-    <div class="tabs">
-      <div class="tab active" data-tab="p1">Email red flags</div>
-      <div class="tab" data-tab="p2">Link verification</div>
-      <div class="tab" data-tab="p3">Urgency tactics</div>
-      <div class="tab" data-tab="p4">What to do</div>
+  <!-- Phishing Visual Comparison (NEW) -->
+  <div class="content-section">
+    <p class="section-label">Recognizing Phishing</p>
+    <h2>Spot the difference: Real vs. Phishing email</h2>
+    <p>Phishing attacks are increasingly sophisticated. Train your eye by comparing these two emails — one legitimate, one fake.</p>
+
+    <div class="phishing-comparison">
+      <div class="fake-email">
+        <div class="fake-email-label legit">✓ Legitimate Email</div>
+        <div class="fake-email-header">
+          <div class="from-line">From: <strong>support@paypal.com</strong></div>
+          <div class="subject-line">Your monthly statement is ready</div>
+        </div>
+        <div class="fake-email-body">
+          <p>Hi Sarah Chen,</p>
+          <p style="margin-top:0.4rem;">Your March statement is now available in your account. You can review it by logging into your PayPal account at paypal.com.</p>
+          <p style="margin-top:0.4rem;">If you have questions, contact us through the Help Center in your account.</p>
+          <p style="margin-top:0.4rem;color:var(--text-muted);font-size:0.75rem;">PayPal, Inc. · San Jose, CA 95131</p>
+        </div>
+      </div>
+
+      <div class="fake-email" style="border-color:rgba(239,107,107,0.3);">
+        <div class="fake-email-label phish">⚠ Phishing Email</div>
+        <div class="fake-email-header">
+          <div class="from-line">From: <strong><span class="red-flag">support@paypa1-secure.net</span></strong></div>
+          <div class="subject-line"><span class="red-flag">URGENT:</span> Your account will be suspended!</div>
+        </div>
+        <div class="fake-email-body">
+          <p><span class="red-flag">Dear Customer,</span></p>
+          <p style="margin-top:0.4rem;">We <span class="red-flag">detected unusual activity</span> on your account. <span class="red-flag">You must verify your identity within 24 hours</span> or your account will be permanently suspended.</p>
+          <p style="margin-top:0.4rem;"><a href="#" style="color:var(--accent-blue);text-decoration:underline;" onclick="event.preventDefault();">Click here to verify now →</a><br><span style="font-size:0.72rem;color:var(--accent-red);">↑ Hovering shows: paypa1-secure.net/verify (NOT paypal.com)</span></p>
+          <p style="margin-top:0.4rem;color:var(--text-muted);font-size:0.75rem;">PayPal <span class="red-flag">Securty</span> Team</p>
+        </div>
+      </div>
     </div>
-    <div class="tab-pane active" id="p1">
-      <div class="alert-strip alert-danger"><div class="alert-icon">🚩</div><div class="alert-text"><strong>Sender address mismatch:</strong> The display name says "Microsoft Support" but the actual email address is "<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="a3d0d6d3d3ccd1d7e3ce92c0d1ccd0ccc5d78ecbc6cfd38dcdc6d7">[email&#160;protected]</a>". Always hover over or click the sender name to see the real address.</div></div>
-      <div class="alert-strip alert-danger"><div class="alert-icon">🚩</div><div class="alert-text"><strong>Generic greetings:</strong> "Dear Customer" or "Dear User" instead of your actual name suggests a mass phishing campaign that doesn't know who you are.</div></div>
-      <div class="alert-strip alert-warn"><div class="alert-icon">⚠️</div><div class="alert-text"><strong>Unexpected attachments:</strong> An invoice from a company you don't recognize, or a file you weren't expecting. .exe, .zip, .docm (macro-enabled) files are particularly risky.</div></div>
-      <div class="alert-strip alert-warn"><div class="alert-icon">⚠️</div><div class="alert-text"><strong>Poor grammar/spelling:</strong> While sophisticated attacks are well-written, many phishing emails still contain errors. Awkward phrasing or odd word choices are warning signs.</div></div>
-    </div>
-    <div class="tab-pane" id="p2">
-      <p>Before clicking any link in email: <strong>hover over it</strong> (don't click) and look at the URL that appears in the bottom of your browser or as a tooltip. Verify: (1) Is the domain exactly correct? (2) Does it use HTTPS? (3) Is the domain relevant to who supposedly sent the email? A PayPal email linking to <code>paypal-secure-login.xyz</code> is not from PayPal.</p>
-      <p>On mobile, long-press a link to preview the URL before tapping. When in doubt, navigate to the website manually by typing the address in your browser instead of clicking the link.</p>
-    </div>
-    <div class="tab-pane" id="p3">
-      <p>Phishing emails create <strong>artificial urgency</strong> to prevent you from thinking clearly: "Your account will be suspended in 24 hours," "URGENT: Verify your payment immediately," "Your file will be deleted unless you confirm now."</p>
-      <p>Legitimate companies almost never demand immediate action via email that bypasses normal processes. If something seems urgent, go to the company's official website directly (type it yourself) and log in there — don't click the email link.</p>
-    </div>
-    <div class="tab-pane" id="p4">
-      <p>If you receive a suspicious email: <strong>(1)</strong> Don't click any links or download attachments. <strong>(2)</strong> Don't reply to it. <strong>(3)</strong> Report it to IT using your company's reporting mechanism (often a button in Outlook: "Report Phishing"). <strong>(4)</strong> If you think it might be real (e.g., it claims to be from your bank), contact the organization directly using a phone number or website address you already know — not contact info in the suspicious email.</p>
-      <p>If you already clicked: immediately report it to IT. Early detection limits damage. Don't be embarrassed — phishing attacks fool even security professionals.</p>
+
+    <div class="card" style="margin-top:0.75rem;">
+      <h3>Red flags in the phishing email:</h3>
+      <p style="font-size:0.88rem;color:var(--text-secondary);line-height:1.7;">
+        <strong style="color:var(--accent-red);">1. Sender address:</strong> "paypa<strong>1</strong>-secure.net" — uses the number 1 instead of the letter l, and a different domain.<br>
+        <strong style="color:var(--accent-red);">2. Generic greeting:</strong> "Dear Customer" instead of your actual name.<br>
+        <strong style="color:var(--accent-red);">3. Artificial urgency:</strong> "within 24 hours" and "permanently suspended" — pressure to act without thinking.<br>
+        <strong style="color:var(--accent-red);">4. Suspicious link:</strong> Hovering reveals a URL that doesn't match paypal.com.<br>
+        <strong style="color:var(--accent-red);">5. Spelling error:</strong> "Securty" instead of "Security" — subtle but telltale.
+      </p>
     </div>
   </div>
 
-  <div class="section fade-up">
-    <div class="section-label">Data Privacy</div>
-    <h2>Personal &amp; company data — your responsibilities</h2>
-    <p>Data privacy is both a legal obligation (GDPR, HIPAA, CCPA) and an ethical one. As an employee, you handle data about customers, colleagues, and the business. Mishandling it has serious consequences.</p>
-    <div class="tabs">
-      <div class="tab active" data-tab="d1">What counts as sensitive data</div>
-      <div class="tab" data-tab="d2">Safe data handling</div>
-      <div class="tab" data-tab="d3">Regulations overview</div>
-      <div class="tab" data-tab="d4">Breach response</div>
-    </div>
-    <div class="tab-pane active" id="d1">
-      <p><strong>Personally Identifiable Information (PII):</strong> Name, address, phone number, email, date of birth, Social Security/national ID numbers, passport numbers, financial account details. This information, in the wrong hands, enables identity theft.</p>
-      <p><strong>Protected Health Information (PHI):</strong> Medical records, diagnoses, treatment history. Protected by HIPAA in the US.</p>
-      <p><strong>Company confidential data:</strong> Financial results before public announcement, client lists, pricing models, strategic plans, source code, employee salaries. This data can harm the company if leaked.</p>
-    </div>
-    <div class="tab-pane" id="d2">
-      <p>Key habits: (1) <strong>Need to know</strong> — only access data you actually need for your job. Don't explore customer records out of curiosity. (2) <strong>Encrypt sensitive files</strong> before emailing — check if your email system auto-encrypts or use the built-in encryption options. (3) <strong>Lock your screen</strong> (Win+L or Ctrl+Cmd+Q on Mac) when stepping away from your desk. (4) <strong>Don't store sensitive data in personal cloud accounts</strong> — use company-approved tools only. (5) <strong>Use company devices</strong> for company data — avoid emailing work files to personal accounts.</p>
-    </div>
-    <div class="tab-pane" id="d3">
-      <p><strong>GDPR (EU):</strong> Requires explicit consent to collect personal data, the right to be forgotten, data breach notification within 72 hours. Applies to any organization handling EU residents' data.</p>
-      <p><strong>HIPAA (US):</strong> Protects health information. Healthcare workers and their business associates must safeguard PHI. Violations carry heavy fines.</p>
-      <p><strong>CCPA (California):</strong> Gives California residents rights over their personal data — to know what's collected, to opt out of sales, to request deletion.</p>
-      <p>You don't need to be a lawyer — but know your company's policies and when to escalate to the legal/compliance team with data-related questions.</p>
-    </div>
-    <div class="tab-pane" id="d4">
-      <p>If you think a data breach has occurred (you accidentally sent sensitive data to the wrong person, you can't find a laptop, you suspect your account is compromised): <strong>Report it immediately.</strong> Don't wait and hope it resolves itself. Most regulations require organizations to report breaches within 72 hours — the clock starts when the breach is discovered, so early reporting gives the company maximum time to respond. You won't be penalized for reporting — you may be penalized for not reporting.</p>
+  <!-- Phishing Red Flags Detail -->
+  <div class="content-section">
+    <h2>What to do with suspicious emails</h2>
+
+    <div data-tabs>
+      <div class="tabs">
+        <button class="tab-btn active" data-target="ph1" aria-label="Red flags">Email Red Flags</button>
+        <button class="tab-btn" data-target="ph2" aria-label="Link verification">Link Verification</button>
+        <button class="tab-btn" data-target="ph3" aria-label="What to do">What To Do</button>
+      </div>
+      <div id="ph1" class="tab-panel active">
+        <div class="card">
+          <p><strong>Sender address mismatch:</strong> Display name says "Microsoft Support" but email is <code style="background:var(--bg-primary);padding:0.1rem 0.3rem;border-radius:3px;font-family:var(--font-mono);font-size:0.82rem;">support@m1crosoft-help.net</code>. Always check the actual address.</p>
+          <p><strong>Generic greetings:</strong> "Dear Customer" instead of your name — a mass phishing campaign.</p>
+          <p><strong>Unexpected attachments:</strong> An invoice from a company you don't recognize. .exe, .zip, .docm files are particularly risky.</p>
+          <p><strong>Poor grammar/spelling:</strong> While sophisticated attacks are well-written, many still contain errors and awkward phrasing.</p>
+        </div>
+      </div>
+      <div id="ph2" class="tab-panel">
+        <div class="card">
+          <p>Before clicking any link: <strong>hover over it</strong> (don't click) and check the URL. Verify: (1) Is the domain exactly correct? (2) Does it use HTTPS? (3) Is it relevant to the sender?</p>
+          <p>On mobile, long-press a link to preview the URL. When in doubt, navigate to the website manually by typing the address yourself.</p>
+        </div>
+      </div>
+      <div id="ph3" class="tab-panel">
+        <div class="card">
+          <p>If suspicious: (1) Don't click links or download attachments. (2) Don't reply. (3) Report to IT (often a "Report Phishing" button in Outlook). (4) If it might be real, contact the organization using a number or URL you already know — not info from the email.</p>
+          <p><strong>If you already clicked:</strong> Report to IT immediately. Early detection limits damage. Don't be embarrassed — phishing fools even security professionals.</p>
+        </div>
+      </div>
     </div>
   </div>
 
-  <div class="section fade-up">
-    <div class="section-label">Security Checklist</div>
+  <!-- Data Privacy -->
+  <div class="content-section">
+    <p class="section-label">Data Privacy</p>
+    <h2>Personal & company data — your responsibilities</h2>
+
+    <div data-tabs>
+      <div class="tabs">
+        <button class="tab-btn active" data-target="dp1" aria-label="Sensitive data">Sensitive Data</button>
+        <button class="tab-btn" data-target="dp2" aria-label="Safe handling">Safe Handling</button>
+        <button class="tab-btn" data-target="dp3" aria-label="Regulations">Regulations</button>
+        <button class="tab-btn" data-target="dp4" aria-label="Breach response">Breach Response</button>
+      </div>
+      <div id="dp1" class="tab-panel active">
+        <div class="card">
+          <p><strong>PII (Personally Identifiable Information):</strong> Name, address, phone, email, DOB, SSN, financial details. Enables identity theft.</p>
+          <p><strong>PHI (Protected Health Information):</strong> Medical records, diagnoses, treatments. Protected by HIPAA in the US.</p>
+          <p><strong>Company confidential:</strong> Financial results before announcement, client lists, pricing, strategic plans, source code, salaries.</p>
+        </div>
+      </div>
+      <div id="dp2" class="tab-panel">
+        <div class="card">
+          <p>Key habits: (1) <strong>Need to know</strong> — only access data you need for your job. (2) <strong>Encrypt sensitive files</strong> before emailing. (3) <strong>Lock your screen</strong> (Win+L or Ctrl+Cmd+Q) when stepping away. (4) Don't store sensitive data in personal cloud accounts. (5) Use company devices for company data.</p>
+        </div>
+      </div>
+      <div id="dp3" class="tab-panel">
+        <div class="card">
+          <p><strong>GDPR (EU):</strong> Requires explicit consent, right to be forgotten, breach notification within 72 hours. Applies to any org handling EU residents' data.</p>
+          <p><strong>HIPAA (US):</strong> Protects health information. Heavy fines for violations.</p>
+          <p><strong>CCPA (California):</strong> Rights to know what's collected, opt out of sales, request deletion.</p>
+          <p>You don't need to be a lawyer — but know your company's policies and when to escalate.</p>
+        </div>
+      </div>
+      <div id="dp4" class="tab-panel">
+        <div class="card">
+          <p>If you suspect a breach (sent sensitive data to wrong person, lost a laptop, compromised account): <strong>Report it immediately.</strong> Don't wait. Most regulations require reporting within 72 hours. You won't be penalized for reporting — you may be penalized for not reporting.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Security Checklist -->
+  <div class="content-section">
+    <p class="section-label">Security Checklist</p>
     <h2>Your personal security habits</h2>
     <p>Click each item to mark it as part of your routine:</p>
-    <div class="checklist" id="checklist">
-      <div class="check-item" data-check="0"><div class="check-box"></div><div class="check-text"><strong>Use a unique, strong password for every work account</strong> — use a password manager to generate and store them</div></div>
-      <div class="check-item" data-check="1"><div class="check-box"></div><div class="check-text"><strong>Enable MFA on all work accounts</strong> — email, VPN, cloud tools, and anything with sensitive data</div></div>
-      <div class="check-item" data-check="2"><div class="check-box"></div><div class="check-text"><strong>Lock your screen when stepping away</strong> — Win+L (Windows) or Ctrl+Cmd+Q (Mac)</div></div>
-      <div class="check-item" data-check="3"><div class="check-box"></div><div class="check-text"><strong>Verify sender addresses before clicking links</strong> — hover over links to preview URLs</div></div>
-      <div class="check-item" data-check="4"><div class="check-box"></div><div class="check-text"><strong>Keep software and OS updated</strong> — security patches close known vulnerabilities</div></div>
-      <div class="check-item" data-check="5"><div class="check-box"></div><div class="check-text"><strong>Use company VPN on public Wi-Fi</strong> — never do sensitive work on unprotected networks</div></div>
-      <div class="check-item" data-check="6"><div class="check-box"></div><div class="check-text"><strong>Report suspicious emails to IT immediately</strong> — don't click, don't reply, report and delete</div></div>
-      <div class="check-item" data-check="7"><div class="check-box"></div><div class="check-text"><strong>Store company data on approved company tools only</strong> — not personal Gmail, Dropbox, or USB drives</div></div>
-      <div class="check-item" data-check="8"><div class="check-box"></div><div class="check-text"><strong>Never share your password with anyone</strong> — including IT (they don't need it and won't ask for it)</div></div>
+    <div class="card">
+      <div class="checklist-item" aria-label="Use unique strong passwords"><div class="checklist-box"></div><p><strong>Use a unique, strong password for every work account</strong> — use a password manager</p></div>
+      <div class="checklist-item" aria-label="Enable MFA"><div class="checklist-box"></div><p><strong>Enable MFA on all work accounts</strong> — email, VPN, cloud tools</p></div>
+      <div class="checklist-item" aria-label="Lock screen"><div class="checklist-box"></div><p><strong>Lock your screen when stepping away</strong> — Win+L or Ctrl+Cmd+Q</p></div>
+      <div class="checklist-item" aria-label="Verify senders"><div class="checklist-box"></div><p><strong>Verify sender addresses before clicking links</strong> — hover over links to preview URLs</p></div>
+      <div class="checklist-item" aria-label="Keep software updated"><div class="checklist-box"></div><p><strong>Keep software and OS updated</strong> — security patches close known vulnerabilities</p></div>
+      <div class="checklist-item" aria-label="Use VPN"><div class="checklist-box"></div><p><strong>Use company VPN on public Wi-Fi</strong> — never do sensitive work on unprotected networks</p></div>
+      <div class="checklist-item" aria-label="Report phishing"><div class="checklist-box"></div><p><strong>Report suspicious emails to IT immediately</strong> — don't click, don't reply</p></div>
+      <div class="checklist-item" aria-label="Approved tools only"><div class="checklist-box"></div><p><strong>Store company data on approved company tools only</strong> — not personal accounts</p></div>
+      <div class="checklist-item" aria-label="Never share passwords"><div class="checklist-box"></div><p><strong>Never share your password with anyone</strong> — IT won't ask for it</p></div>
     </div>
   </div>
 
-  <!-- UNDERSTANDING CODE -->
-  <div class="section fade-up">
-    <div class="section-label">AI Readiness — New</div>
-    <h2>💻 Interacting with code — a foundation for AI</h2>
-    <p>You don't need to be a programmer to work with AI tools effectively. But understanding a few code concepts removes major barriers — especially when running AI scripts, reading error messages, or using the command line.</p>
+  <!-- Try It Yourself -->
+  <div class="try-it">
+    <div class="try-it-title">🧪 Try It Yourself</div>
+    <ol>
+      <li><strong>Check your email for phishing:</strong> Open your inbox and find the most recent email from an unfamiliar sender. Hover over any links without clicking — does the URL match the claimed sender?</li>
+      <li><strong>Test your passwords:</strong> Use the password strength tester above with made-up passwords. Try "password123" and compare it to a 16-character random string.</li>
+      <li><strong>Enable MFA:</strong> If you haven't already, enable MFA on your primary email account. Use an authenticator app rather than SMS.</li>
+      <li><strong>Lock your screen right now</strong> using Win+L (Windows) or Ctrl+Cmd+Q (Mac), then unlock it. Build the muscle memory.</li>
+    </ol>
+  </div>
 
-    <div class="tabs">
-      <div class="tab active" data-tab="code1">Reading code</div>
-      <div class="tab" data-tab="code2">The terminal</div>
-      <div class="tab" data-tab="code3">Error messages</div>
-      <div class="tab" data-tab="code4">Config files</div>
-    </div>
-    <div class="tab-pane active" id="code1">
-      <p>You don't need to write code to read it. When you encounter an AI script or configuration, here's what to look for:</p>
-      <div style="background:#050f0a;border-radius:8px;padding:16px 20px;font-family:'DM Mono',monospace;font-size:0.8rem;line-height:2;margin:14px 0;overflow-x:auto">
-        <div style="color:#508068"><span style="color:#20e870"># Lines starting with # are comments — they explain what the code does</span></div>
-        <div style="color:#508068"><span style="color:#20e870"># They don't run — they're notes for humans</span></div>
-        <div style="margin-top:8px;color:#d8f0e0"><span style="color:#20c8a0">model_name</span> = <span style="color:#f0d040">"claude-sonnet-4-5"</span>   <span style="color:#508068"># This sets which AI model to use</span></div>
-        <div style="color:#d8f0e0"><span style="color:#20c8a0">max_tokens</span> = <span style="color:#a8f080">1000</span>               <span style="color:#508068"># Maximum length of the AI response</span></div>
-        <div style="color:#d8f0e0"><span style="color:#20c8a0">input_file</span> = <span style="color:#f0d040">"data.csv"</span>         <span style="color:#508068"># The file to process</span></div>
-        <div style="margin-top:8px;color:#d8f0e0"><span style="color:#20e870">print</span>(<span style="color:#f0d040">"Processing started..."</span>)  <span style="color:#508068"># Shows a message when run</span></div>
+  <!-- Quiz -->
+  <div class="quiz-section" data-module="5">
+    <p class="section-label" style="text-align:center;">Check Your Understanding</p>
+    <h2>Module 5 Quiz</h2>
+    <p class="quiz-intro">Answer all questions to complete this module.</p>
+
+    <div class="quiz-question">
+      <p class="q-text">1. An email from "support@amaz0n-verify.com" asks you to confirm your order by clicking a link. What should you do?</p>
+      <div class="quiz-options">
+        <button class="quiz-option" data-correct="false" data-explanation="The domain 'amaz0n-verify.com' uses a zero instead of an 'o' and isn't Amazon's real domain. Clicking the link could lead to credential theft."><span class="marker">A</span> Click the link — it looks like Amazon</button>
+        <button class="quiz-option" data-correct="true" data-explanation="Correct! The domain uses a zero instead of 'o' — a classic phishing trick. Don't click, report to IT, and if you need to check an order, go to amazon.com directly by typing it yourself."><span class="marker">B</span> Don't click — the domain is suspicious (amaz0n, not amazon). Report to IT.</button>
+        <button class="quiz-option" data-correct="false" data-explanation="Replying to a phishing email confirms your email is active and may trigger more attacks. Never reply to suspicious emails."><span class="marker">C</span> Reply asking if it's legitimate</button>
       </div>
-      <p>Key patterns to recognize: <strong>variable = value</strong> (setting a configuration), <strong>function(input)</strong> (doing something with data), <strong>import library</strong> (loading a tool), and <strong># comments</strong> explaining what things do. These patterns are consistent across Python, JavaScript, and most AI scripting languages.</p>
+      <div class="quiz-feedback"></div>
     </div>
-    <div class="tab-pane" id="code2">
-      <p>The <strong>terminal</strong> (Command Prompt on Windows, Terminal on Mac/Linux) is a text interface for your computer. Many AI tools are run from here. You don't need to memorize it — just know enough to not panic.</p>
-      <div style="display:flex;flex-direction:column;gap:8px;margin:14px 0">
-        <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:12px 16px;font-size:0.84rem;color:#90c0a8">
-          <code style="color:var(--accent)">cd Documents</code> — <strong style="color:var(--text)">Change Directory</strong>. Move into a folder. Like double-clicking a folder in File Explorer, but in text.
-        </div>
-        <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:12px 16px;font-size:0.84rem;color:#90c0a8">
-          <code style="color:var(--accent)">ls</code> (Mac/Linux) or <code style="color:var(--accent)">dir</code> (Windows) — <strong style="color:var(--text)">List</strong> files in the current folder. Tells you where you are.
-        </div>
-        <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:12px 16px;font-size:0.84rem;color:#90c0a8">
-          <code style="color:var(--accent)">python script.py</code> — <strong style="color:var(--text)">Run a Python script</strong>. Replace script.py with the actual filename. Most AI tools are run this way.
-        </div>
-        <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:12px 16px;font-size:0.84rem;color:#90c0a8">
-          <code style="color:var(--accent)">pip install package-name</code> — <strong style="color:var(--text)">Install a Python library</strong>. Like downloading an app, but for code components AI tools depend on.
-        </div>
-        <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:12px 16px;font-size:0.84rem;color:#90c0a8">
-          <code style="color:var(--accent)">Ctrl+C</code> — <strong style="color:var(--text)">Stop a running program</strong>. If something is running and you need to cancel, press Ctrl+C in the terminal.
-        </div>
+
+    <div class="quiz-question">
+      <p class="q-text">2. Which MFA method is most secure?</p>
+      <div class="quiz-options">
+        <button class="quiz-option" data-correct="false" data-explanation="SMS codes are better than nothing, but vulnerable to SIM-swapping attacks where criminals hijack your phone number."><span class="marker">A</span> SMS text message codes</button>
+        <button class="quiz-option" data-correct="false" data-explanation="Authenticator apps are very secure (recommended for most people), but a physical key is technically the strongest because it can't be phished remotely."><span class="marker">B</span> Authenticator app (e.g., Google Authenticator)</button>
+        <button class="quiz-option" data-correct="true" data-explanation="Correct! A physical security key (like YubiKey) is the most secure because it requires physical possession — it can't be phished, SIM-swapped, or intercepted remotely."><span class="marker">C</span> Physical security key (e.g., YubiKey)</button>
       </div>
-      <p>The terminal always has a <strong>current working directory</strong> — the folder it's "inside." File paths you type are relative to this folder. Use <code>pwd</code> (Mac/Linux) or <code>cd</code> (Windows) to see where you are.</p>
+      <div class="quiz-feedback"></div>
     </div>
-    <div class="tab-pane" id="code3">
-      <p>Error messages look scary but almost always tell you exactly what's wrong. Learn to read them from the bottom up — the last few lines are usually the actual error; the top lines are just the chain of calls that led there.</p>
-      <div style="display:flex;flex-direction:column;gap:10px;margin:14px 0">
-        <div style="background:rgba(240,72,88,0.07);border:1px solid rgba(240,72,88,0.2);border-radius:9px;padding:14px 16px">
-          <div style="font-family:'DM Mono',monospace;font-size:0.78rem;color:#f09090;margin-bottom:6px">ModuleNotFoundError: No module named 'anthropic'</div>
-          <div style="font-size:0.82rem;color:var(--muted)"><strong style="color:var(--text)">Meaning:</strong> A required library isn't installed. <strong style="color:var(--text)">Fix:</strong> Run <code>pip install anthropic</code> in the terminal.</div>
-        </div>
-        <div style="background:rgba(240,72,88,0.07);border:1px solid rgba(240,72,88,0.2);border-radius:9px;padding:14px 16px">
-          <div style="font-family:'DM Mono',monospace;font-size:0.78rem;color:#f09090;margin-bottom:6px">FileNotFoundError: [Errno 2] No such file or directory: 'data.csv'</div>
-          <div style="font-size:0.82rem;color:var(--muted)"><strong style="color:var(--text)">Meaning:</strong> The script can't find the file at the specified path. <strong style="color:var(--text)">Fix:</strong> Check the file exists and the path is correct. The terminal's current directory might not be where you think.</div>
-        </div>
-        <div style="background:rgba(240,72,88,0.07);border:1px solid rgba(240,72,88,0.2);border-radius:9px;padding:14px 16px">
-          <div style="font-family:'DM Mono',monospace;font-size:0.78rem;color:#f09090;margin-bottom:6px">AuthenticationError: 401 Invalid API key</div>
-          <div style="font-size:0.82rem;color:var(--muted)"><strong style="color:var(--text)">Meaning:</strong> Your API key is wrong, missing, or not loaded properly. <strong style="color:var(--text)">Fix:</strong> Check the key is correctly set in your environment variable or .env file — no extra spaces, correct capitalization.</div>
-        </div>
-        <div style="background:rgba(240,72,88,0.07);border:1px solid rgba(240,72,88,0.2);border-radius:9px;padding:14px 16px">
-          <div style="font-family:'DM Mono',monospace;font-size:0.78rem;color:#f09090;margin-bottom:6px">PermissionError: [Errno 13] Permission denied</div>
-          <div style="font-size:0.82rem;color:var(--muted)"><strong style="color:var(--text)">Meaning:</strong> The script doesn't have permission to read/write to that file or folder. <strong style="color:var(--text)">Fix:</strong> Check file permissions, or run the terminal as Administrator (Windows) / with sudo (Mac/Linux) — but only when you understand why.</div>
-        </div>
+
+    <div class="quiz-question">
+      <p class="q-text">3. You accidentally emailed a spreadsheet with customer SSNs to the wrong person. What should you do first?</p>
+      <div class="quiz-options">
+        <button class="quiz-option" data-correct="false" data-explanation="Hoping nobody notices risks severe consequences. Most regulations require breach reporting within 72 hours. Delay makes things worse."><span class="marker">A</span> Hope nobody notices and delete it from your sent folder</button>
+        <button class="quiz-option" data-correct="true" data-explanation="Correct! Report immediately. Early detection gives your organization maximum time to respond. You won't be penalized for reporting — you may be penalized for not reporting. This is potentially a data breach under GDPR/CCPA."><span class="marker">B</span> Report to IT / your manager immediately</button>
+        <button class="quiz-option" data-correct="false" data-explanation="The person already received the email. Asking them to delete it is a good supplementary step, but your first action must be to report to IT so the organization can respond properly."><span class="marker">C</span> Email the recipient asking them to delete it</button>
       </div>
+      <div class="quiz-feedback"></div>
     </div>
-    <div class="tab-pane" id="code4">
-      <p>AI tools and APIs often use <strong>configuration files</strong> to store settings. The most common formats you'll encounter:</p>
-      <div style="display:flex;flex-direction:column;gap:10px;margin:14px 0">
-        <div style="background:var(--surface2);border:1px solid var(--border);border-radius:9px;padding:16px">
-          <div style="font-family:'DM Mono',monospace;font-size:0.75rem;color:var(--accent);margin-bottom:8px">.env — Environment Variables file</div>
-          <div style="background:#050f0a;border-radius:6px;padding:10px 14px;font-family:'DM Mono',monospace;font-size:0.78rem;line-height:1.9;margin-bottom:8px">
-            <span style="color:#20c8a0">ANTHROPIC_API_KEY</span>=<span style="color:#f0d040">sk-ant-yourkey</span><br>
-            <span style="color:#20c8a0">MODEL_NAME</span>=<span style="color:#f0d040">claude-sonnet-4-5</span><br>
-            <span style="color:#20c8a0">DEBUG</span>=<span style="color:#f0d040">false</span>
-          </div>
-          <div style="font-size:0.82rem;color:var(--muted)">Stores secrets and configuration outside your code. <strong style="color:var(--text)">Never commit .env to version control.</strong> Add <code>.env</code> to your .gitignore file.</div>
-        </div>
-        <div style="background:var(--surface2);border:1px solid var(--border);border-radius:9px;padding:16px">
-          <div style="font-family:'DM Mono',monospace;font-size:0.75rem;color:var(--accent);margin-bottom:8px">.json — Configuration / API response</div>
-          <div style="background:#050f0a;border-radius:6px;padding:10px 14px;font-family:'DM Mono',monospace;font-size:0.78rem;line-height:1.9;margin-bottom:8px">
-            <span style="color:#d8f0e0">{</span><br>
-            <span style="color:#d8f0e0;padding-left:16px">"model": <span style="color:#f0d040">"claude-sonnet-4-5"</span>,</span><br>
-            <span style="color:#d8f0e0;padding-left:16px">"max_tokens": <span style="color:#a8f080">1000</span>,</span><br>
-            <span style="color:#d8f0e0;padding-left:16px">"temperature": <span style="color:#a8f080">0.7</span></span><br>
-            <span style="color:#d8f0e0">}</span>
-          </div>
-          <div style="font-size:0.82rem;color:var(--muted)">Structured data format. Used for API responses, model config files, and tool settings. Readable in any text editor.</div>
-        </div>
-        <div style="background:var(--surface2);border:1px solid var(--border);border-radius:9px;padding:16px">
-          <div style="font-family:'DM Mono',monospace;font-size:0.75rem;color:var(--accent);margin-bottom:8px">requirements.txt — Python dependencies</div>
-          <div style="background:#050f0a;border-radius:6px;padding:10px 14px;font-family:'DM Mono',monospace;font-size:0.78rem;line-height:1.9;margin-bottom:8px">
-            <span style="color:#d8f0e0">anthropic>=0.25.0</span><br>
-            <span style="color:#d8f0e0">pandas==2.1.0</span><br>
-            <span style="color:#d8f0e0">python-dotenv>=1.0.0</span>
-          </div>
-          <div style="font-size:0.82rem;color:var(--muted)">Lists every Python library an AI project needs. Install all at once with <code>pip install -r requirements.txt</code>. Always run this when setting up a new AI project.</div>
-        </div>
+
+    <div class="quiz-question">
+      <p class="q-text">4. Before pasting company financial data into an AI tool like ChatGPT, you should:</p>
+      <div class="quiz-options">
+        <button class="quiz-option" data-correct="false" data-explanation="Confidential financial data should generally not be pasted into external AI tools regardless of how you send it. The data travels to and is processed on remote servers."><span class="marker">A</span> Go ahead — AI tools are secure and encrypted</button>
+        <button class="quiz-option" data-correct="true" data-explanation="Correct! Company data policies determine what can be shared with external AI tools. Financial data before public announcement is typically confidential and should not be sent to external cloud services without explicit approval."><span class="marker">B</span> Check your company's data policy on AI tool usage first</button>
+        <button class="quiz-option" data-correct="false" data-explanation="Using a personal account may actually be worse from a compliance perspective — it's shadow IT. Always use company-approved tools and follow data policies."><span class="marker">C</span> Use your personal account instead of your work account</button>
       </div>
+      <div class="quiz-feedback"></div>
+    </div>
+
+    <div class="quiz-score">
+      <div class="score-num"></div>
+      <p class="score-msg"></p>
     </div>
   </div>
 
-  <div class="quiz-wrap" id="quizWrap">
-    <div id="quizInner"></div>
+  <div class="module-nav">
+    <a href="module4-internet-cloud.html" class="prev">
+      <div class="nav-dir">← Previous</div>
+      <div class="nav-title">Internet & Cloud Basics</div>
+    </a>
+    <a href="conclusion.html" class="next">
+      <div class="nav-dir">Wrap-Up →</div>
+      <div class="nav-title">You're Ready</div>
+    </a>
   </div>
-</div>
+
 </div>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
-const threats = {
-  phishing: { title: '🎣 Phishing', text: 'Phishing is the most common cyberattack. Attackers send emails (or texts — "smishing," or calls — "vishing") impersonating trusted entities (your bank, Microsoft, your CEO) to trick you into clicking a malicious link, downloading malware, or entering credentials on a fake website. "Spear phishing" targets specific individuals with personalized details scraped from LinkedIn or social media. Defenses: verify sender addresses, hover over links before clicking, be suspicious of urgency, confirm unusual requests via a separate channel (call the person directly).' },
-  ransomware: { title: '🔒 Ransomware', text: 'Ransomware is malicious software that encrypts all files on your computer and network drives, then demands payment (usually cryptocurrency) for the decryption key. It typically arrives via phishing email attachments or compromised websites. Famous attacks: WannaCry (2017, $4B+ damage), Colonial Pipeline (2021, shut down US fuel supply). Defenses: regular backups (offline/air-gapped), keep OS updated, don\'t open unexpected attachments, use endpoint protection software. If hit: isolate the infected machine immediately and call IT — do NOT pay the ransom (no guarantee of recovery).' },
-  social: { title: '🎭 Social Engineering', text: 'Attacks that manipulate human psychology rather than technical vulnerabilities. Examples: "CEO fraud" — an attacker emails the finance department posing as the CEO asking for an urgent wire transfer. "Pretexting" — calling IT posing as an employee to get a password reset. "Quid pro quo" — offering something (fake tech support) in exchange for credentials. Key defense: <strong>verify identity via a separate channel</strong> before acting on any unusual request, no matter how convincing. Legitimate IT will never ask for your password.' },
-  malware: { title: '🦠 Malware', text: 'Malware is any malicious software: viruses (self-replicating), worms (spread over networks), trojans (disguised as legitimate software), spyware (secretly monitors activity), adware (unwanted advertising software), keyloggers (record keystrokes including passwords). Entry points: phishing attachments, infected USB drives, compromised websites, pirated software, unpatched vulnerabilities. Defenses: use company-approved endpoint protection, don\'t install unapproved software, never plug in found USB drives, keep everything updated.' },
-  mfa: { title: '📱 MFA Bypass Attacks', text: 'As MFA becomes standard, attackers have developed workarounds. "MFA fatigue/push bombing" — flooding a victim with MFA approval notifications until they accidentally approve one. "Real-time phishing" — a fake login page captures both your password and MFA code simultaneously and immediately uses them on the real site. "SIM swapping" — convincing a phone carrier to transfer your number to an attacker\'s SIM. Defenses: use authenticator apps (not SMS) when possible, never approve an MFA request you didn\'t initiate, if receiving unexpected MFA prompts — change your password immediately and report to IT.' },
-  insider: { title: '👤 Insider Threats', text: 'Threats from people with legitimate access — employees, contractors, former employees. Can be intentional (disgruntled employee stealing data) or unintentional (employee accidentally emails a customer list to the wrong person). Unintentional insider threats are far more common. Defenses for individuals: follow the principle of least privilege (only access what you need), report when you accidentally expose data, don\'t share credentials, ensure access is revoked promptly when someone leaves a team. From an org perspective: monitor unusual access patterns, enforce role-based access controls.' },
-};
+<footer class="site-footer">
+  <strong>TechReady Series for Tim</strong> · Module 5 of 5<br>
+  Spec'd by Tim Johnson · Built by Claude · Atkinson Graduate School of Management · Willamette University
+</footer>
 
-document.querySelectorAll('.threat-card').forEach(card => {
-  card.addEventListener('click', () => {
-    document.querySelectorAll('.threat-card').forEach(c => c.classList.remove('active'));
-    card.classList.add('active');
-    const d = threats[card.dataset.threat];
-    const td = document.getElementById('threatDetail');
-    td.innerHTML = `<div class="threat-detail-title">${d.title}</div><div class="threat-detail-text">${d.text}</div>`;
-    td.classList.add('visible');
-  });
-});
-
-// Password meter
-const pwInput = document.getElementById('pwInput');
-const pwFill = document.getElementById('pwFill');
-const pwScoreText = document.getElementById('pwScoreText');
-const pwTips = document.getElementById('pwTips');
-
-function scorePw(pw) {
-  if (!pw) return { score: 0, label: '', tips: [] };
-  let score = 0;
-  const tips = [];
-  if (pw.length >= 8) score += 1; else tips.push('Use at least 8 characters (12+ is better)');
-  if (pw.length >= 12) score += 1;
-  if (pw.length >= 16) score += 1;
-  if (/[A-Z]/.test(pw)) score += 1; else tips.push('Add uppercase letters');
-  if (/[a-z]/.test(pw)) score += 1; else tips.push('Add lowercase letters');
-  if (/[0-9]/.test(pw)) score += 1; else tips.push('Add numbers');
-  if (/[^A-Za-z0-9]/.test(pw)) score += 1; else tips.push('Add special characters (!@#$%^&*)');
-  const commonWords = ['password', '123456', 'qwerty', 'letmein', 'welcome', 'monkey', 'dragon', 'master', 'abc123'];
-  if (commonWords.some(w => pw.toLowerCase().includes(w))) { score = Math.min(score, 2); tips.unshift('Avoid common words/patterns'); }
-  const label = score <= 2 ? 'Very Weak' : score <= 4 ? 'Weak' : score <= 5 ? 'Moderate' : score <= 6 ? 'Strong' : 'Very Strong';
-  return { score, label, tips };
-}
-
-pwInput.addEventListener('input', () => {
-  const pw = pwInput.value;
-  if (!pw) { pwFill.style.width = '0%'; pwScoreText.textContent = 'Enter a password above to see its strength'; pwTips.innerHTML = ''; return; }
-  const { score, label, tips } = scorePw(pw);
-  const pct = Math.min(Math.round(score / 7 * 100), 100);
-  const colors = { 'Very Weak': '#f04858', 'Weak': '#f09020', 'Moderate': '#f0d040', 'Strong': '#20e870', 'Very Strong': '#20f0a0' };
-  pwFill.style.width = pct + '%';
-  pwFill.style.background = colors[label];
-  pwScoreText.textContent = `Strength: ${label} (${pct}%)`;
-  pwTips.innerHTML = tips.length ? '<strong style="color:var(--text)">Improve it:</strong> ' + tips.map(t => `• ${t}`).join(' ') : '<strong style="color:var(--accent)">✓ Good password! For maximum security, use a password manager to generate truly random passwords.</strong>';
-});
-
-// Checklist
-document.querySelectorAll('.check-item').forEach(item => {
-  item.addEventListener('click', () => {
-    item.classList.toggle('done');
-    const box = item.querySelector('.check-box');
-    box.textContent = item.classList.contains('done') ? '✓' : '';
-  });
-});
-
-// Tabs
-document.querySelectorAll('.tab').forEach(t => {
-  t.addEventListener('click', () => {
-    const sec = t.closest('.section');
-    sec.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
-    sec.querySelectorAll('.tab-pane').forEach(x => x.classList.remove('active'));
-    t.classList.add('active');
-    document.getElementById(t.dataset.tab).classList.add('active');
-  });
-});
-
-const quizData = [
-  { q: "Over 90% of successful cyberattacks begin with:", a: ["Sophisticated hacking of firewalls","Phishing — tricking someone into clicking a malicious link or revealing credentials","Brute-force password guessing","Exploiting hardware vulnerabilities"], c: 1, e: "Phishing is by far the most common attack vector. Technical defenses like firewalls are difficult to bypass directly, so attackers target people instead. A convincing email can bypass millions of dollars of security infrastructure if one employee clicks the wrong link." },
-  { q: "You receive an urgent email from 'Microsoft Support' asking you to click a link to verify your account or it will be suspended. You should:", a: ["Click the link immediately to prevent account suspension","Check the sender's actual email address and hover over the link before doing anything","Reply asking for more information","Forward it to colleagues to warn them"], c: 1, e: "This is a classic phishing pattern using urgency and authority. First verify: hover over any links (don't click) to see the real URL. Check the actual sender email address. If in doubt, go directly to Microsoft's website by typing it yourself — don't use anything in the email." },
-  { q: "What is Multi-Factor Authentication (MFA)?", a: ["Having multiple passwords for one account","Requiring two or more verification factors to log in (e.g., password + phone code)","Logging in from multiple devices simultaneously","Having IT approve every login"], c: 1, e: "MFA requires something you know (password) plus something you have (phone/authenticator) or something you are (biometric). Even if an attacker has your password, they can't log in without the second factor. Microsoft says MFA blocks 99.9% of automated account attacks." },
-  { q: "You receive multiple unexpected MFA push notifications on your phone asking you to approve a login. You should:", a: ["Approve one to make them stop","Deny all of them and immediately change your password, then contact IT","Ignore them — they'll time out automatically","Approve the last one which is probably legitimate"], c: 1, e: "This is an 'MFA fatigue' or 'push bombing' attack. An attacker who has your password is sending approval requests hoping you'll accidentally (or frustratedly) approve one. Deny all, change your password immediately, and report to IT — your account has been compromised." },
-  { q: "The safest way to manage strong, unique passwords for every account is:", a: ["Write them in a notebook kept at your desk","Use variations of one memorable password across all sites","Use a password manager (Bitwarden, 1Password, LastPass)","Use the same strong password everywhere"], c: 2, e: "Password managers generate and store unique, complex passwords for every account. You only remember one master password. Reusing passwords across sites is extremely dangerous — when one site is breached, attackers try those credentials on every other site (credential stuffing)." },
-  { q: "Ransomware is:", a: ["Software that demands you pay to renew an expired subscription","Malware that encrypts your files and demands payment to restore access","A type of phishing email from ransomware.com","Illegal software that plays ransom notes through your speakers"], c: 1, e: "Ransomware encrypts files on your computer (and connected network drives), making them inaccessible. Attackers demand payment (usually cryptocurrency) for the decryption key. Key defenses: regular offline backups, keep software updated, don't open suspicious attachments." },
-  { q: "A colleague you've never met calls claiming to be IT Support and asks for your password to fix an issue. You should:", a: ["Give it to them — IT legitimately needs passwords to help","Ask for their employee ID then provide the password","Refuse — IT will never ask for your password — verify by calling IT back on a known number","Give them a temporary password just for this issue"], c: 2, e: "Legitimate IT support never needs your password. This is a social engineering attack called pretexting. Always verify by hanging up and calling IT directly using a number you already know (from the company directory, not from the caller). IT can access systems through admin tools without knowing your personal password." },
-  { q: "You accidentally email a spreadsheet containing customer personal data (names, emails, phone numbers) to an external address by mistake. You should:", a: ["Do nothing and hope the recipient doesn't notice","Wait a day to see if it causes any issues before escalating","Immediately report it to IT and your manager — data breach protocol must be followed","Delete your sent email copy and the issue is resolved"], c: 2, e: "This is a data breach — personal data has been exposed to unauthorized parties. Most privacy regulations (GDPR, CCPA) require organizations to report certain breaches within 72 hours of discovery. Immediate reporting gives the company maximum time to respond, potentially recall the data, and notify affected customers if required." },
-  { q: "Which of the following is the SAFEST password?", a: ["Password123!","J0hn$mith1990","kT9#mP2$vX8nQ4@z","ilovemydog"], c: 2, e: "kT9#mP2$vX8nQ4@z is the strongest: it's long (16 chars), random, and uses uppercase, lowercase, numbers, and special characters with no recognizable patterns. The others contain predictable elements: 'Password', a person's name with birth year, or a dictionary word — all easily guessed or cracked." },
-  { q: "When working from a coffee shop on public Wi-Fi, the most important security step is:", a: ["Only visiting sites that start with 'www'","Connecting to your company VPN before accessing work systems","Closing any tabs you're not using","Using Chrome instead of Firefox"], c: 1, e: "Public Wi-Fi is unencrypted — anyone on the same network could potentially intercept your traffic. A VPN (Virtual Private Network) encrypts all your internet traffic, protecting it even on unsecured networks. Always connect to your company's VPN before accessing work email, files, or systems on public Wi-Fi." },
-];
-
-let cur=0,score=0,answered=false;
-function renderQuiz(){
-  const q=quizData[cur];
-  document.getElementById('quizInner').innerHTML=`
-    <div class="quiz-header"><div class="quiz-title">Knowledge Check</div><div class="q-counter">Question ${cur+1} of ${quizData.length}</div></div>
-    <div class="q-progress"><div class="q-progress-fill" style="width:${(cur/quizData.length)*100}%"></div></div>
-    <div class="q-text">${q.q}</div>
-    <div class="answers">${q.a.map((a,i)=>`<button class="ans-btn" data-i="${i}">${a}</button>`).join('')}</div>
-    <div class="feedback" id="fb"></div>
-    <button class="next-btn" id="nb">${cur<quizData.length-1?'Next Question →':'See Results →'}</button>`;
-  answered=false;
-  document.querySelectorAll('.ans-btn').forEach(b=>b.addEventListener('click',()=>handleAnswer(parseInt(b.dataset.i))));
-  document.getElementById('nb').addEventListener('click',nextQ);
-}
-function handleAnswer(i){
-  if(answered)return;answered=true;
-  const q=quizData[cur];if(i===q.c)score++;
-  document.querySelectorAll('.ans-btn').forEach((b,idx)=>{b.disabled=true;if(idx===q.c)b.classList.add('correct');if(idx===i&&i!==q.c)b.classList.add('wrong');});
-  const fb=document.getElementById('fb');fb.className='feedback '+(i===q.c?'correct':'wrong');fb.innerHTML=(i===q.c?'✓ Correct! ':'✗ Not quite. ')+q.e;
-  document.getElementById('nb').classList.add('show');
-}
-function nextQ(){if(cur<quizData.length-1){cur++;renderQuiz();}else showScore();}
-function showScore(){
-  const pct=Math.round(score/quizData.length*100);
-  const msgs=[[90,'🏆 Security Expert!','Outstanding cybersecurity awareness.'],[70,'⭐ Strong Foundation','Good knowledge — review missed items.'],[50,'📚 Getting There','Important material — review and retry.'],[0,'🔄 Please Review','This content is critical — re-read and retry.']];
-  const[,t,s]=msgs.find(([th])=>pct>=th);
-  document.getElementById('quizInner').innerHTML=`<div class="score-screen"><div class="score-ring">${pct}%</div><div class="score-headline">${t}</div><p class="score-sub">${score}/${quizData.length} correct — ${s}</p><div class="score-btns"><button class="btn-primary" id="retryBtn">Try Again</button><button class="btn-ghost
+<script src="app.js"></script>
+</body>
+</html>
