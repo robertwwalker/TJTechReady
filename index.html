@@ -1,665 +1,989 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>TechReady Series for Tim — Workplace Technology Basics</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TechReady Series — Atkinson Graduate School of Management</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+/* ─── TOKENS ─────────────────────────────────────────────────────────────── */
+:root {
+  --bg:       #07080f;
+  --surface:  #0e1018;
+  --surface2: #151820;
+  --border:   #1e2230;
+  --border2:  #262b3a;
+  --text:     #dde4f8;
+  --muted:    #5a6480;
+  --muted2:   #8090b8;
 
-  :root {
-    --bg:       #0b0f1a;
-    --surface:  #111827;
-    --border:   #1e2d40;
-    --accent:   #00d4a8;
-    --accent2:  #3b82f6;
-    --warn:     #f59e0b;
-    --text:     #e2e8f0;
-    --muted:    #64748b;
-    --card-bg:  #141c2b;
-  }
+  /* per-module accents */
+  --c-pre:  #7090ff;   /* Module 0  – pre-assessment  indigo  */
+  --c1:     #f0c040;   /* Module 1  – hardware        amber   */
+  --c2:     #30d8c8;   /* Module 2  – OS              teal    */
+  --c3:     #f04880;   /* Module 3  – files           rose    */
+  --c4:     #c080ff;   /* Module 4  – cloud           violet  */
+  --c5:     #20e870;   /* Module 5  – security        emerald */
+  --c-cap:  #60d8ff;   /* Capstone  –                 sky     */
 
-  html { scroll-behavior: smooth; }
+  --correct: #40f090;
+  --radius:  14px;
+}
 
-  body {
-    font-family: 'DM Sans', sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-    overflow-x: hidden;
-  }
+/* ─── RESET & BASE ───────────────────────────────────────────────────────── */
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+  line-height: 1.6;
+}
 
-  /* ── GRID NOISE BACKGROUND ── */
-  body::before {
-    content: '';
-    position: fixed; inset: 0;
-    background-image:
-      linear-gradient(rgba(0,212,168,.03) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(0,212,168,.03) 1px, transparent 1px);
-    background-size: 40px 40px;
-    pointer-events: none;
-    z-index: 0;
-  }
+/* subtle grid atmosphere */
+body::before {
+  content:'';
+  position:fixed; inset:0; pointer-events:none; z-index:0;
+  background-image:
+    linear-gradient(rgba(112,144,255,0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(112,144,255,0.025) 1px, transparent 1px);
+  background-size: 52px 52px;
+}
+/* radial colour blooms */
+body::after {
+  content:'';
+  position:fixed; inset:0; pointer-events:none; z-index:0;
+  background:
+    radial-gradient(ellipse at 15% 10%,  rgba(112,144,255,0.08) 0%, transparent 50%),
+    radial-gradient(ellipse at 85% 40%,  rgba(192,128,255,0.06) 0%, transparent 45%),
+    radial-gradient(ellipse at 40% 90%,  rgba(32,232,112,0.05)  0%, transparent 45%);
+}
 
-  /* ── NAVBAR ── */
-  .navbar {
-    position: relative; z-index: 10;
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 18px 32px;
-    border-bottom: 1px solid var(--border);
-    background: rgba(11,15,26,.85);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    position: sticky; top: 0;
-  }
-  .navbar-brand {
-    display: flex; align-items: center; gap: 14px;
-    text-decoration: none; color: inherit;
-  }
-  .navbar-logo {
-    height: 40px; width: auto;
-    border-radius: 6px;
-    object-fit: contain;
-    background: white;
-    padding: 3px 6px;
-  }
-  .navbar-divider {
-    width: 1px; height: 28px;
-    background: var(--border);
-  }
-  .navbar-title {
-    font-family: 'Syne', sans-serif;
-    font-size: .9rem; font-weight: 700;
-    color: var(--text);
-    line-height: 1.2;
-  }
-  .navbar-subtitle {
-    font-size: .72rem; color: var(--muted);
-    margin-top: 1px;
-  }
-  .navbar-badge {
-    font-size: .72rem;
-    padding: 4px 10px;
-    border-radius: 100px;
-    border: 1px solid var(--border);
-    color: var(--muted);
-    white-space: nowrap;
-  }
+.app { position:relative; z-index:1; }
 
-  /* ── HERO ── */
-  .hero {
-    position: relative;
-    z-index: 1;
-    padding: 80px 24px 60px;
-    max-width: 960px;
-    margin: 0 auto;
-  }
+/* ─── NAV ────────────────────────────────────────────────────────────────── */
+nav {
+  position:sticky; top:0; z-index:200;
+  border-bottom:1px solid var(--border);
+  background: rgba(7,8,15,0.92);
+  backdrop-filter: blur(16px);
+  padding: 0 48px;
+  height: 64px;
+  display:flex; align-items:center; justify-content:space-between;
+}
+.nav-brand { display:flex; align-items:center; gap:14px; text-decoration:none; }
+.nav-logo-img {
+  height:34px; width:auto;
+  filter: brightness(0) invert(1);
+  opacity:0.85;
+}
+.nav-wordmark {
+  font-family:'Syne',sans-serif;
+  font-weight:800;
+  font-size:0.95rem;
+  color: var(--text);
+  letter-spacing:-0.01em;
+  line-height:1.2;
+}
+.nav-wordmark span {
+  display:block;
+  font-family:'DM Mono',monospace;
+  font-weight:400;
+  font-size:0.6rem;
+  letter-spacing:0.14em;
+  text-transform:uppercase;
+  color: var(--muted);
+  margin-top:1px;
+}
+.nav-right { display:flex; align-items:center; gap:10px; }
+.nav-pill {
+  font-family:'DM Mono',monospace;
+  font-size:0.65rem;
+  letter-spacing:0.1em;
+  text-transform:uppercase;
+  padding:5px 14px;
+  border-radius:20px;
+  border:1px solid var(--border2);
+  color: var(--muted2);
+  text-decoration:none;
+  transition: all 0.2s;
+}
+.nav-pill:hover { border-color:var(--c-pre); color:var(--text); }
+.nav-pill.highlight {
+  background:rgba(112,144,255,0.1);
+  border-color:rgba(112,144,255,0.35);
+  color:var(--c-pre);
+}
+.nav-pill.highlight:hover { background:rgba(112,144,255,0.18); }
 
-  .eyebrow {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: .2em;
-    text-transform: uppercase;
-    color: var(--accent);
-    border: 1px solid rgba(0,212,168,.25);
-    padding: 6px 14px;
-    border-radius: 100px;
-    margin-bottom: 28px;
-  }
-  .eyebrow span { width:6px; height:6px; border-radius:50%; background:var(--accent); display:inline-block; animation: pulse 2s infinite; }
-  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
+/* ─── HERO ───────────────────────────────────────────────────────────────── */
+.hero {
+  max-width:1080px; margin:0 auto;
+  padding: 100px 48px 80px;
+}
+@keyframes fadeUp {
+  from { opacity:0; transform:translateY(28px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+.hero-eyebrow {
+  font-family:'DM Mono',monospace;
+  font-size:0.68rem;
+  letter-spacing:0.22em;
+  text-transform:uppercase;
+  color:var(--c-pre);
+  margin-bottom:22px;
+  animation: fadeUp 0.6s ease both;
+}
+.hero h1 {
+  font-family:'Syne',sans-serif;
+  font-weight:800;
+  font-size: clamp(2.8rem, 6vw, 4.4rem);
+  line-height:1.04;
+  letter-spacing:-0.04em;
+  margin-bottom:28px;
+  animation: fadeUp 0.6s 0.1s ease both;
+}
+.hero h1 em { font-style:normal; color:var(--c-pre); }
+.hero-body {
+  font-size:1.05rem;
+  color:var(--muted2);
+  max-width:620px;
+  line-height:1.82;
+  margin-bottom:44px;
+  animation: fadeUp 0.6s 0.2s ease both;
+}
+.hero-body strong { color:var(--text); font-weight:600; }
 
-  h1 {
-    font-family: 'Syne', sans-serif;
-    font-size: clamp(2.6rem, 6vw, 4.4rem);
-    font-weight: 800;
-    line-height: 1.05;
-    letter-spacing: -.02em;
-    margin-bottom: 24px;
-  }
-  h1 em {
-    font-style: normal;
-    color: var(--accent);
-  }
-  h1 .dim { color: var(--muted); }
+/* stat strip */
+.stats {
+  display:flex; gap:36px; flex-wrap:wrap;
+  margin-bottom:52px;
+  animation: fadeUp 0.6s 0.3s ease both;
+}
+.stat { display:flex; flex-direction:column; gap:3px; }
+.stat-val {
+  font-family:'Syne',sans-serif;
+  font-weight:800;
+  font-size:1.8rem;
+  letter-spacing:-0.03em;
+  color:var(--text);
+  line-height:1;
+}
+.stat-val span { color:var(--c-pre); }
+.stat-label {
+  font-family:'DM Mono',monospace;
+  font-size:0.62rem;
+  text-transform:uppercase;
+  letter-spacing:0.14em;
+  color:var(--muted);
+}
+.stat-divider {
+  width:1px; background:var(--border2);
+  height:40px; align-self:center;
+}
 
-  .hero-body {
-    font-size: 1.1rem;
-    line-height: 1.75;
-    color: #94a3b8;
-    max-width: 640px;
-    margin-bottom: 44px;
-  }
+/* hero CTAs */
+.hero-ctas {
+  display:flex; gap:12px; flex-wrap:wrap;
+  animation: fadeUp 0.6s 0.4s ease both;
+}
+.btn-primary {
+  background: var(--c-pre);
+  color:#fff;
+  border:none;
+  padding:13px 28px;
+  border-radius:9px;
+  font-family:'Syne',sans-serif;
+  font-weight:700;
+  font-size:0.92rem;
+  cursor:pointer;
+  text-decoration:none;
+  display:inline-flex; align-items:center; gap:8px;
+  transition: all 0.22s;
+}
+.btn-primary:hover { transform:translateY(-2px); box-shadow:0 12px 30px rgba(112,144,255,0.35); }
+.btn-ghost {
+  background:transparent;
+  color:var(--text);
+  border:1px solid var(--border2);
+  padding:13px 28px;
+  border-radius:9px;
+  font-family:'Syne',sans-serif;
+  font-weight:600;
+  font-size:0.92rem;
+  cursor:pointer;
+  text-decoration:none;
+  display:inline-flex; align-items:center; gap:8px;
+  transition: all 0.22s;
+}
+.btn-ghost:hover { border-color:var(--c-pre); color:var(--c-pre); }
 
-  /* ── STAT STRIP ── */
-  .stats {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 32px;
-    margin-bottom: 64px;
-    padding-bottom: 48px;
-    border-bottom: 1px solid var(--border);
-  }
-  .stat-item { }
-  .stat-num {
-    font-family: 'Syne', sans-serif;
-    font-size: 2rem;
-    font-weight: 800;
-    color: var(--accent);
-    line-height: 1;
-  }
-  .stat-label {
-    font-size: .8rem;
-    color: var(--muted);
-    margin-top: 4px;
-    letter-spacing: .05em;
-    text-transform: uppercase;
-  }
+/* ─── NEW-IN-THIS-VERSION BANNER ─────────────────────────────────────────── */
+.updates-banner {
+  max-width:1080px; margin:0 auto 0;
+  padding: 0 48px 64px;
+  animation: fadeUp 0.6s 0.5s ease both;
+}
+.updates-inner {
+  background: var(--surface);
+  border:1px solid var(--border2);
+  border-radius:var(--radius);
+  padding:28px 32px;
+  display:flex; gap:24px; align-items:flex-start;
+}
+.updates-icon { font-size:1.6rem; flex-shrink:0; margin-top:2px; }
+.updates-label {
+  font-family:'DM Mono',monospace;
+  font-size:0.62rem;
+  text-transform:uppercase;
+  letter-spacing:0.14em;
+  color:var(--correct);
+  margin-bottom:7px;
+}
+.updates-title {
+  font-family:'Syne',sans-serif;
+  font-weight:700;
+  font-size:1rem;
+  margin-bottom:10px;
+}
+.updates-chips { display:flex; gap:8px; flex-wrap:wrap; }
+.update-chip {
+  font-family:'DM Mono',monospace;
+  font-size:0.62rem;
+  padding:3px 10px;
+  border-radius:20px;
+  letter-spacing:0.06em;
+}
 
-  /* ── SECTION LABELS ── */
-  .section-label {
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: .25em;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin-bottom: 20px;
-  }
+/* ─── SECTION SHELL ──────────────────────────────────────────────────────── */
+.section-shell {
+  max-width:1080px; margin:0 auto;
+  padding: 0 48px 80px;
+}
+.section-heading {
+  display:flex; align-items:baseline; gap:14px;
+  margin-bottom:32px;
+}
+.section-heading h2 {
+  font-family:'Syne',sans-serif;
+  font-weight:800;
+  font-size:1.5rem;
+  letter-spacing:-0.02em;
+}
+.section-heading-sub {
+  font-family:'DM Mono',monospace;
+  font-size:0.66rem;
+  text-transform:uppercase;
+  letter-spacing:0.12em;
+  color:var(--muted);
+}
 
-  /* ── OVERVIEW CARD ── */
-  .overview-section {
-    position: relative; z-index:1;
-    max-width: 960px;
-    margin: 0 auto 64px;
-    padding: 0 24px;
-  }
+/* ─── ENTRY POINT CARDS (Pre-Assessment & Quick Overview) ────────────────── */
+.entry-grid {
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:16px;
+  margin-bottom:0;
+}
+.entry-card {
+  border-radius:var(--radius);
+  padding:32px;
+  text-decoration:none;
+  display:flex; flex-direction:column;
+  transition: all 0.25s;
+  position:relative;
+  overflow:hidden;
+}
+.entry-card::before {
+  content:'';
+  position:absolute; inset:0;
+  opacity:0;
+  transition: opacity 0.25s;
+}
+.entry-card:hover::before { opacity:1; }
+.entry-card:hover { transform:translateY(-3px); }
 
-  .overview-card {
-    background: linear-gradient(135deg, rgba(0,212,168,.08), rgba(59,130,246,.06));
-    border: 1px solid rgba(0,212,168,.2);
-    border-radius: 20px;
-    padding: 40px 44px;
-    display: flex;
-    gap: 40px;
-    align-items: flex-start;
-    flex-wrap: wrap;
-    position: relative;
-    overflow: hidden;
-  }
-  .overview-card::after {
-    content: 'OVERVIEW';
-    position: absolute;
-    right: -20px; top: 20px;
-    font-family: 'Syne', sans-serif;
-    font-size: 80px;
-    font-weight: 800;
-    color: rgba(0,212,168,.04);
-    letter-spacing: .1em;
-    pointer-events: none;
-  }
+.entry-card.pre {
+  background:rgba(112,144,255,0.07);
+  border:1px solid rgba(112,144,255,0.25);
+}
+.entry-card.pre::before { background:rgba(112,144,255,0.04); }
+.entry-card.pre:hover { box-shadow:0 16px 40px rgba(112,144,255,0.15); border-color:rgba(112,144,255,0.5); }
 
-  .overview-icon {
-    width: 56px; height: 56px;
-    background: rgba(0,212,168,.12);
-    border-radius: 14px;
-    display: flex; align-items:center; justify-content:center;
-    font-size: 26px;
-    flex-shrink: 0;
-  }
+.entry-card.overview {
+  background:rgba(32,232,144,0.05);
+  border:1px solid rgba(32,232,144,0.18);
+}
+.entry-card.overview::before { background:rgba(32,232,144,0.03); }
+.entry-card.overview:hover { box-shadow:0 16px 40px rgba(32,232,144,0.1); border-color:rgba(32,232,144,0.38); }
 
-  .overview-content { flex: 1; min-width: 240px; }
-  .overview-content h2 {
-    font-family: 'Syne', sans-serif;
-    font-size: 1.5rem;
-    font-weight: 700;
-    margin-bottom: 10px;
-  }
-  .overview-content p {
-    color: #94a3b8;
-    line-height: 1.7;
-    margin-bottom: 20px;
-    font-size: .95rem;
-  }
+.entry-badge {
+  font-family:'DM Mono',monospace;
+  font-size:0.58rem;
+  font-weight:700;
+  letter-spacing:0.14em;
+  text-transform:uppercase;
+  padding:4px 10px;
+  border-radius:5px;
+  display:inline-block;
+  margin-bottom:16px;
+  width:fit-content;
+}
+.entry-card.pre .entry-badge   { background:rgba(112,144,255,0.18); color:var(--c-pre); }
+.entry-card.overview .entry-badge { background:rgba(32,232,144,0.15); color:var(--correct); }
 
-  .tag-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
-  .tag {
-    font-size: .75rem;
-    padding: 4px 10px;
-    border-radius: 100px;
-    border: 1px solid var(--border);
-    color: var(--muted);
-  }
-  .tag.green { border-color: rgba(0,212,168,.3); color: var(--accent); }
+.entry-icon { font-size:2.2rem; margin-bottom:14px; }
+.entry-title {
+  font-family:'Syne',sans-serif;
+  font-weight:800;
+  font-size:1.2rem;
+  letter-spacing:-0.02em;
+  margin-bottom:10px;
+  color:var(--text);
+}
+.entry-desc {
+  font-size:0.86rem;
+  color:var(--muted2);
+  line-height:1.72;
+  margin-bottom:20px;
+  flex:1;
+}
+.entry-pills { display:flex; gap:7px; flex-wrap:wrap; margin-bottom:20px; }
+.entry-pill {
+  font-family:'DM Mono',monospace;
+  font-size:0.6rem;
+  padding:3px 9px;
+  border-radius:12px;
+  border:1px solid var(--border2);
+  color:var(--muted2);
+}
+.entry-cta {
+  font-family:'Syne',sans-serif;
+  font-weight:700;
+  font-size:0.82rem;
+  display:flex; align-items:center; gap:7px;
+}
+.entry-card.pre .entry-cta   { color:var(--c-pre); }
+.entry-card.overview .entry-cta { color:var(--correct); }
 
-  .btn {
-    display: inline-flex; align-items: center; gap: 8px;
-    font-family: 'Syne', sans-serif;
-    font-size: .9rem; font-weight: 700;
-    padding: 12px 24px;
-    border-radius: 10px;
-    text-decoration: none;
-    transition: all .2s;
-  }
-  .btn-primary {
-    background: var(--accent);
-    color: #0b0f1a;
-  }
-  .btn-primary:hover { background: #00efc0; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,212,168,.25); }
-  .btn-secondary {
-    background: transparent;
-    color: var(--accent);
-    border: 1px solid rgba(0,212,168,.3);
-  }
-  .btn-secondary:hover { background: rgba(0,212,168,.06); transform: translateY(-2px); }
+/* ─── MODULE GRID ────────────────────────────────────────────────────────── */
+.module-grid {
+  display:grid;
+  grid-template-columns:repeat(3, 1fr);
+  gap:16px;
+}
 
-  /* ── MODULES GRID ── */
-  .modules-section {
-    position: relative; z-index:1;
-    max-width: 960px;
-    margin: 0 auto 80px;
-    padding: 0 24px;
-  }
+.mod-card {
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:28px;
+  text-decoration:none;
+  display:flex; flex-direction:column;
+  position:relative;
+  overflow:hidden;
+  transition: all 0.25s;
+  /* staggered entrance */
+}
+.mod-card::after {
+  content:'';
+  position:absolute; bottom:0; left:0; right:0;
+  height:2px;
+  opacity:0;
+  transition: opacity 0.25s;
+}
+.mod-card:hover { transform:translateY(-4px); border-color:var(--card-accent,var(--border2)); }
+.mod-card:hover::after { opacity:1; background:var(--card-accent,var(--border2)); }
 
-  .modules-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 20px;
-  }
+.mod-card[data-mod="1"] { --card-accent:var(--c1); }
+.mod-card[data-mod="2"] { --card-accent:var(--c2); }
+.mod-card[data-mod="3"] { --card-accent:var(--c3); }
+.mod-card[data-mod="4"] { --card-accent:var(--c4); }
+.mod-card[data-mod="5"] { --card-accent:var(--c5); grid-column: 1 / -1; flex-direction:row; gap:32px; align-items:flex-start; }
 
-  .module-card {
-    background: var(--card-bg);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 28px;
-    text-decoration: none;
-    color: inherit;
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-    transition: all .25s;
-    position: relative;
-    overflow: hidden;
-  }
-  .module-card::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 3px;
-    background: var(--mod-color, var(--accent));
-    opacity: 0;
-    transition: opacity .2s;
-  }
-  .module-card:hover { border-color: var(--mod-color, var(--accent)); transform: translateY(-4px); box-shadow: 0 12px 32px rgba(0,0,0,.4); }
-  .module-card:hover::before { opacity: 1; }
+/* top strip */
+.mod-strip {
+  display:flex; align-items:center; justify-content:space-between;
+  margin-bottom:20px;
+}
+.mod-num {
+  font-family:'DM Mono',monospace;
+  font-size:0.6rem;
+  letter-spacing:0.16em;
+  text-transform:uppercase;
+  color:var(--muted);
+}
+.mod-icon-wrap {
+  width:42px; height:42px; border-radius:10px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:1.3rem;
+  background:rgba(255,255,255,0.04);
+  border:1px solid var(--border2);
+}
 
-  .mod-header {
-    display: flex; align-items: center; justify-content: space-between;
-  }
-  .mod-num {
-    font-size: .72rem;
-    font-weight: 700;
-    letter-spacing: .18em;
-    text-transform: uppercase;
-    color: var(--mod-color, var(--accent));
-    opacity: .7;
-  }
-  .mod-icon {
-    width: 44px; height: 44px;
-    border-radius: 12px;
-    display: flex; align-items:center; justify-content:center;
-    font-size: 20px;
-    background: rgba(255,255,255,.04);
-    border: 1px solid var(--border);
-  }
+/* module title */
+.mod-title {
+  font-family:'Syne',sans-serif;
+  font-weight:800;
+  font-size:1.08rem;
+  letter-spacing:-0.015em;
+  margin-bottom:10px;
+  color:var(--text);
+}
+.mod-desc {
+  font-size:0.83rem;
+  color:var(--muted2);
+  line-height:1.72;
+  flex:1;
+  margin-bottom:18px;
+}
 
-  .module-card h3 {
-    font-family: 'Syne', sans-serif;
-    font-size: 1.15rem;
-    font-weight: 700;
-    line-height: 1.25;
-  }
-  .module-card .mod-desc {
-    font-size: .875rem;
-    color: #64748b;
-    line-height: 1.65;
-    flex: 1;
-  }
+/* tags row */
+.mod-tags { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:14px; }
+.mod-tag {
+  font-family:'DM Mono',monospace;
+  font-size:0.58rem;
+  letter-spacing:0.06em;
+  padding:3px 9px;
+  border-radius:10px;
+  border:1px solid var(--border2);
+  color:var(--muted2);
+}
+/* AI-new tag */
+.mod-tag.new {
+  font-weight:600;
+  letter-spacing:0.08em;
+}
+.mod-card[data-mod="1"] .mod-tag.new { background:rgba(240,192,64,0.1);  color:var(--c1); border-color:rgba(240,192,64,0.3); }
+.mod-card[data-mod="2"] .mod-tag.new { background:rgba(48,216,200,0.1);  color:var(--c2); border-color:rgba(48,216,200,0.3); }
+.mod-card[data-mod="3"] .mod-tag.new { background:rgba(240,72,128,0.1);  color:var(--c3); border-color:rgba(240,72,128,0.3); }
+.mod-card[data-mod="4"] .mod-tag.new { background:rgba(192,128,255,0.1); color:var(--c4); border-color:rgba(192,128,255,0.3); }
+.mod-card[data-mod="5"] .mod-tag.new { background:rgba(32,232,112,0.1);  color:var(--c5); border-color:rgba(32,232,112,0.3); }
 
-  .mod-topics {
-    display: flex; flex-wrap: wrap; gap: 6px;
-    margin-top: 4px;
-  }
-  .mod-topic {
-    font-size: .72rem;
-    padding: 3px 9px;
-    border-radius: 6px;
-    background: rgba(255,255,255,.04);
-    color: var(--muted);
-    border: 1px solid var(--border);
-  }
+/* security snapshot badge */
+.snap-badge {
+  display:inline-flex; align-items:center; gap:5px;
+  font-family:'DM Mono',monospace;
+  font-size:0.57rem;
+  letter-spacing:0.1em;
+  text-transform:uppercase;
+  background:rgba(240,64,80,0.1);
+  border:1px solid rgba(240,64,80,0.25);
+  color:#f09090;
+  padding:3px 9px;
+  border-radius:10px;
+  margin-top:2px;
+}
 
-  .mod-arrow {
-    display: flex; align-items:center; justify-content:space-between;
-    margin-top: 6px;
-    font-size: .8rem;
-    color: var(--mod-color, var(--accent));
-    opacity: 0;
-    transition: opacity .2s;
-  }
-  .module-card:hover .mod-arrow { opacity: 1; }
+/* open link */
+.mod-open {
+  font-family:'Syne',sans-serif;
+  font-weight:700;
+  font-size:0.8rem;
+  display:flex; align-items:center; gap:6px;
+  color:var(--card-accent, var(--muted2));
+  margin-top:auto;
+}
 
-  /* color per module */
-  .m1 { --mod-color: #60a5fa; }
-  .m2 { --mod-color: #a78bfa; }
-  .m3 { --mod-color: #34d399; }
-  .m4 { --mod-color: #38bdf8; }
-  .m5 { --mod-color: #f87171; }
+/* standalone wide card (Module 5) */
+.mod-card[data-mod="5"] .mod-main { flex:1; display:flex; flex-direction:column; }
+.mod-card[data-mod="5"] .mod-aside {
+  flex-shrink:0; width:220px;
+  display:flex; flex-direction:column; gap:10px;
+  padding-top:4px;
+}
+.mod-aside-block {
+  background:rgba(32,232,112,0.05);
+  border:1px solid rgba(32,232,112,0.15);
+  border-radius:10px;
+  padding:12px 14px;
+}
+.mod-aside-label {
+  font-family:'DM Mono',monospace;
+  font-size:0.58rem;
+  text-transform:uppercase;
+  letter-spacing:0.12em;
+  color:var(--c5);
+  margin-bottom:5px;
+}
+.mod-aside-text { font-size:0.8rem; color:var(--muted2); line-height:1.6; }
 
-  /* ── WHO THIS IS FOR ── */
-  .audience-section {
-    position: relative; z-index:1;
-    max-width: 960px;
-    margin: 0 auto 80px;
-    padding: 0 24px;
-  }
-  .audience-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 16px;
-  }
-  .audience-card {
-    background: var(--card-bg);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 22px;
-  }
-  .audience-card .a-icon { font-size: 28px; margin-bottom: 10px; }
-  .audience-card h4 {
-    font-family: 'Syne', sans-serif;
-    font-size: .95rem; font-weight: 700;
-    margin-bottom: 6px;
-  }
-  .audience-card p { font-size: .82rem; color: var(--muted); line-height: 1.6; }
+/* ─── CAPSTONE CARD ──────────────────────────────────────────────────────── */
+.capstone-card {
+  background: linear-gradient(135deg, rgba(96,216,255,0.07) 0%, rgba(160,96,255,0.07) 100%);
+  border:1px solid rgba(96,216,255,0.2);
+  border-radius:var(--radius);
+  padding:36px 40px;
+  text-decoration:none;
+  display:grid;
+  grid-template-columns:1fr auto;
+  gap:32px;
+  align-items:center;
+  transition: all 0.25s;
+  position:relative;
+  overflow:hidden;
+}
+.capstone-card::before {
+  content:'';
+  position:absolute; top:-60px; right:-60px;
+  width:200px; height:200px;
+  border-radius:50%;
+  background:radial-gradient(circle, rgba(96,216,255,0.1), transparent 70%);
+  pointer-events:none;
+}
+.capstone-card:hover {
+  transform:translateY(-3px);
+  box-shadow:0 20px 50px rgba(96,216,255,0.12);
+  border-color:rgba(96,216,255,0.4);
+}
+.cap-eyebrow {
+  font-family:'DM Mono',monospace;
+  font-size:0.63rem;
+  letter-spacing:0.18em;
+  text-transform:uppercase;
+  color:var(--c-cap);
+  margin-bottom:10px;
+}
+.cap-title {
+  font-family:'Syne',sans-serif;
+  font-weight:800;
+  font-size:1.4rem;
+  letter-spacing:-0.02em;
+  color:var(--text);
+  margin-bottom:10px;
+}
+.cap-desc { font-size:0.88rem; color:var(--muted2); line-height:1.72; margin-bottom:18px; }
+.cap-stages { display:flex; gap:8px; flex-wrap:wrap; }
+.cap-stage {
+  font-family:'DM Mono',monospace;
+  font-size:0.6rem;
+  padding:4px 10px;
+  border-radius:8px;
+  border:1px solid var(--border2);
+  color:var(--muted2);
+}
+.cap-cta {
+  flex-shrink:0;
+  background: linear-gradient(135deg, rgba(96,216,255,0.2), rgba(160,96,255,0.2));
+  border:1px solid rgba(96,216,255,0.3);
+  color:var(--c-cap);
+  padding:14px 24px;
+  border-radius:10px;
+  font-family:'Syne',sans-serif;
+  font-weight:700;
+  font-size:0.88rem;
+  text-align:center;
+  line-height:1.4;
+  transition: all 0.22s;
+  white-space:nowrap;
+}
+.capstone-card:hover .cap-cta {
+  background: linear-gradient(135deg, rgba(96,216,255,0.3), rgba(160,96,255,0.3));
+}
 
-  /* ── FOOTER ── */
-  footer {
-    position: relative; z-index:1;
-    border-top: 1px solid var(--border);
-    padding: 32px 24px;
-    text-align: center;
-    color: var(--muted);
-    font-size: .82rem;
-  }
-  footer strong { color: var(--text); }
-  .footer-credit {
-    margin-top: 10px;
-    font-size: .78rem;
-    color: #374151;
-  }
-  .footer-credit a { color: #4b5563; text-decoration: underline; }
+/* ─── WHO THIS IS FOR ────────────────────────────────────────────────────── */
+.audience-grid {
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:14px;
+}
+.audience-card {
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:24px 22px;
+}
+.audience-icon { font-size:1.5rem; margin-bottom:10px; }
+.audience-title {
+  font-family:'Syne',sans-serif;
+  font-weight:700;
+  font-size:0.9rem;
+  margin-bottom:7px;
+  color:var(--text);
+}
+.audience-desc { font-size:0.81rem; color:var(--muted2); line-height:1.65; }
 
-  /* ── FADE IN ANIMATIONS ── */
-  .fade-up {
-    opacity: 0;
-    transform: translateY(24px);
-    animation: fadeUp .6s forwards;
-  }
-  @keyframes fadeUp { to { opacity:1; transform:translateY(0); } }
-  .delay-1 { animation-delay: .1s; }
-  .delay-2 { animation-delay: .2s; }
-  .delay-3 { animation-delay: .3s; }
-  .delay-4 { animation-delay: .4s; }
-  .delay-5 { animation-delay: .5s; }
-  .delay-6 { animation-delay: .6s; }
-  .delay-7 { animation-delay: .7s; }
+/* ─── FOOTER ─────────────────────────────────────────────────────────────── */
+footer {
+  border-top:1px solid var(--border);
+  padding:32px 48px;
+  display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:14px;
+}
+.footer-left {
+  font-family:'DM Mono',monospace;
+  font-size:0.67rem;
+  color:var(--muted);
+  line-height:1.8;
+}
+.footer-left strong { color:var(--muted2); font-weight:500; }
+.footer-right { display:flex; gap:8px; flex-wrap:wrap; }
+.footer-dot {
+  width:8px; height:8px; border-radius:50%;
+}
 
-  @media (max-width: 600px) {
-    .overview-card { padding: 28px 24px; }
-    .hero { padding: 56px 20px 40px; }
-  }
+/* ─── RESPONSIVE ─────────────────────────────────────────────────────────── */
+@media(max-width:900px) {
+  nav { padding:0 24px; }
+  .hero, .updates-banner, .section-shell { padding-left:24px; padding-right:24px; }
+  .module-grid { grid-template-columns:1fr 1fr; }
+  .mod-card[data-mod="5"] { flex-direction:column; }
+  .mod-card[data-mod="5"] .mod-aside { width:100%; flex-direction:row; }
+  .audience-grid { grid-template-columns:1fr 1fr; }
+  .capstone-card { grid-template-columns:1fr; }
+  .cap-cta { text-align:left; }
+}
+@media(max-width:620px) {
+  .hero h1 { font-size:2.4rem; }
+  .module-grid { grid-template-columns:1fr; }
+  .mod-card[data-mod="5"] { grid-column:auto; }
+  .entry-grid { grid-template-columns:1fr; }
+  .audience-grid { grid-template-columns:1fr; }
+  .stats { gap:20px; }
+  .stat-divider { display:none; }
+  footer { flex-direction:column; align-items:flex-start; }
+}
 </style>
 </head>
 <body>
+<div class="app">
 
-<!-- ══ NAVBAR ═════════════════════════════════════════ -->
-<nav class="navbar">
-  <a class="navbar-brand" href="#">
-    <img
-      class="navbar-logo"
-      src="./AGSMlogo.jpeg"
-      alt="Atkinson Graduate School of Management"
-    />
-    <div class="navbar-divider"></div>
-    <div>
-      <div class="navbar-title">TechReady Series for Tim</div>
-      <div class="navbar-subtitle">Atkinson Graduate School of Management</div>
+<!-- ── NAV ──────────────────────────────────────────────────────────────── -->
+<nav>
+  <a class="nav-brand" href="#">
+    <img class="nav-logo-img" src="./AGSMlogo.jpeg" alt="Atkinson Graduate School of Management">
+    <div class="nav-wordmark">
+      TechReady Series
+      <span>Atkinson · Willamette University</span>
     </div>
   </a>
-  <span class="navbar-badge">5 Modules · Self-Paced</span>
+  <div class="nav-right">
+    <a class="nav-pill highlight" href="./module0-preassessment.html">Diagnostic →</a>
+    <a class="nav-pill" href="./overview.html">Quick Overview</a>
+    <a class="nav-pill" href="./capstone-final-readiness.html">Capstone</a>
+  </div>
 </nav>
 
-<!-- ══ HERO ══════════════════════════════════════════ -->
+<!-- ── HERO ─────────────────────────────────────────────────────────────── -->
 <section class="hero">
-  <div class="eyebrow fade-up"><span></span> TechReady Series for Tim · 5 Modules</div>
-
-  <h1 class="fade-up delay-1">
-    The foundation for<br>
-    working with <em>AI tools.</em>
-  </h1>
-
-  <p class="hero-body fade-up delay-2">
-    AI tools like large language models don't operate in a vacuum — they work with
-    files, folders, code, operating systems, and cloud services. This series gives
-    students entering a <strong style="color:var(--text)">course on managing with AI</strong>
-    the grounding they need to interact confidently with those tools: uploading documents,
-    reading file paths, understanding where data lives, and knowing what's happening
-    under the hood when an AI completes a task. Use these modules to fill gaps or to
-    demonstrate baseline tech familiarity before the AI work begins.
-    Cybersecurity is its own extensive standalone module, separate from the condensed overview.
+  <div class="hero-eyebrow">TechReady Series for Tim · Atkinson Graduate School of Management</div>
+  <h1>The foundation for<br>working with <em>AI tools.</em></h1>
+  <p class="hero-body">
+    AI tools don't operate in a vacuum — they work with files, operating systems, hardware, cloud
+    services, and code. This series gives students entering a <strong>course on managing with AI</strong>
+    the grounding they need: uploading documents, reading file paths, understanding where data lives,
+    running local models, calling APIs, and knowing what's happening under the hood. Now with a
+    <strong>diagnostic pre-assessment</strong>, AI-readiness expansions in every module,
+    <strong>Security Snapshots</strong> throughout, and a <strong>hands-on capstone scenario</strong>.
   </p>
-
-  <div class="stats fade-up delay-3">
-    <div class="stat-item">
-      <div class="stat-num">5</div>
+  <div class="stats">
+    <div class="stat">
+      <div class="stat-val">7<span></span></div>
+      <div class="stat-label">Total Files</div>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat">
+      <div class="stat-val">5</div>
       <div class="stat-label">Core Modules</div>
     </div>
-    <div class="stat-item">
-      <div class="stat-num">Self-Paced</div>
-      <div class="stat-label">Study Format</div>
+    <div class="stat-divider"></div>
+    <div class="stat">
+      <div class="stat-val">1</div>
+      <div class="stat-label">Pre-Assessment</div>
     </div>
-    <div class="stat-item">
-      <div class="stat-num">AI-Ready</div>
+    <div class="stat-divider"></div>
+    <div class="stat">
+      <div class="stat-val">1</div>
+      <div class="stat-label">Capstone</div>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat">
+      <div class="stat-val" style="color:var(--correct)">AI</div>
       <div class="stat-label">Learning Goal</div>
     </div>
-    <div class="stat-item">
-      <div class="stat-num">4+1</div>
-      <div class="stat-label">Core + Cybersecurity</div>
-    </div>
+  </div>
+  <div class="hero-ctas">
+    <a class="btn-primary" href="./module0-preassessment.html">Start with Diagnostic →</a>
+    <a class="btn-ghost"   href="./overview.html">Quick Overview (Modules 1–4)</a>
   </div>
 </section>
 
-<!-- ══ OVERVIEW SHORTCUT ══════════════════════════════ -->
-<section class="overview-section">
-  <div class="section-label fade-up">Already have the basics?</div>
-  <div class="overview-card fade-up delay-1">
-    <div class="overview-icon">⚡</div>
-    <div class="overview-content">
-      <h2>Quick Overview — 4 Modules at a Glance</h2>
-      <p>
-        Already comfortable with the basics? The overview page covers Modules 1–4
-        in a condensed format — enough to confirm you have the foundation needed
-        to work effectively with AI tools. Cybersecurity (Module 5) is a substantial
-        standalone module and is intentionally not included here.
-      </p>
-      <div class="tag-row">
-        <span class="tag green">Modules 1–4</span>
-        <span class="tag">Condensed Format</span>
-        <span class="tag">Proficient Learners</span>
-        <span class="tag">No Cybersecurity</span>
+<!-- ── WHAT'S NEW BANNER ─────────────────────────────────────────────────── -->
+<div class="updates-banner">
+  <div class="updates-inner">
+    <div class="updates-icon">✨</div>
+    <div>
+      <div class="updates-label">Now in this version</div>
+      <div class="updates-title">8 AI-readiness improvements across the full series</div>
+      <div class="updates-chips">
+        <span class="update-chip" style="background:rgba(112,144,255,0.1);color:var(--c-pre);border:1px solid rgba(112,144,255,0.25)">New: Diagnostic Pre-Assessment</span>
+        <span class="update-chip" style="background:rgba(240,192,64,0.1);color:var(--c1);border:1px solid rgba(240,192,64,0.25)">GPU Stress Tests — M1</span>
+        <span class="update-chip" style="background:rgba(48,216,200,0.1);color:var(--c2);border:1px solid rgba(48,216,200,0.25)">AI Quick Start Guides — M2</span>
+        <span class="update-chip" style="background:rgba(240,72,128,0.1);color:var(--c3);border:1px solid rgba(240,72,128,0.25)">.csv / .txt Exercises — M3</span>
+        <span class="update-chip" style="background:rgba(192,128,255,0.1);color:var(--c4);border:1px solid rgba(192,128,255,0.25)">API Integration Tutorial — M4</span>
+        <span class="update-chip" style="background:rgba(240,64,80,0.1);color:#f09090;border:1px solid rgba(240,64,80,0.25)">🔒 Security Snapshots — M1–4</span>
+        <span class="update-chip" style="background:rgba(32,232,112,0.1);color:var(--c5);border:1px solid rgba(32,232,112,0.25)">Understanding Code — M5</span>
+        <span class="update-chip" style="background:rgba(96,216,255,0.1);color:var(--c-cap);border:1px solid rgba(96,216,255,0.25)">New: Final Readiness Capstone</span>
       </div>
-      <a href="https://robertwwalker.github.io/TJTechReady/overview.html" class="btn btn-primary">
-        Go to Overview →
-      </a>
     </div>
+  </div>
+</div>
+
+<!-- ── ENTRY POINTS ──────────────────────────────────────────────────────── -->
+<section class="section-shell">
+  <div class="section-heading">
+    <h2>Where to begin</h2>
+    <span class="section-heading-sub">Choose your entry point</span>
+  </div>
+  <div class="entry-grid">
+
+    <a class="entry-card pre" href="./module0-preassessment.html">
+      <span class="entry-badge">⚡ New — Recommended First Step</span>
+      <div class="entry-icon">🎯</div>
+      <div class="entry-title">Diagnostic Pre-Assessment</div>
+      <p class="entry-desc">
+        20 questions across all four foundational domains — AI-framed around GPU specs, file formats,
+        OS compatibility, and cloud APIs. Takes ~10 minutes and produces a <strong style="color:var(--text)">personalised
+        learning path</strong>: which modules to complete in full, skim, or skip before starting AI work.
+      </p>
+      <div class="entry-pills">
+        <span class="entry-pill">Hardware &amp; GPU</span>
+        <span class="entry-pill">OS Compatibility</span>
+        <span class="entry-pill">File Formats</span>
+        <span class="entry-pill">Cloud &amp; APIs</span>
+        <span class="entry-pill">~10 minutes</span>
+      </div>
+      <div class="entry-cta">Take the diagnostic →</div>
+    </a>
+
+    <a class="entry-card overview" href="./overview.html">
+      <span class="entry-badge">Quick path · Modules 1–4</span>
+      <div class="entry-icon">⚡</div>
+      <div class="entry-title">Quick Overview — 4 Modules at a Glance</div>
+      <p class="entry-desc">
+        Already comfortable with the basics? The overview page covers Modules 1–4 in a condensed format —
+        enough to confirm you have the foundation needed to work effectively with AI tools.
+        Cybersecurity (Module 5) is a substantial standalone module and is intentionally not included here.
+      </p>
+      <div class="entry-pills">
+        <span class="entry-pill">Modules 1–4</span>
+        <span class="entry-pill">Condensed Format</span>
+        <span class="entry-pill">Proficient Learners</span>
+        <span class="entry-pill">No Cybersecurity</span>
+      </div>
+      <div class="entry-cta">Go to Overview →</div>
+    </a>
+
   </div>
 </section>
 
-<!-- ══ FULL MODULE LIST ═══════════════════════════════ -->
-<section class="modules-section">
-  <div class="section-label fade-up">Full curriculum</div>
-  <div class="modules-grid">
+<!-- ── MODULES ───────────────────────────────────────────────────────────── -->
+<section class="section-shell" style="padding-top:0">
+  <div class="section-heading">
+    <h2>Full curriculum</h2>
+    <span class="section-heading-sub">5 modules · self-paced</span>
+  </div>
+
+  <div class="module-grid">
 
     <!-- M1 -->
-    <a href="https://robertwwalker.github.io/TJTechReady/module1-hardware-software.html" class="module-card m1 fade-up delay-1">
-      <div class="mod-header">
+    <a class="mod-card" data-mod="1" href="./module1-hardware-software.html">
+      <div class="mod-strip">
         <span class="mod-num">Module 01 of 05</span>
-        <div class="mod-icon">🖥️</div>
+        <div class="mod-icon-wrap">🖥️</div>
       </div>
-      <h3>Hardware vs. Software</h3>
+      <div class="mod-title">Hardware vs. Software</div>
       <p class="mod-desc">
-        AI tools run on real machines. Understanding the difference between hardware
-        and software — CPU, RAM, storage, GPU — helps you make sense of why a model
-        runs slowly, why your device struggles with certain tasks, and what IT means
-        when something needs a fix. The GPU in particular is central to how AI
-        inference works.
+        AI tools run on real machines. Understanding CPU, RAM, storage, and GPU helps you diagnose
+        slow models, compatibility failures, and what IT actually means when something needs a fix.
+        The GPU is central to how AI inference works — and now you can test yours.
       </p>
-      <div class="mod-topics">
-        <span class="mod-topic">CPU · RAM · Storage</span>
-        <span class="mod-topic">Drivers &amp; Firmware</span>
-        <span class="mod-topic">Fault Diagnosis</span>
+      <div class="mod-tags">
+        <span class="mod-tag">CPU · RAM · Storage</span>
+        <span class="mod-tag">Drivers &amp; Firmware</span>
+        <span class="mod-tag new">🤖 GPU Stress Tests</span>
+        <span class="snap-badge">🔒 Security Snapshot</span>
       </div>
-      <div class="mod-arrow">Open module <span>→</span></div>
+      <div class="mod-open">Open module →</div>
     </a>
 
     <!-- M2 -->
-    <a href="https://robertwwalker.github.io/TJTechReady/module2-operating-systems.html" class="module-card m2 fade-up delay-2">
-      <div class="mod-header">
+    <a class="mod-card" data-mod="2" href="./module2-operating-systems.html">
+      <div class="mod-strip">
         <span class="mod-num">Module 02 of 05</span>
-        <div class="mod-icon">🪟</div>
+        <div class="mod-icon-wrap">🪟</div>
       </div>
-      <h3>Operating Systems</h3>
+      <div class="mod-title">Operating Systems</div>
       <p class="mod-desc">
-        AI tools are software, and software runs on an operating system. Knowing
-        whether you're on Windows, macOS, or Linux — and what version — matters when
-        installing AI applications, running local models, troubleshooting
-        compatibility issues, and following setup instructions that differ by platform.
+        Knowing your OS version matters when installing AI applications, running local models, and
+        following setup instructions that differ by platform. New: platform-specific Quick Start
+        guides walk you through installing AI tools on Windows, macOS, and Linux step by step.
       </p>
-      <div class="mod-topics">
-        <span class="mod-topic">Windows · macOS · Linux</span>
-        <span class="mod-topic">Finding Your Version</span>
-        <span class="mod-topic">Security Updates &amp; EOL</span>
+      <div class="mod-tags">
+        <span class="mod-tag">Windows · macOS · Linux</span>
+        <span class="mod-tag">Security Updates &amp; EOL</span>
+        <span class="mod-tag new">🤖 AI Quick Start Guides</span>
+        <span class="snap-badge">🔒 Security Snapshot</span>
       </div>
-      <div class="mod-arrow">Open module <span>→</span></div>
+      <div class="mod-open">Open module →</div>
     </a>
 
     <!-- M3 -->
-    <a href="https://robertwwalker.github.io/TJTechReady/module3-files-folders.html" class="module-card m3 fade-up delay-3">
-      <div class="mod-header">
+    <a class="mod-card" data-mod="3" href="./module3-files-folders.html">
+      <div class="mod-strip">
         <span class="mod-num">Module 03 of 05</span>
-        <div class="mod-icon">📁</div>
+        <div class="mod-icon-wrap">📁</div>
       </div>
-      <h3>Files &amp; Folders</h3>
+      <div class="mod-title">Files &amp; Folders</div>
       <p class="mod-desc">
-        Nearly every AI interaction involves a file — uploading a document for
-        analysis, pointing a model at a folder of data, saving outputs, or sharing
-        results. Understanding file paths, extensions like .pdf, .csv, and .txt,
-        and the difference between local and cloud storage is essential for
-        getting things in and out of AI tools reliably.
+        Nearly every AI interaction involves a file. Now includes hands-on exercises with the formats
+        models actually expect — .csv, .txt, .json — and guided practice navigating file paths in the
+        terminal the way AI scripts require.
       </p>
-      <div class="mod-topics">
-        <span class="mod-topic">File Paths &amp; Extensions</span>
-        <span class="mod-topic">Local vs Cloud vs Network</span>
-        <span class="mod-topic">Naming · Backup · Search</span>
+      <div class="mod-tags">
+        <span class="mod-tag">File Paths &amp; Extensions</span>
+        <span class="mod-tag">Local vs Cloud vs Network</span>
+        <span class="mod-tag new">🤖 .csv &amp; .txt Exercises</span>
+        <span class="snap-badge">🔒 Security Snapshot</span>
       </div>
-      <div class="mod-arrow">Open module <span>→</span></div>
+      <div class="mod-open">Open module →</div>
     </a>
 
     <!-- M4 -->
-    <a href="https://robertwwalker.github.io/TJTechReady/module4-internet-cloud.html" class="module-card m4 fade-up delay-4">
-      <div class="mod-header">
+    <a class="mod-card" data-mod="4" href="./module4-internet-cloud.html">
+      <div class="mod-strip">
         <span class="mod-num">Module 04 of 05</span>
-        <div class="mod-icon">☁️</div>
+        <div class="mod-icon-wrap">☁️</div>
       </div>
-      <h3>Internet &amp; Cloud Basics</h3>
+      <div class="mod-title">Internet &amp; Cloud Basics</div>
       <p class="mod-desc">
-        Almost every AI tool is a cloud service — ChatGPT, Claude, Copilot, Gemini,
-        and the rest all live on remote servers you reach over the internet. Understanding
-        how URLs work, what APIs are, the difference between browser-based and
-        locally-run tools, and how cloud sync works makes you a much more effective
-        user and collaborator when AI is in the workflow.
+        Almost every AI tool is a cloud service. Now expanded beyond sync and storage to include a
+        practical tutorial on calling AI APIs: endpoints, authentication, request/response anatomy,
+        API keys, SDKs, and a step-by-step document-analysis workflow.
       </p>
-      <div class="mod-topics">
-        <span class="mod-topic">Wi-Fi · DNS · VPN</span>
-        <span class="mod-topic">M365 · Teams · OneDrive</span>
-        <span class="mod-topic">Troubleshooting</span>
+      <div class="mod-tags">
+        <span class="mod-tag">Wi-Fi · DNS · VPN</span>
+        <span class="mod-tag">M365 · Teams · OneDrive</span>
+        <span class="mod-tag new">🤖 API Integration Tutorial</span>
+        <span class="snap-badge">🔒 Security Snapshot</span>
       </div>
-      <div class="mod-arrow">Open module <span>→</span></div>
+      <div class="mod-open">Open module →</div>
     </a>
 
-    <!-- M5 -->
-    <a href="https://robertwwalker.github.io/TJTechReady/module5-cybersecurity.html" class="module-card m5 fade-up delay-5">
-      <div class="mod-header">
-        <span class="mod-num">Module 05 of 05</span>
-        <div class="mod-icon">🔐</div>
+    <!-- M5 — wide standalone -->
+    <a class="mod-card" data-mod="5" href="./module5-cybersecurity.html">
+      <div class="mod-main">
+        <div class="mod-strip">
+          <span class="mod-num">Module 05 of 05 · Standalone</span>
+          <div class="mod-icon-wrap">🔐</div>
+        </div>
+        <div class="mod-title">Data Privacy &amp; Cybersecurity</div>
+        <p class="mod-desc">
+          AI tools introduce new attack surfaces — prompt injection, data leakage, oversharing sensitive
+          documents with cloud models, and shadow IT risks. This module builds the security awareness
+          needed to use AI responsibly: protecting credentials, understanding what data you should and
+          shouldn't feed a model, and recognising when something has gone wrong.
+          New: an <em style="font-style:normal;color:var(--c5)">Understanding Code</em> section teaches
+          you to read scripts, use the terminal, decode error messages, and work with config files —
+          foundational skills for every AI interaction.
+        </p>
+        <div class="mod-tags">
+          <span class="mod-tag">Phishing · Ransomware</span>
+          <span class="mod-tag">Passwords &amp; MFA</span>
+          <span class="mod-tag">GDPR · HIPAA · CCPA</span>
+          <span class="mod-tag new">🤖 Understanding Code</span>
+        </div>
+        <div class="mod-open">Open module →</div>
       </div>
-      <h3>Data Privacy &amp; Cybersecurity</h3>
-      <p class="mod-desc">
-        AI tools introduce new attack surfaces — prompt injection, data leakage,
-        oversharing sensitive documents with cloud models, and shadow IT risks
-        when employees use unapproved AI services. This module builds the security
-        awareness needed to use AI responsibly: protecting credentials, understanding
-        what data you should and shouldn't feed a model, and recognizing when
-        something has gone wrong. Standalone — not in the condensed overview.
-      </p>
-      <div class="mod-topics">
-        <span class="mod-topic">Phishing · Ransomware</span>
-        <span class="mod-topic">Passwords &amp; MFA</span>
-        <span class="mod-topic">GDPR · HIPAA · CCPA</span>
+      <div class="mod-aside">
+        <div class="mod-aside-block">
+          <div class="mod-aside-label">Standalone</div>
+          <div class="mod-aside-text">Not included in the Quick Overview. Intended as a full standalone module — take it after Modules 1–4 or independently.</div>
+        </div>
+        <div class="mod-aside-block">
+          <div class="mod-aside-label">Security Snapshots</div>
+          <div class="mod-aside-text">Critical security concepts are now embedded in Modules 1–4 as Security Snapshots so students who skip this module still get baseline awareness.</div>
+        </div>
       </div>
-      <div class="mod-arrow">Open module <span>→</span></div>
     </a>
 
   </div>
 </section>
 
-<!-- ══ WHO THIS IS FOR ════════════════════════════════ -->
-<section class="audience-section">
-  <div class="section-label fade-up">Who this is for</div>
+<!-- ── CAPSTONE ──────────────────────────────────────────────────────────── -->
+<section class="section-shell" style="padding-top:0">
+  <div class="section-heading">
+    <h2>Final Readiness Capstone</h2>
+    <span class="section-heading-sub">New · Integrative scenario</span>
+  </div>
+  <a class="capstone-card" href="./capstone-final-readiness.html">
+    <div>
+      <div class="cap-eyebrow">🏁 Capstone Assessment · All 5 Domains</div>
+      <div class="cap-title">Can you do it for real?</div>
+      <p class="cap-desc">
+        A four-stage workplace scenario that puts everything together: check system compatibility for an
+        AI task, locate and convert a file to the right format, upload it securely to cloud storage,
+        then complete a <strong style="color:var(--text)">privacy risk audit</strong> — documenting
+        every data decision made along the way. The final gate before AI coursework.
+      </p>
+      <div class="cap-stages">
+        <span class="cap-stage">Stage 1 · System Check</span>
+        <span class="cap-stage">Stage 2 · File Prep</span>
+        <span class="cap-stage">Stage 3 · Cloud Upload</span>
+        <span class="cap-stage">Stage 4 · Privacy Audit</span>
+      </div>
+    </div>
+    <div class="cap-cta">Begin Capstone<br>→</div>
+  </a>
+</section>
+
+<!-- ── WHO THIS IS FOR ───────────────────────────────────────────────────── -->
+<section class="section-shell" style="padding-top:0">
+  <div class="section-heading">
+    <h2>Who this is for</h2>
+  </div>
   <div class="audience-grid">
-    <div class="audience-card fade-up delay-1">
-      <div class="a-icon">🤖</div>
-      <h4>AI Course Students</h4>
-      <p>Enrolled in a course on managing with AI and need the tech foundation to actually use the tools — not just talk about them.</p>
+    <div class="audience-card">
+      <div class="audience-icon">🤖</div>
+      <div class="audience-title">AI Course Students</div>
+      <p class="audience-desc">Enrolled in a course on managing with AI and need the tech foundation to actually use the tools — not just talk about them.</p>
     </div>
-    <div class="audience-card fade-up delay-2">
-      <div class="a-icon">📂</div>
-      <h4>Working with Files &amp; Data</h4>
-      <p>AI tools live and die by the inputs you give them. Knowing how to find, format, and share files means you can put the right data in front of a model every time.</p>
+    <div class="audience-card">
+      <div class="audience-icon">📂</div>
+      <div class="audience-title">Working with Files &amp; Data</div>
+      <p class="audience-desc">AI tools live and die by the inputs you give them. Knowing how to find, format, and share files means you can put the right data in front of a model every time.</p>
     </div>
-    <div class="audience-card fade-up delay-3">
-      <div class="a-icon">☁️</div>
-      <h4>Cloud-Based Workflows</h4>
-      <p>Most AI tools are cloud services. Understanding how the internet, APIs, and sync work helps you integrate AI into real tasks without getting stuck on the plumbing.</p>
+    <div class="audience-card">
+      <div class="audience-icon">☁️</div>
+      <div class="audience-title">Cloud-Based Workflows</div>
+      <p class="audience-desc">Most AI tools are cloud services. Understanding APIs, sync, and how the internet works helps you integrate AI into real tasks without getting stuck on the plumbing.</p>
     </div>
-    <div class="audience-card fade-up delay-4">
-      <div class="a-icon">🔐</div>
-      <h4>Responsible AI Use</h4>
-      <p>Cybersecurity matters more, not less, when AI is involved. The standalone security module covers what data is safe to share with a model — and what absolutely isn't.</p>
+    <div class="audience-card">
+      <div class="audience-icon">🔐</div>
+      <div class="audience-title">Responsible AI Use</div>
+      <p class="audience-desc">Cybersecurity matters more, not less, when AI is involved. Security Snapshots in every module cover what data is safe to share with a model — and what absolutely isn't.</p>
     </div>
   </div>
 </section>
 
-<!-- ══ FOOTER ═════════════════════════════════════════ -->
+<!-- ── FOOTER ────────────────────────────────────────────────────────────── -->
 <footer>
-  <strong>TechReady Series for Tim</strong> · Five modules · No prerequisites · Built for AI course readiness
-  <div class="footer-credit">
+  <div class="footer-left">
+    <strong>TechReady Series for Tim</strong> · Seven files · No prerequisites · Built for AI course readiness<br>
     Spec'd by Tim Johnson · Built by Claude · Atkinson Graduate School of Management · Willamette University
+  </div>
+  <div class="footer-right">
+    <div class="footer-dot" style="background:var(--c1)"></div>
+    <div class="footer-dot" style="background:var(--c2)"></div>
+    <div class="footer-dot" style="background:var(--c3)"></div>
+    <div class="footer-dot" style="background:var(--c4)"></div>
+    <div class="footer-dot" style="background:var(--c5)"></div>
+    <div class="footer-dot" style="background:var(--c-cap)"></div>
+    <div class="footer-dot" style="background:var(--c-pre)"></div>
   </div>
 </footer>
 
+</div><!-- .app -->
 </body>
 </html>

@@ -292,6 +292,113 @@
     </div>
   </div>
 
+  <!-- AI FILE FORMAT EXERCISES -->
+  <div class="section fade-up">
+    <div class="section-label">AI Readiness — New</div>
+    <h2>🤖 File formats you'll use with AI</h2>
+    <p>AI tools are only as good as the data you put in front of them. Knowing which file formats models expect — and how to prepare them — is a core practical skill for any AI workflow.</p>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:18px 0">
+      <div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:18px">
+        <div style="font-size:1.4rem;margin-bottom:8px">📋</div>
+        <div style="font-family:'DM Mono',monospace;font-size:0.72rem;color:var(--accent);margin-bottom:5px">.csv — Comma-Separated Values</div>
+        <div style="font-size:0.83rem;color:var(--muted);line-height:1.65"><strong style="color:var(--text)">The universal AI data format.</strong> Every row is a record; columns are separated by commas. AI models, data science tools (pandas, scikit-learn), and most APIs expect CSV for tabular data. Excel can save as CSV via File → Save As → CSV.</div>
+      </div>
+      <div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:18px">
+        <div style="font-size:1.4rem;margin-bottom:8px">📝</div>
+        <div style="font-family:'DM Mono',monospace;font-size:0.72rem;color:var(--accent);margin-bottom:5px">.txt — Plain Text</div>
+        <div style="font-size:0.83rem;color:var(--muted);line-height:1.65"><strong style="color:var(--text)">Clean input for language models.</strong> No formatting, no embedded objects — just text. When feeding documents to a language model for summarization, Q&A, or analysis, plain .txt (or .md) is often cleaner than a Word .docx file.</div>
+      </div>
+      <div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:18px">
+        <div style="font-size:1.4rem;margin-bottom:8px">📦</div>
+        <div style="font-family:'DM Mono',monospace;font-size:0.72rem;color:var(--accent);margin-bottom:5px">.json — JavaScript Object Notation</div>
+        <div style="font-size:0.83rem;color:var(--muted);line-height:1.65"><strong style="color:var(--text)">How AI APIs communicate.</strong> API responses — including from ChatGPT, Claude, and Gemini — are returned as JSON. It's a structured text format using key-value pairs. You'll see .json files for model configs, API responses, and training data.</div>
+      </div>
+      <div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:18px">
+        <div style="font-size:1.4rem;margin-bottom:8px">📄</div>
+        <div style="font-family:'DM Mono',monospace;font-size:0.72rem;color:var(--accent);margin-bottom:5px">.pdf — Portable Document Format</div>
+        <div style="font-size:0.83rem;color:var(--muted);line-height:1.65"><strong style="color:var(--text)">Common AI input with caveats.</strong> Many AI tools accept PDFs for document analysis. However, scanned PDFs (images of pages) often need OCR (optical character recognition) first to extract machine-readable text before an AI can process them.</div>
+      </div>
+    </div>
+
+    <div class="section-label" style="margin:22px 0 14px">Hands-on Exercises — Do These Now</div>
+    <div class="tabs">
+      <div class="tab active" data-tab="ex1">Exercise 1: CSV</div>
+      <div class="tab" data-tab="ex2">Exercise 2: TXT</div>
+      <div class="tab" data-tab="ex3">Exercise 3: Paths</div>
+      <div class="tab" data-tab="ex4">Exercise 4: Inspect</div>
+    </div>
+    <div class="tab-pane active" id="ex1">
+      <div style="background:rgba(240,72,128,0.05);border:1px solid rgba(240,72,128,0.18);border-radius:10px;padding:18px 22px;margin-bottom:16px">
+        <div style="font-family:'DM Mono',monospace;font-size:0.63rem;color:var(--accent);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:8px">Exercise: Create and inspect a .csv file</div>
+        <div style="font-size:0.88rem;color:#c8a8b8;line-height:1.75">
+          <strong style="color:var(--text)">Step 1:</strong> Open Notepad (Windows) or TextEdit in Plain Text mode (Mac: Format → Make Plain Text).<br>
+          <strong style="color:var(--text)">Step 2:</strong> Type this exactly — these are headers and two rows of sample data:<br>
+          <code style="display:block;margin:10px 0;padding:10px;background:#0a0508;border-radius:6px;font-size:0.82rem;line-height:1.8">name,age,city,role<br>Alice,32,New York,Engineer<br>Bob,28,Chicago,Designer</code>
+          <strong style="color:var(--text)">Step 3:</strong> Save the file as <code>sample_data.csv</code> (make sure the extension is .csv, not .txt).<br>
+          <strong style="color:var(--text)">Step 4:</strong> Open it in Excel or Google Sheets — it should auto-organize into columns. This is what an AI model receives as tabular input.<br>
+          <strong style="color:var(--text)">What you learned:</strong> CSV files are just text with commas as delimiters. Any text editor can create them. Any data tool can read them. They have no special formatting — which is exactly why AI tools prefer them.
+        </div>
+      </div>
+    </div>
+    <div class="tab-pane" id="ex2">
+      <div style="background:rgba(240,72,128,0.05);border:1px solid rgba(240,72,128,0.18);border-radius:10px;padding:18px 22px;margin-bottom:16px">
+        <div style="font-family:'DM Mono',monospace;font-size:0.63rem;color:var(--accent);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:8px">Exercise: Extract text from a document for AI input</div>
+        <div style="font-size:0.88rem;color:#c8a8b8;line-height:1.75">
+          <strong style="color:var(--text)">Scenario:</strong> You have a Word document you want to analyze with an AI tool. The tool only accepts plain text.<br><br>
+          <strong style="color:var(--text)">Method A (Word):</strong> File → Save As → change format to "Plain Text (.txt)" → Click OK. Warning: all formatting (bold, tables, images) will be lost — only the text remains. This is exactly what you want for AI input.<br><br>
+          <strong style="color:var(--text)">Method B (Copy-paste):</strong> Select all text in the document (Ctrl+A / Cmd+A) → Copy → Open Notepad/TextEdit → Paste → Save as .txt.<br><br>
+          <strong style="color:var(--text)">Method C (macOS Terminal):</strong> <code>textutil -convert txt yourfile.docx</code> — converts any supported format to plain text from the command line.<br><br>
+          <strong style="color:var(--text)">Key insight:</strong> AI language models process text tokens, not visual formatting. A document with beautiful formatting in .docx may confuse the model with embedded XML/metadata. Clean .txt is almost always better.
+        </div>
+      </div>
+    </div>
+    <div class="tab-pane" id="ex3">
+      <div style="background:rgba(240,72,128,0.05);border:1px solid rgba(240,72,128,0.18);border-radius:10px;padding:18px 22px;margin-bottom:16px">
+        <div style="font-family:'DM Mono',monospace;font-size:0.63rem;color:var(--accent);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:8px">Exercise: Navigate to a file using its exact path</div>
+        <div style="font-size:0.88rem;color:#c8a8b8;line-height:1.75">
+          <strong style="color:var(--text)">Why this matters for AI:</strong> When you run AI tools from the command line (like <code>python train.py --data /path/to/data.csv</code>), you must provide exact file paths. Being unable to construct or navigate paths is a constant stumbling block for beginners.<br><br>
+          <strong style="color:var(--text)">Windows exercise:</strong> Open File Explorer → navigate to a file → click the address bar at the top → it shows the full path (e.g., <code>C:\Users\You\Documents\data.csv</code>). Copy it. Open Command Prompt and type <code>type "C:\Users\You\Documents\data.csv"</code> to display its contents.<br><br>
+          <strong style="color:var(--text)">Mac/Linux exercise:</strong> Open Terminal. Type <code>ls ~/Documents</code> to list your Documents folder. Then type <code>cat ~/Documents/sample_data.csv</code> (using the file from Exercise 1) to display its contents. The <code>~</code> is shorthand for your home directory.<br><br>
+          <strong style="color:var(--text)">Relative vs. absolute paths:</strong> <code>data.csv</code> (relative — looks in current folder) vs. <code>/Users/you/Documents/data.csv</code> (absolute — works from anywhere). AI scripts almost always need absolute paths or paths relative to a known working directory.
+        </div>
+      </div>
+    </div>
+    <div class="tab-pane" id="ex4">
+      <div style="background:rgba(240,72,128,0.05);border:1px solid rgba(240,72,128,0.18);border-radius:10px;padding:18px 22px;margin-bottom:16px">
+        <div style="font-family:'DM Mono',monospace;font-size:0.63rem;color:var(--accent);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:8px">Exercise: Inspect a file without opening it</div>
+        <div style="font-size:0.88rem;color:#c8a8b8;line-height:1.75">
+          AI workflows often involve files with unknown contents. Learning to inspect files quickly prevents errors.<br><br>
+          <strong style="color:var(--text)">Windows:</strong> Right-click any file → Properties → shows exact file size, creation date, type, and path. For text files in Notepad: the status bar shows line count and character position.<br><br>
+          <strong style="color:var(--text)">Mac:</strong> Click a file once → press Space bar for Quick Look preview. Or right-click → Get Info for detailed metadata including exact size, creation/modification dates, and full path.<br><br>
+          <strong style="color:var(--text)">Terminal (all systems):</strong> <code>wc -l filename.csv</code> counts lines (= number of rows in CSV). <code>head -5 filename.csv</code> shows the first 5 lines. These are essential for verifying a dataset before feeding it to a model.<br><br>
+          <strong style="color:var(--text)">Goal:</strong> Before sending any file to an AI tool, you should know: its format, approximate size, and whether it contains what you think it contains.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECURITY SNAPSHOT -->
+  <div class="section fade-up" style="border-color:rgba(240,72,128,0.25)">
+    <div class="section-label" style="color:var(--accent)">🔒 Security Snapshot</div>
+    <h2>Files, data leakage &amp; AI risks</h2>
+    <p>Files and how you handle them are central to data privacy in AI workflows. These concepts apply even if you skip the full Cybersecurity module.</p>
+    <div style="display:flex;flex-direction:column;gap:10px;margin-top:16px">
+      <div style="background:rgba(240,72,128,0.06);border:1px solid rgba(240,72,128,0.18);border-radius:9px;padding:16px 18px">
+        <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:0.88rem;color:#f08090;margin-bottom:6px">⚠️ Uploading files to cloud AI tools sends them to third-party servers</div>
+        <div style="font-size:0.83rem;color:var(--muted);line-height:1.65">When you upload a document to ChatGPT, Claude, or Gemini, that file is transmitted to and processed on those companies' servers. <strong style="color:var(--text)">Never upload confidential company data, customer PII, medical records, or financial data to public AI tools without explicit approval</strong> from your company's data governance policy. Check before uploading.</div>
+      </div>
+      <div style="background:rgba(240,72,128,0.06);border:1px solid rgba(240,72,128,0.18);border-radius:9px;padding:16px 18px">
+        <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:0.88rem;color:#f08090;margin-bottom:6px">⚠️ CSV and TXT files can contain sensitive data you might not notice</div>
+        <div style="font-size:0.83rem;color:var(--muted);line-height:1.65">Data exports from CRM systems, finance tools, or HR software often contain personal identifiable information in seemingly innocuous CSV files. Before sending any data file to an AI tool, open it and scan the columns/content. A file named "sales_report.csv" might also contain customer email addresses and phone numbers.</div>
+      </div>
+      <div style="background:rgba(240,72,128,0.06);border:1px solid rgba(240,72,128,0.18);border-radius:9px;padding:16px 18px">
+        <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:0.88rem;color:#f08090;margin-bottom:6px">⚠️ File naming reveals information — be intentional</div>
+        <div style="font-size:0.83rem;color:var(--muted);line-height:1.65">Filenames are often visible in logs, URLs, cloud storage, and sharing links. Avoid naming files with customer names, internal project codenames, financial figures, or PII in the filename itself (e.g., <code>smith_john_ssn_records.csv</code>). Use neutral, descriptive names that don't expose sensitive context.</div>
+      </div>
+    </div>
+  </div>
+
   <div class="quiz-wrap" id="quizWrap">
     <div id="quizInner"></div>
   </div>

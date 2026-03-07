@@ -273,6 +273,95 @@
     </div>
   </div>
 
+  <!-- AI READINESS: GPU STRESS TEST -->
+  <div class="section fade-up">
+    <div class="section-label">AI Readiness — New</div>
+    <h2>🤖 Can your hardware run local AI?</h2>
+    <p>Many modern AI tools (like running a local language model, image generator, or transcription engine) require significant GPU power. Understanding your hardware's capabilities determines whether you can run AI locally or need to use cloud-based APIs instead.</p>
+
+    <div style="background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:24px;margin:18px 0">
+      <div class="section-label" style="margin-bottom:14px">GPU Capability Tiers for Local AI</div>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div style="background:rgba(77,240,160,0.07);border:1px solid rgba(77,240,160,0.2);border-radius:9px;padding:16px;display:flex;gap:14px;align-items:flex-start">
+          <div style="font-size:1.4rem;flex-shrink:0">🟢</div>
+          <div>
+            <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:0.9rem;color:var(--correct);margin-bottom:5px">CAPABLE — Dedicated GPU with 8GB+ VRAM</div>
+            <div style="font-size:0.83rem;color:var(--muted);line-height:1.65">Examples: NVIDIA RTX 3070/4060/4070, AMD RX 6700 XT. Can run mid-size language models (7B–13B parameters), local image generation (Stable Diffusion), and real-time transcription. Suitable for serious AI development work.</div>
+          </div>
+        </div>
+        <div style="background:rgba(240,192,64,0.07);border:1px solid rgba(240,192,64,0.2);border-radius:9px;padding:16px;display:flex;gap:14px;align-items:flex-start">
+          <div style="font-size:1.4rem;flex-shrink:0">🟡</div>
+          <div>
+            <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:0.9rem;color:var(--accent);margin-bottom:5px">LIMITED — Integrated GPU or older dedicated GPU (4GB VRAM)</div>
+            <div style="font-size:0.83rem;color:var(--muted);line-height:1.65">Examples: Intel Iris Xe, NVIDIA GTX 1050, Apple M1 integrated. Can run small models (1B–3B parameters) slowly, or quantized (compressed) versions of larger models. Good for learning but bottlenecked for production AI tasks.</div>
+          </div>
+        </div>
+        <div style="background:rgba(240,77,122,0.07);border:1px solid rgba(240,77,122,0.2);border-radius:9px;padding:16px;display:flex;gap:14px;align-items:flex-start">
+          <div style="font-size:1.4rem;flex-shrink:0">🔴</div>
+          <div>
+            <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:0.9rem;color:var(--wrong);margin-bottom:5px">CPU-ONLY / NO DEDICATED GPU</div>
+            <div style="font-size:0.83rem;color:var(--muted);line-height:1.65">Local AI inference on CPU only is extremely slow — a task taking 2 seconds on GPU may take 5–10 minutes on CPU. For learning and API-based work this is fine, but running local models will be impractical. Cloud-based AI APIs (OpenAI, Anthropic, Google) are the right approach here.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-label" style="margin:22px 0 12px">How to check your GPU — step by step</div>
+    <div class="tabs">
+      <div class="tab active" data-tab="gpu-win">Windows</div>
+      <div class="tab" data-tab="gpu-mac">macOS</div>
+      <div class="tab" data-tab="gpu-lin">Linux</div>
+      <div class="tab" data-tab="gpu-ram">RAM Check</div>
+    </div>
+    <div class="tab-pane active" id="gpu-win">
+      <p><strong>Method 1 — Task Manager:</strong> Press <code>Ctrl+Shift+Esc</code> → Performance tab → Click "GPU 0" (and GPU 1 if you have two). You'll see the GPU name, current usage, and critically: <strong>Dedicated GPU Memory</strong> (VRAM). This is the key number for AI tasks.</p>
+      <p><strong>Method 2 — Device Manager:</strong> Press <code>Win+X</code> → Device Manager → Display Adapters. This shows your GPU model name. Search that name online to find its VRAM specs.</p>
+      <p><strong>VRAM threshold:</strong> 8GB+ VRAM = capable for most local models. 4GB = limited. Under 4GB = use cloud APIs.</p>
+    </div>
+    <div class="tab-pane" id="gpu-mac">
+      <p><strong>Apple Silicon (M1/M2/M3/M4):</strong> Click Apple menu → About This Mac. Apple Silicon chips use unified memory shared between CPU and GPU — there's no separate VRAM figure. An M1 with 16GB unified memory performs comparably to a dedicated GPU with ~8GB VRAM for many AI tasks. M2/M3/M4 chips are significantly faster.</p>
+      <p><strong>Intel Mac with AMD GPU:</strong> Apple menu → About This Mac → System Report → Graphics/Displays. Look for "VRAM (Dynamic, Max)." Many older Intel MacBooks have only 1.5–2GB which limits local AI tasks to very small models.</p>
+    </div>
+    <div class="tab-pane" id="gpu-lin">
+      <p><strong>NVIDIA GPU:</strong> Open Terminal and run <code>nvidia-smi</code>. This shows GPU model, total VRAM, currently used VRAM, and GPU utilization. If nvidia-smi isn't installed: <code>sudo apt install nvidia-utils-xxx</code> (replace xxx with your driver version).</p>
+      <p><strong>AMD GPU:</strong> Run <code>lspci | grep -i vga</code> to see your GPU model, then <code>glxinfo | grep "Video memory"</code> for VRAM. Alternatively <code>sudo apt install radeontop</code> for AMD monitoring.</p>
+      <p><strong>Any GPU:</strong> <code>lshw -C display</code> shows display hardware details including memory size.</p>
+    </div>
+    <div class="tab-pane" id="gpu-ram">
+      <p>AI models also require substantial system RAM (not VRAM). A 7B parameter model typically needs 8–16GB of system RAM minimum. Check your RAM:</p>
+      <p><strong>Windows:</strong> <code>Ctrl+Shift+Esc</code> → Performance → Memory. Look at "Installed memory" and "Speed."</p>
+      <p><strong>Mac:</strong> Apple menu → About This Mac → shows Memory directly.</p>
+      <p><strong>Linux:</strong> Run <code>free -h</code> in Terminal.</p>
+      <p><strong>Minimum for local AI:</strong> 16GB RAM recommended. 8GB is workable for small models. Under 8GB, use cloud-based AI APIs — trying to run local models will cause your system to freeze.</p>
+    </div>
+
+    <div style="background:rgba(240,128,64,0.07);border:1px solid rgba(240,128,64,0.2);border-radius:10px;padding:16px 20px;margin-top:18px">
+      <div style="font-family:'DM Mono',monospace;font-size:0.63rem;color:var(--accent2);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:8px">Key Takeaway</div>
+      <div style="font-size:0.88rem;color:#c8b090;line-height:1.75">If your hardware doesn't meet local AI requirements, <strong style="color:var(--text)">that's completely fine</strong> — cloud-based AI APIs (OpenAI, Anthropic, Google Gemini) let you access powerful models without local GPU requirements. Understanding your hardware simply tells you which approach to use. Module 4 covers cloud/API basics.</div>
+    </div>
+  </div>
+
+  <!-- SECURITY SNAPSHOT -->
+  <div class="section fade-up" style="border-color:rgba(240,77,122,0.25)">
+    <div class="section-label" style="color:#f04d7a">🔒 Security Snapshot</div>
+    <h2>Hardware risks you need to know</h2>
+    <p>Even if you skip the full Cybersecurity module, these hardware-related security concepts are essential for anyone working with AI tools and sensitive data.</p>
+    <div style="display:flex;flex-direction:column;gap:10px;margin-top:16px">
+      <div style="background:rgba(240,77,122,0.06);border:1px solid rgba(240,77,122,0.18);border-radius:9px;padding:16px 18px">
+        <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:0.88rem;color:#f08090;margin-bottom:6px">⚠️ Unknown USB drives are a malware vector</div>
+        <div style="font-size:0.83rem;color:var(--muted);line-height:1.65">Never plug in a USB drive you found, received unexpectedly, or can't verify. Malicious USBs can install malware the moment they're connected — before any software runs. This is a real attack technique called "USB drop attack." Only use USB drives from trusted, known sources.</div>
+      </div>
+      <div style="background:rgba(240,77,122,0.06);border:1px solid rgba(240,77,122,0.18);border-radius:9px;padding:16px 18px">
+        <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:0.88rem;color:#f08090;margin-bottom:6px">⚠️ Hardware can leak data even when "off"</div>
+        <div style="font-size:0.83rem;color:var(--muted);line-height:1.65">Hard drives store data even after deletion until overwritten. Disposing of old computers without proper disk wiping (not just reformatting) leaves sensitive data recoverable. Use full-disk encryption (BitLocker on Windows, FileVault on Mac) so that if a device is lost or stolen, the data is unreadable.</div>
+      </div>
+      <div style="background:rgba(240,77,122,0.06);border:1px solid rgba(240,77,122,0.18);border-radius:9px;padding:16px 18px">
+        <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:0.88rem;color:#f08090;margin-bottom:6px">⚠️ AI model weights can contain embedded malware</div>
+        <div style="font-size:0.83rem;color:var(--muted);line-height:1.65">When downloading local AI models (e.g., from Hugging Face), only use models from verified, reputable sources. Malicious actors have published model files containing embedded malicious code. Stick to well-known model providers and check community verification badges before downloading.</div>
+      </div>
+    </div>
+  </div>
+
   <!-- QUIZ -->
   <div class="quiz-wrap" id="quizWrap">
     <div id="quizInner"></div>
@@ -381,8 +470,9 @@ document.querySelectorAll('.part-btn').forEach(btn => {
 // Tabs
 document.querySelectorAll('.tab').forEach(t => {
   t.addEventListener('click', () => {
-    document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
-    document.querySelectorAll('.tab-pane').forEach(x=>x.classList.remove('active'));
+    const sec = t.closest('.section') || t.closest('.tabs').parentElement;
+    sec.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+    sec.querySelectorAll('.tab-pane').forEach(x=>x.classList.remove('active'));
     t.classList.add('active');
     document.getElementById(t.dataset.tab).classList.add('active');
   });

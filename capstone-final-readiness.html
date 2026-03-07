@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TechReady — Final Readiness Capstone</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #08080f;
+    --surface: #0f1018;
+    --surface2: #161820;
+    --border: #22243a;
+    --accent: #60d8ff;
+    --accent2: #a060ff;
+    --accent3: #40f090;
+    --warn: #f0c040;
+    --danger: #f04060;
+    --text: #e4e8ff;
+    --muted: #607090;
+    --correct: #40f090;
+    --wrong: #f04060;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; overflow-x: hidden; }
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background:
+      radial-gradient(ellipse at 20% 30%, rgba(96,216,255,0.07) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 70%, rgba(160,96,255,0.07) 0%, transparent 50%),
+      radial-gradient(ellipse at 50% 100%, rgba(64,240,144,0.04) 0%, transparent 40%);
+    pointer-events: none; z-index: 0;
+  }
+  .app { position: relative; z-index: 1; }
+
+  header {
+    border-bottom: 1px solid var(--border);
+    padding: 18px 40px;
+    display: flex; align-items: center; justify-content: space-between;
+    background: rgba(8,8,15,0.94); backdrop-filter: blur(12px);
+    position: sticky; top: 0; z-index: 100;
+  }
+  .logo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.1rem; display: flex; align-items: center; gap: 10px; }
+  .logo-chip { background: linear-gradient(135deg, var(--accent2), var(--accent)); color: #fff; font-size: 0.65rem; padding: 3px 8px; border-radius: 4px; font-weight: 700; letter-spacing: 0.05em; }
+  .header-progress { display: flex; align-items: center; gap: 12px; }
+  .stage-dots { display: flex; gap: 5px; }
+  .stage-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--border); transition: all 0.4s ease; }
+  .stage-dot.active { background: var(--accent); box-shadow: 0 0 8px rgba(96,216,255,0.4); }
+  .stage-dot.done { background: var(--correct); }
+  .stage-label { font-family: 'DM Mono', monospace; font-size: 0.7rem; color: var(--muted); }
+
+  .main { max-width: 860px; margin: 0 auto; padding: 60px 40px; }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(22px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes slideIn { from { opacity: 0; transform: translateX(30px); } to { opacity: 1; transform: translateX(0); } }
+  .fade-up { animation: fadeUp 0.5s ease forwards; }
+  .slide-in { animation: slideIn 0.4s ease forwards; }
+
+  /* INTRO */
+  .intro-eyebrow { font-family: 'DM Mono', monospace; font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent); margin-bottom: 18px; }
+  h1 { font-family: 'Syne', sans-serif; font-weight: 800; font-size: clamp(2rem,5vw,3rem); line-height: 1.06; letter-spacing: -0.03em; margin-bottom: 20px; }
+  h1 em { font-style: normal; background: linear-gradient(90deg, var(--accent), var(--accent2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  .intro-desc { font-size: 1rem; color: var(--muted); max-width: 560px; line-height: 1.78; margin-bottom: 36px; }
+  .scenario-setup { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 32px; margin-bottom: 32px; }
+  .setup-label { font-family: 'DM Mono', monospace; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.14em; color: var(--accent); margin-bottom: 14px; }
+  .setup-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1.25rem; margin-bottom: 14px; }
+  .setup-text { font-size: 0.92rem; color: #b0b8d8; line-height: 1.8; }
+  .setup-text strong { color: var(--text); }
+  .skills-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 18px; }
+  .skill-badge { font-family: 'DM Mono', monospace; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.08em; padding: 4px 12px; border-radius: 20px; border: 1px solid; }
+  .badge-hw { background: rgba(240,192,64,0.1); color: #f0c040; border-color: rgba(240,192,64,0.3); }
+  .badge-os { background: rgba(48,216,200,0.1); color: #30d8c8; border-color: rgba(48,216,200,0.3); }
+  .badge-fi { background: rgba(240,72,128,0.1); color: #f04880; border-color: rgba(240,72,128,0.3); }
+  .badge-net { background: rgba(192,128,255,0.1); color: #c080ff; border-color: rgba(192,128,255,0.3); }
+  .badge-sec { background: rgba(64,240,144,0.1); color: #40f090; border-color: rgba(64,240,144,0.3); }
+
+  .start-btn { background: linear-gradient(135deg, var(--accent2), var(--accent)); color: #fff; border: none; padding: 14px 36px; border-radius: 10px; font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1rem; cursor: pointer; transition: all 0.2s; }
+  .start-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 30px rgba(96,216,255,0.25); }
+
+  /* STAGE */
+  .stage-screen { animation: fadeUp 0.45s ease; }
+  .stage-header { margin-bottom: 32px; }
+  .stage-num { font-family: 'DM Mono', monospace; font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.15em; color: var(--accent); margin-bottom: 8px; }
+  .stage-title { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.7rem; letter-spacing: -0.02em; margin-bottom: 10px; }
+  .stage-sub { font-size: 0.92rem; color: var(--muted); line-height: 1.7; }
+
+  /* TASK CARDS */
+  .task-list { display: flex; flex-direction: column; gap: 12px; margin-bottom: 28px; }
+  .task-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 22px 26px; display: flex; gap: 16px; align-items: flex-start; cursor: pointer; transition: all 0.25s; }
+  .task-card:hover:not(.locked) { border-color: var(--accent); background: rgba(96,216,255,0.04); }
+  .task-card.active { border-color: var(--accent); background: rgba(96,216,255,0.06); }
+  .task-card.done { border-color: rgba(64,240,144,0.35); background: rgba(64,240,144,0.04); cursor: default; }
+  .task-card.locked { opacity: 0.4; cursor: not-allowed; }
+  .task-check { width: 26px; height: 26px; border-radius: 50%; border: 2px solid var(--border); flex-shrink: 0; display: flex; align-items: center; justify-content: center; margin-top: 2px; transition: all 0.25s; font-size: 0.8rem; }
+  .task-card.done .task-check { background: var(--correct); border-color: var(--correct); color: #000; }
+  .task-card.active .task-check { border-color: var(--accent); }
+  .task-info { flex: 1; }
+  .task-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.95rem; margin-bottom: 4px; }
+  .task-desc { font-size: 0.83rem; color: var(--muted); line-height: 1.6; }
+  .task-tag { font-family: 'DM Mono', monospace; font-size: 0.62rem; padding: 2px 8px; border-radius: 4px; display: inline-block; margin-top: 6px; }
+
+  /* INTERACTION ZONE */
+  .interaction-zone { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 32px; margin-bottom: 24px; min-height: 200px; }
+  .interaction-zone.hidden { display: none; }
+  .iz-label { font-family: 'DM Mono', monospace; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.14em; color: var(--accent); margin-bottom: 16px; }
+  .iz-question { font-size: 1rem; font-weight: 500; line-height: 1.65; margin-bottom: 20px; }
+
+  /* CHOICE BUTTONS */
+  .choices { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
+  .choice-btn { background: var(--surface2); border: 1px solid var(--border); border-radius: 9px; padding: 13px 18px; color: var(--text); cursor: pointer; text-align: left; font-family: 'DM Sans', sans-serif; font-size: 0.88rem; line-height: 1.5; transition: all 0.2s; }
+  .choice-btn:hover:not(:disabled) { border-color: var(--accent); background: rgba(96,216,255,0.06); }
+  .choice-btn.correct { border-color: var(--correct); background: rgba(64,240,144,0.1); color: var(--correct); }
+  .choice-btn.wrong { border-color: var(--wrong); background: rgba(240,64,96,0.1); color: var(--wrong); }
+  .choice-btn:disabled { cursor: not-allowed; }
+
+  /* FEEDBACK */
+  .iz-feedback { padding: 14px 18px; border-radius: 9px; font-size: 0.88rem; line-height: 1.65; margin-bottom: 18px; display: none; }
+  .iz-feedback.correct { background: rgba(64,240,144,0.08); border: 1px solid rgba(64,240,144,0.25); color: #80f0b0; display: block; }
+  .iz-feedback.wrong { background: rgba(240,64,96,0.08); border: 1px solid rgba(240,64,96,0.25); color: #f09090; display: block; }
+
+  .continue-btn { background: var(--accent); color: #000; border: none; padding: 11px 26px; border-radius: 8px; font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.88rem; cursor: pointer; transition: all 0.2s; display: none; }
+  .continue-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 22px rgba(96,216,255,0.3); }
+  .continue-btn.show { display: inline-block; }
+
+  /* PRIVACY AUDIT */
+  .risk-list { display: flex; flex-direction: column; gap: 10px; margin: 14px 0; }
+  .risk-item { background: var(--surface2); border: 1px solid var(--border); border-radius: 9px; padding: 14px 18px; cursor: pointer; transition: all 0.2s; }
+  .risk-item:hover { border-color: var(--warn); }
+  .risk-item.flagged { border-color: var(--danger); background: rgba(240,64,96,0.06); }
+  .risk-item.cleared { border-color: rgba(64,240,144,0.3); background: rgba(64,240,144,0.04); }
+  .risk-header { display: flex; align-items: center; justify-content: space-between; }
+  .risk-title { font-size: 0.9rem; font-weight: 600; }
+  .risk-indicator { font-family: 'DM Mono', monospace; font-size: 0.68rem; padding: 3px 10px; border-radius: 12px; }
+  .risk-unset { background: var(--border); color: var(--muted); }
+  .risk-high { background: rgba(240,64,96,0.15); color: var(--danger); border: 1px solid rgba(240,64,96,0.3); }
+  .risk-low { background: rgba(64,240,144,0.12); color: var(--correct); border: 1px solid rgba(64,240,144,0.25); }
+  .risk-detail { font-size: 0.82rem; color: var(--muted); line-height: 1.65; margin-top: 10px; display: none; }
+  .risk-item.open .risk-detail { display: block; }
+  .risk-actions { display: flex; gap: 8px; margin-top: 10px; }
+  .risk-action-btn { font-family: 'DM Mono', monospace; font-size: 0.68rem; padding: 4px 12px; border-radius: 5px; border: 1px solid var(--border); background: transparent; color: var(--muted); cursor: pointer; transition: all 0.2s; }
+  .risk-action-btn:hover { border-color: var(--warn); color: var(--warn); }
+  .risk-action-btn.selected-high { background: rgba(240,64,96,0.15); color: var(--danger); border-color: rgba(240,64,96,0.4); }
+  .risk-action-btn.selected-low { background: rgba(64,240,144,0.12); color: var(--correct); border-color: rgba(64,240,144,0.3); }
+
+  /* CERTIFICATE */
+  .cert-screen { text-align: center; padding: 40px 20px 60px; animation: fadeUp 0.6s ease; }
+  .cert-badge { font-size: 5rem; margin-bottom: 20px; display: block; }
+  .cert-title { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 2.2rem; letter-spacing: -0.03em; margin-bottom: 12px; }
+  .cert-title em { font-style: normal; background: linear-gradient(90deg, var(--accent), var(--accent2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  .cert-sub { color: var(--muted); margin-bottom: 40px; font-size: 0.95rem; line-height: 1.7; max-width: 480px; margin-left: auto; margin-right: auto; }
+  .cert-card { background: var(--surface); border: 1px solid; border-image: linear-gradient(135deg, rgba(96,216,255,0.4), rgba(160,96,255,0.4)) 1; border-radius: 16px; padding: 36px; margin: 0 auto 36px; max-width: 520px; }
+  .cert-score-row { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; margin-bottom: 24px; }
+  .cert-score { text-align: center; }
+  .cert-score-val { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.8rem; color: var(--accent); margin-bottom: 4px; }
+  .cert-score-label { font-family: 'DM Mono', monospace; font-size: 0.63rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); }
+  .cert-skills { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+  .cert-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+  .btn-primary { background: linear-gradient(135deg, var(--accent2), var(--accent)); color: #fff; border: none; padding: 12px 26px; border-radius: 8px; font-family: 'Syne', sans-serif; font-weight: 700; cursor: pointer; transition: all 0.2s; }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 26px rgba(96,216,255,0.25); }
+  .btn-ghost { background: transparent; color: var(--text); border: 1px solid var(--border); padding: 12px 26px; border-radius: 8px; font-family: 'Syne', sans-serif; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+  .btn-ghost:hover { border-color: var(--accent); }
+
+  @media(max-width:600px) { .main{padding:28px 18px;} header{padding:14px 18px;} .cert-score-row{grid-template-columns:1fr 1fr;} }
+</style>
+</head>
+<body>
+<div class="app">
+<header>
+  <div class="logo"><div class="logo-chip">CAPSTONE</div>Final Readiness</div>
+  <div class="header-progress">
+    <div class="stage-dots" id="stageDots">
+      <div class="stage-dot active"></div>
+      <div class="stage-dot"></div>
+      <div class="stage-dot"></div>
+      <div class="stage-dot"></div>
+    </div>
+    <div class="stage-label" id="stageLabel">Stage 1 of 4</div>
+  </div>
+</header>
+
+<div class="main" id="mainArea"></div>
+</div>
+
+<script>
+// ─── STATE ──────────────────────────────────────────────────────────────────
+let state = {
+  screen: 'intro',  // intro | stage1 | stage2 | stage3 | stage4 | cert
+  stageScores: {},  // stageId -> {correct, total}
+  riskRatings: {},  // riskId -> 'high' | 'low'
+  totalCorrect: 0,
+  totalQ: 0,
+};
+
+// ─── STAGE DATA ──────────────────────────────────────────────────────────────
+const stages = [
+  { id: 1, title: 'System Compatibility Check', sub: 'Before uploading anything, confirm your system can handle the task and identify the right tools.', num: 'Stage 01 / 04', badges: ['badge-hw','badge-os'] },
+  { id: 2, title: 'Locate &amp; Prepare the File',  sub: 'Navigate to the file using its path, verify its format, and convert it for AI input.', num: 'Stage 02 / 04', badges: ['badge-fi'] },
+  { id: 3, title: 'Upload to Cloud Storage',   sub: 'Choose the right cloud service, share it appropriately, and use the API correctly.', num: 'Stage 03 / 04', badges: ['badge-net'] },
+  { id: 4, title: 'Privacy Risk Audit',        sub: 'Document the privacy risks involved in each decision you made — the final gate before AI coursework.', num: 'Stage 04 / 04', badges: ['badge-sec'] },
+];
+
+// Stage questions
+const stageQs = {
+  1: [
+    {
+      id:'s1q1',
+      q:"Your manager asks you to run a local AI transcription tool on a 2-hour audio file. You check your laptop in Task Manager and find: GPU = Intel Iris Xe (integrated, 1.5GB shared), RAM = 8GB. What should you tell your manager?",
+      choices:["The laptop can run it perfectly — integrated GPUs work fine for all AI","The laptop has limited GPU capability — local transcription will be very slow. A cloud-based transcription API would be significantly faster and more practical","I need to reinstall Windows first","The audio file format is the issue, not the hardware"],
+      c:1, e:"Intel Iris Xe with 1.5GB shared VRAM is a limited-tier GPU. Local AI transcription on a 2-hour audio file will take far longer than the audio itself. A cloud API (like OpenAI Whisper API or Google Speech-to-Text) would process it in minutes. Understanding your hardware determines which AI approach to use."
+    },
+    {
+      id:'s1q2',
+      q:"You need to verify if the new AI tool supports your OS. You're on a Windows laptop. IT asks 'what version are you on?' Where do you look?",
+      choices:["Microsoft Word → Help → About Word","Settings (Win+I) → System → About → shows Edition and Version","The Windows taskbar clock","Control Panel → Programs"],
+      c:1, e:"Settings → System → About is the definitive place to find your Windows edition (e.g., Windows 11 Pro) and version (e.g., 23H2). You can also press Win+R → type 'winver' → Enter for a quick popup. This is the first piece of information IT needs to help you."
+    },
+    {
+      id:'s1q3',
+      q:"The AI tool's installation page says: 'Requires Windows 10 version 1903 or later, or Windows 11. 64-bit only.' You're running Windows 11 Home, version 22H2. Can you proceed?",
+      choices:["No — you need Windows 10 specifically, not Windows 11","No — Windows 11 Home isn't supported, only Pro","Yes — Windows 11 satisfies 'Windows 10 or later' and 22H2 is after 1903","You need to check with IT before installing anything"],
+      c:2, e:"'Windows 10 version 1903 or later' includes Windows 11, which is Microsoft's successor. Version 22H2 (released late 2022) is well after version 1903 (released 2019). Windows 11 Home meets the requirement. Always read system requirements literally — they often include compatibility notes like 'or later' and 'or newer.'"
+    },
+  ],
+  2: [
+    {
+      id:'s2q1',
+      q:"Your AI tool needs a plain text version of a customer survey report. You have a file at: C:\\Users\\Jordan\\Documents\\Surveys\\CustomerFeedback_Q3.docx\n\nYour colleague says 'just send me the csv.' What's wrong with this request?",
+      choices:["Nothing — .docx and .csv are the same format","A .docx is a Word document (formatted text/structured document). A .csv is a table of data (rows and columns). You'd convert to .txt for plain text input, or .csv only if the survey results are structured tabular data","You should always send PDFs, never CSVs","The file path is incorrect — it won't work on Windows"],
+      c:1, e:"Format matters significantly for AI tools. A .docx → .txt conversion gives unstructured text (good for language model analysis). A .docx → .csv would only make sense if the document contains tabular survey data. Sending a Word doc as if it were CSV creates errors. Understanding file types prevents downstream failures."
+    },
+    {
+      id:'s2q2',
+      q:"You need to navigate to the file C:\\Users\\Jordan\\Documents\\Surveys\\CustomerFeedback_Q3.docx using File Explorer. Which approach is fastest?",
+      choices:["Click Desktop → right-click → Properties → navigate from there","Click the address bar in File Explorer, type the full path and press Enter","Open Word, then use File → Open","Google 'how to find files on Windows'"],
+      c:1, e:"Clicking the File Explorer address bar and typing (or pasting) the complete path is the fastest method. File Explorer navigates directly to that location. This skill — navigating by path — is essential for AI scripts where you must specify exact file locations as command-line arguments or configuration values."
+    },
+    {
+      id:'s2q3',
+      q:"You convert the Word document to a .txt file. Before sending it to the AI tool, you want to quickly verify the first few lines. What's the quickest way?",
+      choices:["Open it in Word","On Windows: open Command Prompt, navigate to the folder, type: more CustomerFeedback_Q3.txt — or on Mac/Linux: head -20 filename.txt","Email it to yourself and open it on your phone","Rename it to .pdf first"],
+      c:1, e:"The command-line tools 'more' (Windows) and 'head' (Mac/Linux) let you inspect file contents without opening them in an application. 'head -20 filename.txt' shows the first 20 lines instantly. This is a fundamental AI workflow skill — verifying your data before passing it to a model prevents wasted API calls on corrupted or wrong files."
+    },
+  ],
+  3: [
+    {
+      id:'s3q1',
+      q:"Your AI tool will process the file on a cloud server. You need to upload it to company-approved cloud storage. Which option is most appropriate for company data?",
+      choices:["Your personal Gmail Drive account — it's free and easy","The company's Microsoft SharePoint/OneDrive — company-managed and approved","A random free file hosting site","Text the file to your personal phone first"],
+      c:1, e:"Company data must go into company-approved, company-managed cloud storage. Using personal accounts for work files violates data governance policies, removes IT oversight and backup coverage, and may violate privacy regulations (GDPR, HIPAA). SharePoint/OneDrive is managed by IT with access controls, audit logs, and security policies."
+    },
+    {
+      id:'s3q2',
+      q:"You need to share the uploaded file with an external AI API. The API docs say it needs an HTTPS URL to the file. You generate a shareable link in OneDrive. The link begins with http:// (not https://). What should you do?",
+      choices:["Use it — http and https are the same thing","Do not use it — http links are unencrypted. Look for an option to generate an https:// link, or use a different sharing method","Rename the file and try again","The link format doesn't matter for API calls"],
+      c:1, e:"HTTPS encrypts data in transit. An HTTP link sends your file's contents in plain text that anyone monitoring the network can intercept. For company data (especially customer survey results), always use HTTPS URLs. Modern cloud services like OneDrive always generate HTTPS links — if you see HTTP, something unusual is happening and it warrants investigation."
+    },
+    {
+      id:'s3q3',
+      q:"The AI API requires your API key in the request header. Where should you store this key so it's accessible to your script but NOT accidentally shared?",
+      choices:["Paste it directly into your Python script file","Store it in a .env file in your project folder and load it with python-dotenv. Never commit the .env file to version control","Write it in a comment at the top of the script","Email it to your team members so they all have it"],
+      c:1, e:"API keys in code files get accidentally shared constantly — in GitHub repos, in screenshots, in code reviews. The .env pattern keeps secrets separate from code. python-dotenv loads the key as an environment variable at runtime. Add .env to .gitignore so it's never committed. This is the industry standard for credentials management."
+    },
+  ],
+};
+
+// Privacy risks for Stage 4
+const privacyRisks = [
+  {
+    id: 'r1',
+    title: 'Customer names and emails in the survey data',
+    detail: 'The CustomerFeedback_Q3.txt file contains real customer names and email addresses from the survey. This is Personally Identifiable Information (PII) subject to GDPR, CCPA, and your company\'s data policy.',
+    correctRating: 'high',
+    explanation: 'HIGH RISK. PII (names, emails) in AI input requires explicit policy approval. Before sending to any AI API, you should: (1) anonymize/pseudonymize the data if possible, (2) verify your company\'s AI data policy explicitly permits this, (3) use an enterprise API tier with data privacy guarantees.'
+  },
+  {
+    id: 'r2',
+    title: 'API key stored in .env file (not in code)',
+    detail: 'You stored the API key in a .env file using the python-dotenv pattern, and the .env file is not committed to version control.',
+    correctRating: 'low',
+    explanation: 'LOW RISK. This is the correct, industry-standard approach. The key is not in your code, not in version control, and not visible to anyone else. Good practice maintained.'
+  },
+  {
+    id: 'r3',
+    title: 'File stored in company SharePoint (not personal account)',
+    detail: 'The survey data was uploaded to company-managed SharePoint rather than a personal Google Drive or Dropbox.',
+    correctRating: 'low',
+    explanation: 'LOW RISK. Company SharePoint is IT-managed with access controls, audit logs, and backup policies. This is the correct location for company data. It maintains data governance compliance.'
+  },
+  {
+    id: 'r4',
+    title: 'Prompts sent to a public AI API may be logged',
+    detail: 'You\'re calling an external AI API. The survey content (including customer feedback) will be transmitted to and processed on that company\'s servers.',
+    correctRating: 'high',
+    explanation: 'HIGH RISK. External AI API providers may log prompts for quality/safety review and potentially use them for model training (varies by plan and provider). Customer feedback data sent to an external API represents a data transfer to a third party. This requires: checking your company\'s AI vendor policy, using an enterprise API with data-zero retention agreements if the data is sensitive.'
+  },
+  {
+    id: 'r5',
+    title: 'Converting .docx to .txt removes document metadata',
+    detail: 'During conversion, document metadata (author name, edit history, comments, tracked changes) may have been removed along with formatting.',
+    correctRating: 'low',
+    explanation: 'LOW RISK — and actually a BENEFIT from a privacy perspective. Document metadata (.docx files contain author names, revision history, comments, and sometimes deleted text in undo history) can leak more information than intended. Converting to plain .txt strips this metadata, which is generally desirable before sharing with AI tools.'
+  },
+  {
+    id: 'r6',
+    title: 'Using an HTTP (not HTTPS) API endpoint',
+    detail: 'Hypothetically: if the AI API endpoint used HTTP instead of HTTPS, all transmitted data would be unencrypted.',
+    correctRating: 'high',
+    explanation: 'HIGH RISK (hypothetical but important to recognize). HTTP transmits data in plaintext — readable by anyone monitoring network traffic. For customer PII or company data, this would be a serious security failure. Always verify AI API endpoints use HTTPS. Legitimate AI APIs always use HTTPS — HTTP would be a major red flag.'
+  },
+];
+
+// ─── RENDER ──────────────────────────────────────────────────────────────────
+function render() {
+  document.getElementById('mainArea').innerHTML = '';
+  if (state.screen === 'intro') renderIntro();
+  else if (state.screen.startsWith('stage')) renderStage(parseInt(state.screen.replace('stage','')));
+  else if (state.screen === 'cert') renderCert();
+  updateStageDots();
+}
+
+function updateStageDots() {
+  const dots = document.querySelectorAll('.stage-dot');
+  const stageNum = state.screen === 'intro' ? 0 : state.screen === 'cert' ? 5 : parseInt(state.screen.replace('stage',''));
+  dots.forEach((d, i) => {
+    d.className = 'stage-dot';
+    if (i + 1 < stageNum) d.classList.add('done');
+    else if (i + 1 === stageNum) d.classList.add('active');
+  });
+  const lbl = document.getElementById('stageLabel');
+  if (state.screen === 'cert') lbl.textContent = 'Complete ✓';
+  else if (state.screen === 'intro') lbl.textContent = 'Start when ready';
+  else lbl.textContent = `Stage ${stageNum} of 4`;
+}
+
+function renderIntro() {
+  document.getElementById('mainArea').innerHTML = `
+  <div class="fade-up">
+    <div class="intro-eyebrow">TechReady Series — Final Assessment</div>
+    <h1>Readiness<br><em>Capstone</em></h1>
+    <p class="intro-desc">This capstone puts everything together in a single realistic workplace scenario. You'll check system compatibility, find and prepare a file, upload it to cloud storage, and document the privacy risks — the exact sequence you'd follow before using AI tools professionally.</p>
+
+    <div class="scenario-setup">
+      <div class="setup-label">Your Scenario</div>
+      <div class="setup-title">🏢 Situation: Preparing survey data for AI analysis</div>
+      <p class="setup-text">You work at a mid-size company. Your manager asks you to use an AI analysis tool to extract insights from customer survey responses collected last quarter. The raw data is a Word document on your computer at <strong>C:\\Users\\Jordan\\Documents\\Surveys\\CustomerFeedback_Q3.docx</strong>.<br><br>
+      Before you can use the AI tool, you need to: verify your computer can handle it, convert the file to the right format, upload it securely, and document what data privacy risks you're taking on.</p>
+      <div class="skills-row">
+        <span class="skill-badge badge-hw">Module 1: Hardware</span>
+        <span class="skill-badge badge-os">Module 2: OS</span>
+        <span class="skill-badge badge-fi">Module 3: Files</span>
+        <span class="skill-badge badge-net">Module 4: Cloud/API</span>
+        <span class="skill-badge badge-sec">Module 5: Security</span>
+      </div>
+    </div>
+
+    <button class="start-btn" id="startCapstone">Begin Capstone →</button>
+  </div>`;
+  document.getElementById('startCapstone').addEventListener('click', () => {
+    state.screen = 'stage1';
+    state.stageScores = {};
+    state.riskRatings = {};
+    state.totalCorrect = 0;
+    state.totalQ = 0;
+    render();
+  });
+}
+
+// Stage renderer (stages 1-3 are question-based)
+let currentStageQ = 0;
+let stageAnswered = false;
+
+function renderStage(n) {
+  const stage = stages[n - 1];
+  if (n <= 3) {
+    renderQuestionStage(n, stage);
+  } else {
+    renderPrivacyAudit(stage);
+  }
+}
+
+function renderQuestionStage(n, stage) {
+  currentStageQ = 0;
+  stageAnswered = false;
+  const qs = stageQs[n];
+  const badges = stage.badges.map(b => `<span class="skill-badge ${b}">${b.replace('badge-','Module ').replace('hw','1: Hardware').replace('os','2: OS').replace('fi','3: Files').replace('net','4: Cloud')}</span>`).join('');
+
+  document.getElementById('mainArea').innerHTML = `
+  <div class="stage-screen">
+    <div class="stage-header">
+      <div class="stage-num">${stage.num}</div>
+      <div class="stage-title">${stage.title}</div>
+      <p class="stage-sub">${stage.sub}</p>
+      <div class="skills-row" style="margin-top:10px">${badges}</div>
+    </div>
+
+    <div class="task-list" id="taskList">
+      ${qs.map((q,i)=>`
+        <div class="task-card ${i===0?'active':'locked'}" id="task-${i}">
+          <div class="task-check" id="check-${i}"></div>
+          <div class="task-info">
+            <div class="task-title">Task ${i+1}: ${['Make the compatibility call','Navigate to the file','Inspect before processing','Choose the right service','Verify link security','Secure the API key'][n*3-3+i] || 'Complete task'}</div>
+            <div class="task-desc">${i===0?'Active':'Complete previous task first'}</div>
+          </div>
+        </div>`).join('')}
+    </div>
+
+    <div class="interaction-zone" id="iz">
+      ${renderQuestionHTML(qs[0], 0, qs.length)}
+    </div>
+  </div>`;
+  attachQuestionHandlers(n, qs);
+}
+
+function renderQuestionHTML(q, idx, total) {
+  return `
+    <div class="iz-label">Task ${idx+1} of ${total} — Answer to proceed</div>
+    <div class="iz-question">${q.q.replace(/\n/g,'<br>')}</div>
+    <div class="choices" id="choicesDiv">
+      ${q.choices.map((c,i)=>`<button class="choice-btn" data-i="${i}">${c}</button>`).join('')}
+    </div>
+    <div class="iz-feedback" id="izFb"></div>
+    <button class="continue-btn" id="continueBtn">Continue →</button>`;
+}
+
+function attachQuestionHandlers(n, qs) {
+  stageAnswered = false;
+  document.querySelectorAll('.choice-btn').forEach(b => {
+    b.addEventListener('click', () => {
+      if (stageAnswered) return;
+      stageAnswered = true;
+      const idx = parseInt(b.dataset.i);
+      const q = qs[currentStageQ];
+      const correct = idx === q.c;
+      state.totalQ++;
+      if (correct) { state.totalCorrect++; if(!state.stageScores[n])state.stageScores[n]={correct:0,total:0}; state.stageScores[n].correct++; }
+      if(!state.stageScores[n])state.stageScores[n]={correct:0,total:0};
+      state.stageScores[n].total++;
+
+      document.querySelectorAll('.choice-btn').forEach((x,i) => {
+        x.disabled = true;
+        if (i === q.c) x.classList.add('correct');
+        if (i === idx && !correct) x.classList.add('wrong');
+      });
+      const fb = document.getElementById('izFb');
+      fb.className = 'iz-feedback ' + (correct ? 'correct' : 'wrong');
+      fb.innerHTML = (correct ? '✓ Correct! ' : '✗ Not quite. ') + q.e;
+      document.getElementById('continueBtn').classList.add('show');
+
+      // Mark task done
+      const taskCard = document.getElementById('task-' + currentStageQ);
+      const check = document.getElementById('check-' + currentStageQ);
+      if (taskCard) { taskCard.className = 'task-card done'; }
+      if (check) { check.textContent = '✓'; }
+    });
+  });
+
+  document.getElementById('continueBtn').addEventListener('click', () => {
+    currentStageQ++;
+    if (currentStageQ < qs.length) {
+      // unlock next task
+      const nextTask = document.getElementById('task-' + currentStageQ);
+      if (nextTask) { nextTask.className = 'task-card active'; nextTask.querySelector('.task-desc').textContent = 'Active'; }
+      document.getElementById('iz').innerHTML = renderQuestionHTML(qs[currentStageQ], currentStageQ, qs.length);
+      stageAnswered = false;
+      attachQuestionHandlers(n, qs);
+    } else {
+      // move to next stage
+      state.screen = 'stage' + (n + 1);
+      render();
+    }
+  });
+}
+
+function renderPrivacyAudit(stage) {
+  document.getElementById('mainArea').innerHTML = `
+  <div class="stage-screen">
+    <div class="stage-header">
+      <div class="stage-num">${stage.num}</div>
+      <div class="stage-title">${stage.title}</div>
+      <p class="stage-sub">Review each action from the capstone and rate its privacy risk as HIGH or LOW. Then submit your audit.</p>
+      <div class="skills-row" style="margin-top:10px"><span class="skill-badge badge-sec">Module 5: Security</span></div>
+    </div>
+
+    <div class="interaction-zone" id="iz">
+      <div class="iz-label">Privacy Risk Audit — Rate Each Item</div>
+      <p style="font-size:0.88rem;color:var(--muted);line-height:1.65;margin-bottom:18px">Click each item to expand it, then rate the risk. This is how data practitioners document privacy considerations before AI workflows.</p>
+      <div class="risk-list" id="riskList">
+        ${privacyRisks.map(r => `
+          <div class="risk-item" id="risk-${r.id}" data-id="${r.id}">
+            <div class="risk-header">
+              <div class="risk-title">${r.title}</div>
+              <div class="risk-indicator risk-unset" id="ri-${r.id}">UNRATED</div>
+            </div>
+            <div class="risk-detail" id="rd-${r.id}">
+              <p style="margin-bottom:10px;color:var(--muted)">${r.detail}</p>
+              <div class="risk-actions">
+                <button class="risk-action-btn" data-risk="${r.id}" data-val="high">🔴 High Risk</button>
+                <button class="risk-action-btn" data-risk="${r.id}" data-val="low">🟢 Low Risk</button>
+              </div>
+            </div>
+          </div>`).join('')}
+      </div>
+      <div style="margin-top:20px">
+        <button class="continue-btn show" id="submitAudit" style="display:none">Submit Privacy Audit →</button>
+      </div>
+    </div>
+  </div>`;
+
+  // Toggle expand
+  document.querySelectorAll('.risk-item').forEach(item => {
+    item.addEventListener('click', e => {
+      if (e.target.classList.contains('risk-action-btn')) return;
+      item.classList.toggle('open');
+    });
+  });
+
+  // Rating buttons
+  document.querySelectorAll('.risk-action-btn').forEach(btn => {
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
+      const riskId = btn.dataset.risk;
+      const val = btn.dataset.val;
+      state.riskRatings[riskId] = val;
+      // Update UI
+      const ind = document.getElementById('ri-' + riskId);
+      ind.className = 'risk-indicator ' + (val === 'high' ? 'risk-high' : 'risk-low');
+      ind.textContent = val === 'high' ? 'HIGH RISK' : 'LOW RISK';
+      // Update buttons
+      const btns = document.querySelectorAll(`[data-risk="${riskId}"]`);
+      btns.forEach(b => { b.className = 'risk-action-btn'; if(b.dataset.val===val) b.classList.add(val==='high'?'selected-high':'selected-low'); });
+      // Show submit when all rated
+      if (Object.keys(state.riskRatings).length === privacyRisks.length) {
+        document.getElementById('submitAudit').style.display = 'inline-block';
+      }
+    });
+  });
+
+  document.getElementById('submitAudit').addEventListener('click', () => {
+    // Score the audit
+    let auditCorrect = 0;
+    privacyRisks.forEach(r => {
+      if (state.riskRatings[r.id] === r.correctRating) auditCorrect++;
+    });
+    state.totalQ += privacyRisks.length;
+    state.totalCorrect += auditCorrect;
+    state.stageScores[4] = { correct: auditCorrect, total: privacyRisks.length };
+    showAuditResults(auditCorrect);
+  });
+}
+
+function showAuditResults(correct) {
+  const iz = document.getElementById('iz');
+  let resultsHTML = `
+    <div class="iz-label">Audit Results — ${correct}/${privacyRisks.length} correct</div>
+    <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:20px">`;
+  privacyRisks.forEach(r => {
+    const userRating = state.riskRatings[r.id];
+    const isCorrect = userRating === r.correctRating;
+    resultsHTML += `
+      <div style="background:${isCorrect ? 'rgba(64,240,144,0.06)' : 'rgba(240,64,96,0.06)'};border:1px solid ${isCorrect ? 'rgba(64,240,144,0.25)' : 'rgba(240,64,96,0.25)'};border-radius:9px;padding:14px 18px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+          <div style="font-size:0.88rem;font-weight:600;color:var(--text)">${r.title}</div>
+          <div style="font-family:'DM Mono',monospace;font-size:0.68rem;color:${isCorrect ? 'var(--correct)' : 'var(--wrong)'}">${isCorrect ? '✓ CORRECT' : '✗ INCORRECT'}</div>
+        </div>
+        <div style="font-size:0.82rem;color:var(--muted);line-height:1.65">${r.explanation}</div>
+      </div>`;
+  });
+  resultsHTML += `</div><button class="continue-btn show" id="finishCapstone">Complete Capstone →</button>`;
+  iz.innerHTML = resultsHTML;
+  document.getElementById('finishCapstone').addEventListener('click', () => { state.screen = 'cert'; render(); });
+}
+
+function renderCert() {
+  const pct = Math.round(state.totalCorrect / state.totalQ * 100);
+  const riskCorrect = state.stageScores[4] ? state.stageScores[4].correct : 0;
+  const headline = pct >= 85 ? ['🏆 AI-Ready','You demonstrated strong command of all five foundational areas. You are well-prepared to begin AI coursework.'] :
+                   pct >= 65 ? ['⭐ Nearly Ready','Good performance across most areas. Review the stages where you struggled before beginning AI coursework.'] :
+                   ['📚 More Practice Needed','Some key concepts need reinforcement. Revisit the relevant modules and retake the capstone.'];
+
+  document.getElementById('mainArea').innerHTML = `
+  <div class="cert-screen">
+    <span class="cert-badge">${pct >= 85 ? '🏆' : pct >= 65 ? '⭐' : '📚'}</span>
+    <div class="cert-title">Capstone <em>${headline[0]}</em></div>
+    <p class="cert-sub">${headline[1]}</p>
+    <div class="cert-card">
+      <div class="cert-score-row">
+        <div class="cert-score">
+          <div class="cert-score-val">${pct}%</div>
+          <div class="cert-score-label">Overall Score</div>
+        </div>
+        <div class="cert-score">
+          <div class="cert-score-val">${state.totalCorrect}/${state.totalQ}</div>
+          <div class="cert-score-label">Questions Correct</div>
+        </div>
+        <div class="cert-score">
+          <div class="cert-score-val">${riskCorrect}/${privacyRisks.length}</div>
+          <div class="cert-score-label">Risks Correctly Rated</div>
+        </div>
+      </div>
+      <div class="cert-skills">
+        ${[['Hardware','badge-hw',state.stageScores[1]],['OS','badge-os',state.stageScores[1]],['Files','badge-fi',state.stageScores[2]],['Cloud','badge-net',state.stageScores[3]],['Security','badge-sec',state.stageScores[4]]].map(([name,cls,sc])=>{
+          const ok = sc && sc.total > 0 ? sc.correct/sc.total >= 0.67 : false;
+          return `<span class="skill-badge ${cls}" style="opacity:${ok?1:0.4}">${name} ${ok?'✓':'✗'}</span>`;
+        }).join('')}
+      </div>
+    </div>
+    <div class="cert-actions">
+      <button class="btn-primary" id="retakeBtn">Retake Capstone</button>
+      <button class="btn-ghost" onclick="window.print()">Print Results</button>
+    </div>
+  </div>`;
+  document.getElementById('retakeBtn').addEventListener('click', () => {
+    state.screen = 'intro';
+    state.totalCorrect = 0;
+    state.totalQ = 0;
+    state.stageScores = {};
+    state.riskRatings = {};
+    render();
+  });
+}
+
+render();
+</script>
+</body>
+</html>

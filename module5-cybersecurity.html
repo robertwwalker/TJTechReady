@@ -294,6 +294,108 @@
     </div>
   </div>
 
+  <!-- UNDERSTANDING CODE -->
+  <div class="section fade-up">
+    <div class="section-label">AI Readiness — New</div>
+    <h2>💻 Interacting with code — a foundation for AI</h2>
+    <p>You don't need to be a programmer to work with AI tools effectively. But understanding a few code concepts removes major barriers — especially when running AI scripts, reading error messages, or using the command line.</p>
+
+    <div class="tabs">
+      <div class="tab active" data-tab="code1">Reading code</div>
+      <div class="tab" data-tab="code2">The terminal</div>
+      <div class="tab" data-tab="code3">Error messages</div>
+      <div class="tab" data-tab="code4">Config files</div>
+    </div>
+    <div class="tab-pane active" id="code1">
+      <p>You don't need to write code to read it. When you encounter an AI script or configuration, here's what to look for:</p>
+      <div style="background:#050f0a;border-radius:8px;padding:16px 20px;font-family:'DM Mono',monospace;font-size:0.8rem;line-height:2;margin:14px 0;overflow-x:auto">
+        <div style="color:#508068"><span style="color:#20e870"># Lines starting with # are comments — they explain what the code does</span></div>
+        <div style="color:#508068"><span style="color:#20e870"># They don't run — they're notes for humans</span></div>
+        <div style="margin-top:8px;color:#d8f0e0"><span style="color:#20c8a0">model_name</span> = <span style="color:#f0d040">"claude-sonnet-4-5"</span>   <span style="color:#508068"># This sets which AI model to use</span></div>
+        <div style="color:#d8f0e0"><span style="color:#20c8a0">max_tokens</span> = <span style="color:#a8f080">1000</span>               <span style="color:#508068"># Maximum length of the AI response</span></div>
+        <div style="color:#d8f0e0"><span style="color:#20c8a0">input_file</span> = <span style="color:#f0d040">"data.csv"</span>         <span style="color:#508068"># The file to process</span></div>
+        <div style="margin-top:8px;color:#d8f0e0"><span style="color:#20e870">print</span>(<span style="color:#f0d040">"Processing started..."</span>)  <span style="color:#508068"># Shows a message when run</span></div>
+      </div>
+      <p>Key patterns to recognize: <strong>variable = value</strong> (setting a configuration), <strong>function(input)</strong> (doing something with data), <strong>import library</strong> (loading a tool), and <strong># comments</strong> explaining what things do. These patterns are consistent across Python, JavaScript, and most AI scripting languages.</p>
+    </div>
+    <div class="tab-pane" id="code2">
+      <p>The <strong>terminal</strong> (Command Prompt on Windows, Terminal on Mac/Linux) is a text interface for your computer. Many AI tools are run from here. You don't need to memorize it — just know enough to not panic.</p>
+      <div style="display:flex;flex-direction:column;gap:8px;margin:14px 0">
+        <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:12px 16px;font-size:0.84rem;color:#90c0a8">
+          <code style="color:var(--accent)">cd Documents</code> — <strong style="color:var(--text)">Change Directory</strong>. Move into a folder. Like double-clicking a folder in File Explorer, but in text.
+        </div>
+        <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:12px 16px;font-size:0.84rem;color:#90c0a8">
+          <code style="color:var(--accent)">ls</code> (Mac/Linux) or <code style="color:var(--accent)">dir</code> (Windows) — <strong style="color:var(--text)">List</strong> files in the current folder. Tells you where you are.
+        </div>
+        <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:12px 16px;font-size:0.84rem;color:#90c0a8">
+          <code style="color:var(--accent)">python script.py</code> — <strong style="color:var(--text)">Run a Python script</strong>. Replace script.py with the actual filename. Most AI tools are run this way.
+        </div>
+        <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:12px 16px;font-size:0.84rem;color:#90c0a8">
+          <code style="color:var(--accent)">pip install package-name</code> — <strong style="color:var(--text)">Install a Python library</strong>. Like downloading an app, but for code components AI tools depend on.
+        </div>
+        <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:12px 16px;font-size:0.84rem;color:#90c0a8">
+          <code style="color:var(--accent)">Ctrl+C</code> — <strong style="color:var(--text)">Stop a running program</strong>. If something is running and you need to cancel, press Ctrl+C in the terminal.
+        </div>
+      </div>
+      <p>The terminal always has a <strong>current working directory</strong> — the folder it's "inside." File paths you type are relative to this folder. Use <code>pwd</code> (Mac/Linux) or <code>cd</code> (Windows) to see where you are.</p>
+    </div>
+    <div class="tab-pane" id="code3">
+      <p>Error messages look scary but almost always tell you exactly what's wrong. Learn to read them from the bottom up — the last few lines are usually the actual error; the top lines are just the chain of calls that led there.</p>
+      <div style="display:flex;flex-direction:column;gap:10px;margin:14px 0">
+        <div style="background:rgba(240,72,88,0.07);border:1px solid rgba(240,72,88,0.2);border-radius:9px;padding:14px 16px">
+          <div style="font-family:'DM Mono',monospace;font-size:0.78rem;color:#f09090;margin-bottom:6px">ModuleNotFoundError: No module named 'anthropic'</div>
+          <div style="font-size:0.82rem;color:var(--muted)"><strong style="color:var(--text)">Meaning:</strong> A required library isn't installed. <strong style="color:var(--text)">Fix:</strong> Run <code>pip install anthropic</code> in the terminal.</div>
+        </div>
+        <div style="background:rgba(240,72,88,0.07);border:1px solid rgba(240,72,88,0.2);border-radius:9px;padding:14px 16px">
+          <div style="font-family:'DM Mono',monospace;font-size:0.78rem;color:#f09090;margin-bottom:6px">FileNotFoundError: [Errno 2] No such file or directory: 'data.csv'</div>
+          <div style="font-size:0.82rem;color:var(--muted)"><strong style="color:var(--text)">Meaning:</strong> The script can't find the file at the specified path. <strong style="color:var(--text)">Fix:</strong> Check the file exists and the path is correct. The terminal's current directory might not be where you think.</div>
+        </div>
+        <div style="background:rgba(240,72,88,0.07);border:1px solid rgba(240,72,88,0.2);border-radius:9px;padding:14px 16px">
+          <div style="font-family:'DM Mono',monospace;font-size:0.78rem;color:#f09090;margin-bottom:6px">AuthenticationError: 401 Invalid API key</div>
+          <div style="font-size:0.82rem;color:var(--muted)"><strong style="color:var(--text)">Meaning:</strong> Your API key is wrong, missing, or not loaded properly. <strong style="color:var(--text)">Fix:</strong> Check the key is correctly set in your environment variable or .env file — no extra spaces, correct capitalization.</div>
+        </div>
+        <div style="background:rgba(240,72,88,0.07);border:1px solid rgba(240,72,88,0.2);border-radius:9px;padding:14px 16px">
+          <div style="font-family:'DM Mono',monospace;font-size:0.78rem;color:#f09090;margin-bottom:6px">PermissionError: [Errno 13] Permission denied</div>
+          <div style="font-size:0.82rem;color:var(--muted)"><strong style="color:var(--text)">Meaning:</strong> The script doesn't have permission to read/write to that file or folder. <strong style="color:var(--text)">Fix:</strong> Check file permissions, or run the terminal as Administrator (Windows) / with sudo (Mac/Linux) — but only when you understand why.</div>
+        </div>
+      </div>
+    </div>
+    <div class="tab-pane" id="code4">
+      <p>AI tools and APIs often use <strong>configuration files</strong> to store settings. The most common formats you'll encounter:</p>
+      <div style="display:flex;flex-direction:column;gap:10px;margin:14px 0">
+        <div style="background:var(--surface2);border:1px solid var(--border);border-radius:9px;padding:16px">
+          <div style="font-family:'DM Mono',monospace;font-size:0.75rem;color:var(--accent);margin-bottom:8px">.env — Environment Variables file</div>
+          <div style="background:#050f0a;border-radius:6px;padding:10px 14px;font-family:'DM Mono',monospace;font-size:0.78rem;line-height:1.9;margin-bottom:8px">
+            <span style="color:#20c8a0">ANTHROPIC_API_KEY</span>=<span style="color:#f0d040">sk-ant-yourkey</span><br>
+            <span style="color:#20c8a0">MODEL_NAME</span>=<span style="color:#f0d040">claude-sonnet-4-5</span><br>
+            <span style="color:#20c8a0">DEBUG</span>=<span style="color:#f0d040">false</span>
+          </div>
+          <div style="font-size:0.82rem;color:var(--muted)">Stores secrets and configuration outside your code. <strong style="color:var(--text)">Never commit .env to version control.</strong> Add <code>.env</code> to your .gitignore file.</div>
+        </div>
+        <div style="background:var(--surface2);border:1px solid var(--border);border-radius:9px;padding:16px">
+          <div style="font-family:'DM Mono',monospace;font-size:0.75rem;color:var(--accent);margin-bottom:8px">.json — Configuration / API response</div>
+          <div style="background:#050f0a;border-radius:6px;padding:10px 14px;font-family:'DM Mono',monospace;font-size:0.78rem;line-height:1.9;margin-bottom:8px">
+            <span style="color:#d8f0e0">{</span><br>
+            <span style="color:#d8f0e0;padding-left:16px">"model": <span style="color:#f0d040">"claude-sonnet-4-5"</span>,</span><br>
+            <span style="color:#d8f0e0;padding-left:16px">"max_tokens": <span style="color:#a8f080">1000</span>,</span><br>
+            <span style="color:#d8f0e0;padding-left:16px">"temperature": <span style="color:#a8f080">0.7</span></span><br>
+            <span style="color:#d8f0e0">}</span>
+          </div>
+          <div style="font-size:0.82rem;color:var(--muted)">Structured data format. Used for API responses, model config files, and tool settings. Readable in any text editor.</div>
+        </div>
+        <div style="background:var(--surface2);border:1px solid var(--border);border-radius:9px;padding:16px">
+          <div style="font-family:'DM Mono',monospace;font-size:0.75rem;color:var(--accent);margin-bottom:8px">requirements.txt — Python dependencies</div>
+          <div style="background:#050f0a;border-radius:6px;padding:10px 14px;font-family:'DM Mono',monospace;font-size:0.78rem;line-height:1.9;margin-bottom:8px">
+            <span style="color:#d8f0e0">anthropic>=0.25.0</span><br>
+            <span style="color:#d8f0e0">pandas==2.1.0</span><br>
+            <span style="color:#d8f0e0">python-dotenv>=1.0.0</span>
+          </div>
+          <div style="font-size:0.82rem;color:var(--muted)">Lists every Python library an AI project needs. Install all at once with <code>pip install -r requirements.txt</code>. Always run this when setting up a new AI project.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div class="quiz-wrap" id="quizWrap">
     <div id="quizInner"></div>
   </div>
