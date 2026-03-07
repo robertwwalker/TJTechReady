@@ -42,7 +42,7 @@
   <div class="module-header">
     <div class="module-badge">Module 03 of 05</div>
     <h1>Files & <em>Folders</em></h1>
-    <p class="subtitle">Knowing where your files live, how to navigate folder structures, and what different file types mean is essential for workplace productivity and preventing data loss.</p>
+    <p class="subtitle">Knowing where your files live, how data is encoded, what different file types mean, and how to prepare clean data for AI tools — these are the skills that separate productive AI use from frustrating trial and error.</p>
   </div>
 
   <!-- Core Concept -->
@@ -61,7 +61,7 @@
   <!-- AI Callout -->
   <div class="ai-callout">
     <div class="ai-callout-title">🤖 Why This Matters for AI</div>
-    <p>Almost every AI interaction involves a file. Uploading a PDF for Claude to analyze, pointing a model at a CSV of sales data, saving AI-generated code to the right folder — all of this requires knowing your file paths and extensions. Uploading the wrong file type is one of the most common AI tool errors. And when a local AI framework says <code style="background:rgba(0,0,0,0.3);padding:0.1rem 0.3rem;border-radius:3px;font-family:var(--font-mono);font-size:0.85rem;">FileNotFoundError: data.csv</code>, understanding paths tells you exactly what went wrong.</p>
+    <p>Almost every AI interaction involves a file. Uploading a PDF for Claude to analyze, pointing a model at a CSV of sales data, saving AI-generated code to the right folder — all of this requires knowing your file paths, extensions, and data types. But knowing where your files are is only half the story. The other half is making sure the data inside those files is clean, correctly typed, and in a format the AI can actually parse. This module covers both: the file system fundamentals and the data preparation skills that make AI tools work reliably.</p>
   </div>
 
   <!-- File Paths -->
@@ -120,6 +120,99 @@
     <p style="color:var(--accent-orange);font-size:0.88rem;margin-top:0.75rem;"><strong>Important:</strong> Windows hides file extensions by default. To show them: open File Explorer → View → Show → File name extensions. This helps verify file types — crucial for security (a virus might be named <code style="background:var(--bg-primary);padding:0.1rem 0.3rem;border-radius:3px;font-family:var(--font-mono);font-size:0.85rem;">invoice.pdf.exe</code>).</p>
   </div>
 
+  <!-- How Computers Encode Data -->
+  <div class="content-section">
+    <p class="section-label">Under the Hood</p>
+    <h2>How computers encode data</h2>
+    <p>
+      Every file — whether it's a spreadsheet, a photo, or an email — is stored as a sequence of
+      <strong>binary digits</strong> (bits): ones and zeros. A single bit is a 1 or 0. Eight bits
+      make a <strong>byte</strong>. Your 256 GB hard drive holds roughly 256 billion bytes. But raw
+      bits are meaningless without knowing how to <em>interpret</em> them — and that's where data
+      types and encoding come in.
+    </p>
+
+    <div class="analogy-box">
+      <div class="analogy-label">Analogy</div>
+      <p>Think of a sequence of dots and dashes. Without knowing it's Morse code, it's just a pattern.
+      The dots and dashes are the bits; Morse code is the encoding. The word you decode is the data type.
+      Computers work the same way — the same bits can represent a number, a letter, or a pixel color
+      depending on how the software is told to read them.</p>
+    </div>
+
+    <h3 style="margin-top:1.5rem;">Data types — what computers see</h3>
+    <p>When you look at a spreadsheet, you see names, dates, prices, and yes/no fields. A computer
+    sees each of these as a specific <strong>data type</strong> — and the type determines what
+    operations are possible. Getting the type wrong is one of the most common causes of errors
+    when working with data tools and AI.</p>
+
+    <table class="comp-table" style="margin-top:1rem;">
+      <thead>
+        <tr><th>Data Type</th><th>What It Stores</th><th>Examples</th><th>Watch Out For</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Integer</strong></td>
+          <td>Whole numbers (no decimals)</td>
+          <td>42, -7, 0, 1000000</td>
+          <td>A zip code like 02134 may lose its leading zero if stored as an integer</td>
+        </tr>
+        <tr>
+          <td><strong>Float / Decimal</strong></td>
+          <td>Numbers with decimal points</td>
+          <td>3.14, -0.5, 99.99</td>
+          <td>Floating-point math can produce tiny rounding errors (0.1 + 0.2 = 0.30000000000000004)</td>
+        </tr>
+        <tr>
+          <td><strong>String (Text)</strong></td>
+          <td>Any sequence of characters</td>
+          <td>"Hello", "97301", "N/A"</td>
+          <td>The number "42" stored as text can't be added to another number without conversion</td>
+        </tr>
+        <tr>
+          <td><strong>Boolean</strong></td>
+          <td>True or False (yes/no, on/off)</td>
+          <td>TRUE, FALSE</td>
+          <td>Some systems encode True as 1 and False as 0; others use "Yes"/"No" — mixing causes errors</td>
+        </tr>
+        <tr>
+          <td><strong>Date / DateTime</strong></td>
+          <td>Calendar dates and times</td>
+          <td>2024-03-15, 2024-03-15T14:30:00</td>
+          <td>Dates are notoriously messy — "03/04/2024" means March 4 in the US but April 3 in Europe</td>
+        </tr>
+        <tr>
+          <td><strong>Categorical</strong></td>
+          <td>One value from a fixed set</td>
+          <td>"Red", "Blue", "Green" or "Small", "Medium", "Large"</td>
+          <td>Typos create phantom categories — "Smal" and "Small" look like two different values</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="ai-callout" style="margin-top:1.5rem;">
+      <div class="ai-callout-title">🤖 Why This Matters for AI</div>
+      <p>When you upload a CSV to an AI tool or a data pipeline, the system has to <em>infer</em>
+      what type each column is. If your "Revenue" column contains the text entry "$1,200" instead
+      of the number 1200, the system may treat the entire column as text — and every calculation
+      breaks silently. AI tools are powerful but not magic: they work with what you give them.
+      Understanding data types helps you catch these problems before the AI does something
+      confidently wrong with bad input.</p>
+    </div>
+
+    <h3 style="margin-top:1.5rem;">Text encoding — why characters sometimes break</h3>
+    <p>
+      Text is stored using an <strong>encoding system</strong> that maps each character to a
+      number. The modern standard is <strong>UTF-8</strong>, which handles virtually every character
+      in every language (plus emoji). Older systems used ASCII (English only, 128 characters) or
+      regional encodings like Latin-1 (Western European). When you open a file and see garbled
+      characters like <code style="background:var(--bg-primary);padding:0.1rem 0.3rem;border-radius:3px;font-family:var(--font-mono);font-size:0.85rem;">Ã©</code>
+      instead of <code style="background:var(--bg-primary);padding:0.1rem 0.3rem;border-radius:3px;font-family:var(--font-mono);font-size:0.85rem;">é</code>,
+      it means the file was saved in one encoding but opened in another. When working with AI tools,
+      stick to UTF-8 — it's what almost everything expects.
+    </p>
+  </div>
+
   <!-- Where Files Live -->
   <div class="content-section">
     <p class="section-label">Where Files Live</p>
@@ -135,6 +228,180 @@
     <div class="card">
       <h3>☁️ Cloud Storage</h3>
       <p style="font-size:0.88rem;color:var(--text-secondary);">Files on remote servers accessed via internet: OneDrive, Google Drive, Dropbox, SharePoint. Files sync across all devices. Accessible anywhere. A folder on your computer syncs automatically to the cloud.</p>
+    </div>
+  </div>
+
+  <!-- Data Formats for AI -->
+  <div class="content-section">
+    <p class="section-label">Data Formats for AI</p>
+    <h2>Structured vs. unstructured data</h2>
+    <p>
+      Not all data is the same shape. Understanding the difference between structured and
+      unstructured data is essential for knowing what AI tools can do with your files — and which
+      file format to use.
+    </p>
+
+    <div class="two-col">
+      <div class="card">
+        <h3 style="color:var(--accent-lavender);">Structured Data</h3>
+        <p style="font-size:0.88rem;color:var(--text-secondary);">
+          Data organized into rows and columns with consistent types — like a spreadsheet or database
+          table. Each column has a name and a data type; each row is a record.
+        </p>
+        <p style="font-size:0.85rem;color:var(--text-muted);margin-top:0.5rem;">
+          <strong>Formats:</strong> .csv, .xlsx, .tsv, .json (tabular), database tables<br>
+          <strong>Examples:</strong> sales records, employee rosters, survey responses, financial reports<br>
+          <strong>AI use:</strong> data analysis, trend detection, forecasting, dashboards
+        </p>
+      </div>
+      <div class="card">
+        <h3 style="color:var(--accent-orchid);">Unstructured Data</h3>
+        <p style="font-size:0.88rem;color:var(--text-secondary);">
+          Data without a predefined row/column format — text documents, emails, images, audio,
+          video. Most of the world's data is unstructured.
+        </p>
+        <p style="font-size:0.85rem;color:var(--text-muted);margin-top:0.5rem;">
+          <strong>Formats:</strong> .pdf, .docx, .txt, .jpg, .mp4, .html, email threads<br>
+          <strong>Examples:</strong> customer emails, meeting transcripts, contracts, photos<br>
+          <strong>AI use:</strong> summarization, extraction, classification, image analysis
+        </p>
+      </div>
+    </div>
+
+    <h3 style="margin-top:1.5rem;">Why the format matters for AI</h3>
+    <p>
+      Different AI tools expect different inputs. When you paste a table of data into Claude as
+      plain text, it works — but when you upload the same data as a well-formatted <strong>.csv</strong>
+      file, the AI can parse the columns, understand the types, and give you better analysis.
+      Knowing which format to use is the difference between a vague answer and a precise one.
+    </p>
+
+    <div data-tabs>
+      <div class="tabs">
+        <button class="tab-btn active" data-target="fmt-csv" aria-label="CSV">CSV</button>
+        <button class="tab-btn" data-target="fmt-json" aria-label="JSON">JSON</button>
+        <button class="tab-btn" data-target="fmt-txt" aria-label="Plain Text">Plain Text</button>
+        <button class="tab-btn" data-target="fmt-pdf" aria-label="PDF">PDF</button>
+      </div>
+      <div id="fmt-csv" class="tab-panel active">
+        <div class="card">
+          <p><strong>.csv (Comma-Separated Values)</strong> — The universal format for tabular data. Each line is a row; values are separated by commas. Nearly every tool can read it: Excel, Google Sheets, Python, R, AI platforms. When in doubt about how to share data with an AI tool, CSV is almost always the right answer.</p>
+          <div style="background:var(--bg-primary);border-radius:var(--radius-sm);padding:0.7rem;margin-top:0.5rem;font-family:var(--font-mono);font-size:0.8rem;color:var(--accent-periwinkle);line-height:1.6;">
+            Name,Department,Salary,Start_Date<br>
+            Sarah Chen,Marketing,72000,2022-06-15<br>
+            James Park,Engineering,95000,2021-01-10<br>
+            Maria Lopez,Sales,68000,2023-03-22
+          </div>
+        </div>
+      </div>
+      <div id="fmt-json" class="tab-panel">
+        <div class="card">
+          <p><strong>.json (JavaScript Object Notation)</strong> — Structured data in key-value pairs. Used heavily by APIs and web services. More flexible than CSV — can represent nested data (a customer who has multiple orders, each with multiple items). AI APIs (like OpenAI's) send and receive JSON.</p>
+          <div style="background:var(--bg-primary);border-radius:var(--radius-sm);padding:0.7rem;margin-top:0.5rem;font-family:var(--font-mono);font-size:0.8rem;color:var(--accent-periwinkle);line-height:1.6;">
+            {"name": "Sarah Chen",<br>
+            &nbsp;"department": "Marketing",<br>
+            &nbsp;"salary": 72000,<br>
+            &nbsp;"start_date": "2022-06-15"}
+          </div>
+        </div>
+      </div>
+      <div id="fmt-txt" class="tab-panel">
+        <div class="card">
+          <p><strong>.txt (Plain Text)</strong> — No formatting, no structure — just characters. Useful for unstructured data like meeting notes, email bodies, or raw text you want an AI to summarize or classify. The simplest format, readable by everything.</p>
+        </div>
+      </div>
+      <div id="fmt-pdf" class="tab-panel">
+        <div class="card">
+          <p><strong>.pdf (Portable Document Format)</strong> — Preserves visual layout, but data inside is often hard for AI to parse. A PDF of a table looks clean to humans but may be a jumbled mess to an AI that has to extract the text. When possible, give the AI the underlying data (CSV, XLSX) rather than the PDF report generated from it.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Data Preparation -->
+  <div class="content-section">
+    <p class="section-label">Data Preparation</p>
+    <h2>Garbage in, garbage out — cleaning data for AI</h2>
+    <p>
+      AI tools are powerful, but they are not tolerant of messy input. If you feed a model a
+      spreadsheet full of inconsistent dates, misspelled categories, and columns where numbers
+      are stored as text, the output will reflect that mess — confidently and without warning.
+      <strong>Data sanitization</strong> is the practice of cleaning and standardizing your data
+      before giving it to any tool.
+    </p>
+
+    <div class="analogy-box">
+      <div class="analogy-label">Analogy</div>
+      <p>You wouldn't hand a colleague a report with pages in random order, some paragraphs in
+      French, and half the numbers written in Roman numerals — then ask for a summary. But that's
+      what feeding messy data to an AI tool is. The model will try its best, but the result will
+      be unreliable in ways you can't easily detect.</p>
+    </div>
+
+    <h3 style="margin-top:1.5rem;">The most common data problems (and how to fix them)</h3>
+
+    <div class="card" style="margin-top:0.75rem;">
+      <table class="comp-table">
+        <thead><tr><th>Problem</th><th>Example</th><th>Fix</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><strong>Inconsistent text</strong></td>
+            <td>"Sales", "sales", "SALES", "Slaes"</td>
+            <td>Standardize case; use spell-check; search for near-duplicates</td>
+          </tr>
+          <tr>
+            <td><strong>Mixed date formats</strong></td>
+            <td>"3/4/2024", "2024-03-04", "March 4, 2024"</td>
+            <td>Pick one format (ISO 8601: YYYY-MM-DD is best) and apply to the whole column</td>
+          </tr>
+          <tr>
+            <td><strong>Numbers as text</strong></td>
+            <td>"$1,200" or "1 200" instead of 1200</td>
+            <td>Remove currency symbols, commas, and spaces; ensure column is formatted as a number</td>
+          </tr>
+          <tr>
+            <td><strong>Missing values</strong></td>
+            <td>Empty cells, "N/A", "n/a", "-", "unknown"</td>
+            <td>Decide on one representation (blank or "NA"); be consistent; document what missing means</td>
+          </tr>
+          <tr>
+            <td><strong>Leading/trailing spaces</strong></td>
+            <td>" Marketing" vs "Marketing"</td>
+            <td>Use TRIM() in Excel/Sheets; these invisible differences cause failed lookups</td>
+          </tr>
+          <tr>
+            <td><strong>Merged cells</strong></td>
+            <td>A header spanning three columns in Excel</td>
+            <td>Unmerge all cells before exporting. Merged cells break CSV export and AI parsing</td>
+          </tr>
+          <tr>
+            <td><strong>Multiple data points in one cell</strong></td>
+            <td>"Smith, Jones, Lee" in a single "Assignees" cell</td>
+            <td>Split into separate rows or separate columns — one value per cell is the rule</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 style="margin-top:1.5rem;">A pre-flight checklist before uploading data to any AI tool</h3>
+    <div class="card">
+      <div class="checklist-item" aria-label="Header row"><div class="checklist-box"></div><p><strong>One clear header row</strong> — column names in row 1, data starting in row 2, no blank rows above</p></div>
+      <div class="checklist-item" aria-label="Consistent types"><div class="checklist-box"></div><p><strong>Consistent data types per column</strong> — don't mix numbers and text in the same column</p></div>
+      <div class="checklist-item" aria-label="One value per cell"><div class="checklist-box"></div><p><strong>One value per cell</strong> — no merged cells, no comma-separated lists inside a single cell</p></div>
+      <div class="checklist-item" aria-label="Consistent missing values"><div class="checklist-box"></div><p><strong>Missing values handled consistently</strong> — pick one representation and use it everywhere</p></div>
+      <div class="checklist-item" aria-label="Dates standardized"><div class="checklist-box"></div><p><strong>Dates in ISO format</strong> — YYYY-MM-DD (2024-03-15) sorts correctly and is universally readable</p></div>
+      <div class="checklist-item" aria-label="No formatting artifacts"><div class="checklist-box"></div><p><strong>No formatting artifacts</strong> — remove currency symbols, percentage signs, and commas from numbers</p></div>
+      <div class="checklist-item" aria-label="Saved as CSV"><div class="checklist-box"></div><p><strong>Saved as .csv (UTF-8)</strong> — the safest, most portable format for AI tools</p></div>
+    </div>
+
+    <div class="ai-callout" style="margin-top:1.5rem;">
+      <div class="ai-callout-title">🤖 Why This Matters for AI</div>
+      <p>When you ask an AI to "find the average salary by department" and your data has "Marketing"
+      in some rows and "marketing " (with a trailing space) in others, the AI will treat them as
+      two separate departments and give you two separate averages — both wrong. When your date column
+      has three different formats, the model may misparse March 4 as April 3. AI tools don't complain
+      about messy data. They just give you confidently wrong answers. Cleaning your data before
+      uploading is the single most impactful thing you can do to get useful output from any AI tool.</p>
     </div>
   </div>
 
@@ -211,7 +478,9 @@
       <li><strong>Navigate to your Downloads folder</strong> and note the full file path displayed in the address bar. Write it down.</li>
       <li><strong>Find a file you saved recently</strong> using only the search function (Win+S on Windows, Cmd+Space on Mac).</li>
       <li><strong>Turn on file extensions</strong> if they're hidden (Windows: File Explorer → View → Show → File name extensions). Look at a few files and identify their extensions.</li>
-      <li><strong>Create a properly named test file:</strong> Save a blank document as <code style="background:var(--bg-primary);padding:0.1rem 0.3rem;border-radius:3px;font-family:var(--font-mono);font-size:0.85rem;">2025-01-15_Test_Document.docx</code> — no spaces, date-first naming.</li>
+      <li><strong>Inspect a spreadsheet for data type issues:</strong> Open any .xlsx or .csv file you have. Pick one column and check: are all the values the same type? Are there any numbers stored as text (look for left-aligned numbers or leading apostrophes)? Are dates in a consistent format?</li>
+      <li><strong>Export a clean CSV:</strong> Take a small spreadsheet (even one you create with 5 rows), make sure there are no merged cells, one header row, consistent types — then File → Save As → CSV UTF-8. Open the resulting .csv in a text editor (Notepad or TextEdit) and look at the raw commas-and-text structure.</li>
+      <li><strong>Test garbage in, garbage out:</strong> If you have access to an AI tool, try uploading a messy dataset (inconsistent dates, mixed text/numbers) and ask it to compute an average. Then clean the same data and try again. Compare the results.</li>
     </ol>
   </div>
 
@@ -247,6 +516,36 @@
         <button class="quiz-option" data-correct="false" data-explanation="Most email services cap attachments at 25MB. A 500MB file won't send — it'll bounce or be rejected."><span class="marker">A</span> Attach it directly to an email</button>
         <button class="quiz-option" data-correct="true" data-explanation="Correct! Upload to a cloud service (OneDrive, Google Drive, etc.) and share the link. No size restrictions, the recipient always gets the latest version, and you can control access."><span class="marker">B</span> Upload to cloud storage and share the link</button>
         <button class="quiz-option" data-correct="false" data-explanation="Splitting files is complex and error-prone. Cloud sharing is simpler and more reliable for large files."><span class="marker">C</span> Split it into 20 smaller files and email each one</button>
+      </div>
+      <div class="quiz-feedback"></div>
+    </div>
+
+    <div class="quiz-question">
+      <p class="q-text">4. A spreadsheet column called "Revenue" contains values like "$1,200" and "$950". You want to upload this to an AI tool for analysis. What's the problem?</p>
+      <div class="quiz-options">
+        <button class="quiz-option" data-correct="false" data-explanation="The numbers themselves are fine — it's the formatting that causes issues."><span class="marker">A</span> The numbers are too small for AI to analyze</button>
+        <button class="quiz-option" data-correct="true" data-explanation="Correct! Dollar signs and commas make the computer treat these values as text strings, not numbers. An AI can't compute an average of text. Remove the $ and commas so the column contains plain numbers like 1200 and 950."><span class="marker">B</span> The $ signs and commas make the computer treat them as text, not numbers</button>
+        <button class="quiz-option" data-correct="false" data-explanation="CSV format doesn't fix data type issues — if the values contain $ and commas, they'll still be treated as text in the CSV."><span class="marker">C</span> Nothing — just save as CSV and the AI will figure it out</button>
+      </div>
+      <div class="quiz-feedback"></div>
+    </div>
+
+    <div class="quiz-question">
+      <p class="q-text">5. You have customer feedback emails (unstructured) and a sales spreadsheet (structured). Which format should you use to upload the sales data to an AI for trend analysis?</p>
+      <div class="quiz-options">
+        <button class="quiz-option" data-correct="false" data-explanation="PDF preserves visual layout but makes it hard for AI to parse the underlying data — columns may get jumbled during text extraction."><span class="marker">A</span> Export the spreadsheet as PDF</button>
+        <button class="quiz-option" data-correct="false" data-explanation="Copying into a Word document destroys the tabular structure. The AI would see a wall of text, not clean columns and rows."><span class="marker">B</span> Copy the data into a Word document</button>
+        <button class="quiz-option" data-correct="true" data-explanation="Correct! CSV is the most universally parseable format for structured/tabular data. The AI can read the columns, identify types, and perform accurate calculations. Save the emails separately as .txt for the unstructured analysis."><span class="marker">C</span> Save as .csv (UTF-8) for the spreadsheet; upload emails as .txt separately</button>
+      </div>
+      <div class="quiz-feedback"></div>
+    </div>
+
+    <div class="quiz-question">
+      <p class="q-text">6. Your "Department" column has these values: "Marketing", "marketing", "Marketing ", "Mktg". You ask an AI for average salary by department. What will happen?</p>
+      <div class="quiz-options">
+        <button class="quiz-option" data-correct="false" data-explanation="AI tools don't typically auto-correct inconsistent text. They treat each distinct string as a separate category."><span class="marker">A</span> The AI will recognize they're all the same and group them correctly</button>
+        <button class="quiz-option" data-correct="true" data-explanation="Correct! The AI sees four different text strings and creates four separate groups — each with its own (wrong) average. Standardize the text before uploading: consistent case, no trailing spaces, no abbreviation variants."><span class="marker">B</span> The AI will treat them as four separate departments and give four wrong averages</button>
+        <button class="quiz-option" data-correct="false" data-explanation="Inconsistent data won't usually cause an error message — that's what makes it dangerous. The AI will produce output that looks plausible but is silently wrong."><span class="marker">C</span> The AI will return an error message asking you to fix the data</button>
       </div>
       <div class="quiz-feedback"></div>
     </div>

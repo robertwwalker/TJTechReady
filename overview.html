@@ -101,23 +101,25 @@
   <!-- Module 3 Summary -->
   <div class="content-section">
     <p class="section-label">Module 3</p>
-    <h2>📁 Files & Folders</h2>
+    <h2>📁 Files, Data & AI Preparation</h2>
     <div class="card">
       <p><strong>File paths</strong> are addresses: <code style="background:var(--bg-primary);padding:0.15rem 0.4rem;border-radius:4px;font-family:var(--font-mono);font-size:0.85rem;">C:\Users\You\Documents\report.pdf</code> on Windows, <code style="background:var(--bg-primary);padding:0.15rem 0.4rem;border-radius:4px;font-family:var(--font-mono);font-size:0.85rem;">/Users/you/Desktop/report.pdf</code> on Mac.</p>
 
       <p><strong>Extensions</strong> tell you the file type: .docx (Word), .xlsx (Excel), .pdf (portable document), .csv (data table), .txt (plain text). Windows hides extensions by default — turn them on for security.</p>
 
-      <p><strong>Storage types:</strong> Local (your hard drive, fast but risky if the machine fails), Network drives (company servers, shared access), Cloud (OneDrive, Google Drive — accessible anywhere, auto-synced).</p>
+      <p><strong>Data types</strong> matter: integers, floats, strings, booleans, dates, and categoricals. A "Revenue" column with "$1,200" (text) instead of 1200 (number) will break every calculation silently.</p>
 
-      <p><strong>Good habits:</strong> Use date-based naming (2024-03-15_Report.xlsx), the 3-2-1 backup rule, and check the Recycle Bin/Trash before panicking about deleted files.</p>
+      <p><strong>Structured vs. unstructured:</strong> Spreadsheets and CSV files are structured (rows, columns, types). Emails, PDFs, and meeting notes are unstructured. Different AI tools handle each differently — use CSV for tabular data, .txt or .pdf for documents.</p>
+
+      <p><strong>Garbage in, garbage out:</strong> Clean your data before uploading. Standardize text case, use ISO dates (YYYY-MM-DD), remove currency symbols from numbers, handle missing values consistently, and save as CSV UTF-8.</p>
     </div>
 
     <div class="ai-callout">
       <div class="ai-callout-title">🤖 Why this matters for AI</div>
-      <p>Uploading the wrong file type to an AI tool is one of the most common errors. Claude can read PDFs, images, and text files — but not .xlsx directly in chat. Knowing your extensions and paths lets you feed AI tools the right inputs reliably.</p>
+      <p>Uploading the wrong file type or messy data to an AI tool is the single most common source of bad output. Claude can read PDFs, images, and text — but can't compute on "$1,200" as a number. Knowing your formats, types, and how to clean data lets you feed AI tools the right inputs reliably.</p>
     </div>
 
-    <p style="color:var(--text-muted);font-size:0.85rem;">Can you read a file path and identify an extension? → <a href="module3-files-folders.html" style="color:var(--accent-orchid);">Take the full module</a></p>
+    <p style="color:var(--text-muted);font-size:0.85rem;">Can you read a file path, identify data types, and clean a dataset? → <a href="module3-files-folders.html" style="color:var(--accent-orchid);">Take the full module</a></p>
   </div>
 
   <!-- Module 4 Summary -->
