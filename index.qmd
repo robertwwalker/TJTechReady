@@ -13,9 +13,9 @@ format:
 
 [Module 1 Hardware/Software](./module1-hardware-software.html)
 
-[Module 2 Hardware/Software](./module2-operating-systems.html)
+[Module 2 Operating Systems](./module2-operating-systems.html)
 
-[Module 3 Hardware/Software](./module3-files-folders.html)
+[Module 3 Files/Folder Structure](./module3-files-folders.html)
 
 [Module 4 Networks and Clouds](./module4-internet-cloud.html)
 
