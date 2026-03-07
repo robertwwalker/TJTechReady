@@ -70,7 +70,7 @@
 
     <div class="ai-callout">
       <div class="ai-callout-title">🤖 Why this matters for AI</div>
-      <p>When you run a local LLM and it's slow, it's almost always a RAM or GPU limitation — a hardware bottleneck. Cloud-based AI tools (ChatGPT, Claude) avoid this because the heavy computation happens on remote servers with specialized hardware.</p>
+      <p>AI tools are unusually demanding software. The GPU is central to AI workloads — it's the chip that handles the massive parallel math operations language models require. When an AI tool is slow, it's almost always a hardware limitation. And in a networked world, the hardware that matters might not be on your desk — it might be on a server in a data center. Understanding what's where is the foundation for everything that follows.</p>
     </div>
 
     <p style="color:var(--text-muted);font-size:0.85rem;">Can you identify whether a problem is hardware or software? → <a href="module1-hardware-software.html" style="color:var(--accent-orchid);">Take the full module</a></p>
@@ -135,12 +135,14 @@
       <p><strong>Cloud tools you'll use:</strong> Microsoft 365/Outlook, SharePoint/OneDrive, Teams, Zoom, Google Workspace, Slack.
       A <strong>VPN</strong> creates an encrypted tunnel to your company network — required for remote access to internal resources.</p>
 
+      <p><strong>Local vs. cloud AI:</strong> Cloud tools (ChatGPT, Claude) run on remote servers — powerful but your data leaves your machine. Local tools (Ollama, LM Studio) run on your own hardware — private but require a capable GPU. The tradeoff is performance vs. privacy, and Module 4 covers when each makes sense.</p>
+
       <p><strong>Troubleshooting basics:</strong> Nothing loads? Check Wi-Fi. One site down? Try another browser. Choppy video? Close tabs, try Ethernet. Can't access company files from home? Connect VPN first.</p>
     </div>
 
     <div class="ai-callout">
       <div class="ai-callout-title">🤖 Why this matters for AI</div>
-      <p>Every major AI tool (ChatGPT, Claude, Copilot, Gemini) is a cloud service. When Claude is "thinking," your prompt travels to remote servers, gets processed on GPUs there, and returns over the internet. Understanding this architecture helps you troubleshoot latency and make informed decisions about what data you send.</p>
+      <p>Most major AI tools (ChatGPT, Claude, Copilot, Gemini) are cloud services — your prompt travels to remote servers for processing. But some AI tools run entirely on your own hardware, keeping your data local. Understanding this architecture helps you choose the right tool for the task, troubleshoot performance issues, and make informed decisions about what data you send where.</p>
     </div>
 
     <p style="color:var(--text-muted);font-size:0.85rem;">Confident with URLs, cloud sync, and VPNs? → <a href="module4-internet-cloud.html" style="color:var(--accent-orchid);">Take the full module</a></p>

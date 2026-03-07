@@ -65,7 +65,7 @@
   <!-- AI Callout -->
   <div class="ai-callout">
     <div class="ai-callout-title">🤖 Why This Matters for AI</div>
-    <p>When you run a local LLM and it's slow, it's almost always a <strong>RAM or GPU limitation</strong> — a hardware bottleneck, not a software bug. The GPU (Graphics Processing Unit) is especially critical: it's the chip that handles the massive parallel math operations AI models require. Cloud AI tools like ChatGPT and Claude sidestep this by running on powerful remote servers with specialized GPUs — but understanding the hardware underneath helps you know why some tasks are fast and others aren't.</p>
+    <p>AI tools are software — but they are unusually <em>demanding</em> software. The math behind a large language model requires enormous amounts of RAM and processing power, especially from the <strong>GPU (Graphics Processing Unit)</strong> — a chip originally built for rendering graphics that turns out to be perfectly suited for the massive parallel calculations AI needs. When an AI tool feels slow or your computer struggles to run one, it's almost always a hardware limitation, not a software bug. Understanding the hardware underneath helps you diagnose why some tasks are fast and others aren't — a distinction that will come up throughout the rest of this series.</p>
   </div>
 
   <!-- Hardware vs Software Lists -->
@@ -221,6 +221,35 @@
     <p><strong>Firmware</strong> is software that is permanently (or semi-permanently) installed on hardware chips. It's the lowest level of software — code that tells hardware how to start up before the operating system even loads.</p>
     <p>Examples: your computer's BIOS/UEFI (the chip that runs when you first power on), the firmware in your printer, or the software inside your keyboard. Firmware updates are released by manufacturers to fix bugs or improve performance. Unlike regular software, updating firmware incorrectly can "brick" (permanently damage) a device.</p>
     <p>If IT says "we're pushing a firmware update to your laptop," they're updating low-level chip software — not your apps. Your files won't be affected, but you'll need to restart, and the update takes longer than normal. Don't interrupt it.</p>
+  </div>
+
+  <!-- Your Computer and the Network -->
+  <div class="content-section">
+    <p class="section-label">The Bigger Picture</p>
+    <h2>Your computer isn't the only computer</h2>
+    <p>
+      Everything in this module so far has focused on the machine in front of you. But in a modern
+      networked workplace, your computer is rarely working alone. When you open a web browser,
+      send an email, or use a tool like Google Docs, your machine is communicating with other
+      computers — <strong>servers</strong> — that live in data centers somewhere else.
+    </p>
+    <p>
+      Servers are computers too. They have CPUs, RAM, storage, and GPUs — all the same hardware
+      categories — plus their own operating systems and software. The difference is scale and
+      purpose: a server might have hundreds of gigabytes of RAM and racks of specialized GPUs,
+      because it's designed to handle requests from thousands of users at once rather than to
+      sit on one person's desk.
+    </p>
+    <p>
+      This distinction — <strong>what runs on your machine vs. what runs on a remote server</strong> —
+      turns out to be one of the most important concepts in modern computing, and it comes up
+      constantly when working with AI tools. Some AI software runs entirely on your own hardware;
+      others run on powerful servers and you access them through a browser. The tradeoffs
+      (speed, privacy, cost, capability) are significant, and we'll explore them in detail in
+      Module 4 (Internet & Cloud Basics). For now, the key takeaway is: the hardware and software
+      framework you just learned doesn't only apply to your laptop — it applies to every computer
+      in the chain, including the ones you can't see.
+    </p>
   </div>
 
   <!-- Try It Yourself -->

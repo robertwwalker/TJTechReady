@@ -119,6 +119,68 @@
     </div>
   </div>
 
+  <!-- Local vs. Cloud AI Tools -->
+  <div class="content-section">
+    <p class="section-label">AI-Specific</p>
+    <h2>Local vs. cloud AI tools</h2>
+    <p>
+      Now that you understand the difference between local software and cloud services, there's
+      an important distinction to make specifically for AI: not all AI tools work the same way.
+      Some run entirely on remote servers; others run on your own machine. The difference matters
+      for performance, privacy, cost, and capability.
+    </p>
+
+    <div class="two-col" style="margin-top:1rem;">
+      <div class="card">
+        <h3 style="color:var(--accent-orchid);">Cloud / Commercial AI</h3>
+        <p style="font-size:0.88rem;color:var(--text-secondary);">
+          The AI runs on the provider's servers. You access it through a browser or app, and your
+          prompts travel over the internet to be processed remotely. This is how most people
+          interact with AI today.
+        </p>
+        <p style="font-size:0.85rem;color:var(--text-muted);margin-top:0.5rem;">
+          <strong>Examples:</strong> ChatGPT (OpenAI), Claude (Anthropic), Copilot (Microsoft), Gemini (Google)<br>
+          <strong>Pros:</strong> Powerful models, no hardware requirements on your end, always up to date<br>
+          <strong>Cons:</strong> Requires internet, your data leaves your machine, subscription costs, provider controls the model<br>
+          <strong>Hardware needed:</strong> Any device with a web browser
+        </p>
+      </div>
+      <div class="card">
+        <h3 style="color:var(--accent-lavender);">Local / Open-Source AI</h3>
+        <p style="font-size:0.88rem;color:var(--text-secondary);">
+          The AI model is downloaded and runs entirely on your own computer. Nothing leaves your
+          machine — your prompts and data stay local. This requires more technical setup and
+          more powerful hardware.
+        </p>
+        <p style="font-size:0.85rem;color:var(--text-muted);margin-top:0.5rem;">
+          <strong>Examples:</strong> Ollama, LM Studio, llama.cpp, GPT4All<br>
+          <strong>Pros:</strong> Full data privacy, works offline, no subscription, you control the model<br>
+          <strong>Cons:</strong> Needs a powerful GPU and substantial RAM (Module 1), smaller models than cloud, more setup effort<br>
+          <strong>Hardware needed:</strong> Modern computer with a capable GPU and 16+ GB RAM
+        </p>
+      </div>
+    </div>
+
+    <p style="margin-top:1rem;">
+      This is a spectrum, not a binary. Some tools blend both: Microsoft Copilot integrates cloud
+      AI into local Office applications; some coding assistants run a small model locally but send
+      complex queries to the cloud. The key question is always the same: <strong>where is the computation
+      happening, and where is your data going?</strong> That question ties directly back to the hardware
+      concepts in Module 1 (is your GPU powerful enough?) and forward to the security concepts in
+      Module 5 (should this data leave your machine?).
+    </p>
+
+    <div class="ai-callout" style="margin-top:1rem;">
+      <div class="ai-callout-title">🤖 A note on this from Claude</div>
+      <p>I'm a cloud AI tool — when you type a prompt to me, it travels to Anthropic's servers,
+      gets processed on their hardware, and the response comes back over the internet. I have no
+      ability to run on your local machine. Tools like Ollama let you run smaller, open-source
+      models locally instead. The tradeoff is real: I'm generally more capable, but your data leaves
+      your computer. A local model is less powerful but keeps everything private. There's no single
+      right answer — it depends on what you're doing and what data is involved.</p>
+    </div>
+  </div>
+
   <!-- How Networks Work -->
   <div class="content-section">
     <p class="section-label">How Networks Work</p>
@@ -245,6 +307,16 @@
         <button class="quiz-option" data-correct="false" data-explanation="Your browser only sends the prompt and displays the response. The actual AI processing requires specialized GPU servers that don't exist on your computer."><span class="marker">A</span> In your web browser on your computer</button>
         <button class="quiz-option" data-correct="true" data-explanation="Correct! AI tools like ChatGPT and Claude are cloud services. Your prompt travels over the internet to remote servers with specialized GPUs, gets processed there, and the response streams back."><span class="marker">B</span> On remote servers (the cloud) via the internet</button>
         <button class="quiz-option" data-correct="false" data-explanation="Your router just passes network traffic. It doesn't have the processing power to run AI models."><span class="marker">C</span> On your Wi-Fi router</button>
+      </div>
+      <div class="quiz-feedback"></div>
+    </div>
+
+    <div class="quiz-question">
+      <p class="q-text">4. Your company has strict data privacy rules. You need to use an AI tool to analyze sensitive employee records. Which approach best addresses the privacy concern?</p>
+      <div class="quiz-options">
+        <button class="quiz-option" data-correct="false" data-explanation="ChatGPT is a cloud service — your data leaves your machine and travels to OpenAI's servers. For sensitive employee records under strict privacy rules, this may not be acceptable."><span class="marker">A</span> Upload the records to ChatGPT — it's encrypted</button>
+        <button class="quiz-option" data-correct="true" data-explanation="Correct! A local AI tool like Ollama processes everything on your own hardware. The data never leaves your machine, which addresses the privacy concern. The tradeoff is that local models are typically less capable and require stronger hardware."><span class="marker">B</span> Use a local AI tool (like Ollama) so the data never leaves your computer</button>
+        <button class="quiz-option" data-correct="false" data-explanation="Anonymizing data is a good practice, but the question is about the tool architecture. Even anonymized data is being sent to external servers with a cloud tool. Understanding local vs. cloud is the key concept here."><span class="marker">C</span> It doesn't matter which tool — just anonymize the names first</button>
       </div>
       <div class="quiz-feedback"></div>
     </div>
