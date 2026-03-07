@@ -75,9 +75,11 @@ nav {
 }
 .nav-brand { display:flex; align-items:center; gap:14px; text-decoration:none; }
 .nav-logo-img {
-  height:34px; width:auto;
-  filter: brightness(0) invert(1);
-  opacity:0.85;
+  height:40px; width:40px;
+  object-fit:contain;
+  background:#fff;
+  border-radius:6px;
+  padding:3px;
 }
 .nav-wordmark {
   font-family:'Syne',sans-serif;
@@ -623,7 +625,58 @@ footer {
   width:8px; height:8px; border-radius:50%;
 }
 
-/* ─── RESPONSIVE ─────────────────────────────────────────────────────────── */
+/* ─── VIDEO ──────────────────────────────────────────────────────────────── */
+.video-wrap {
+  position: relative;
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  box-shadow: 0 24px 64px rgba(0,0,0,0.5);
+}
+.video-glow {
+  position: absolute; inset: -1px;
+  border-radius: var(--radius);
+  background: linear-gradient(135deg, rgba(112,144,255,0.18), rgba(192,128,255,0.12), rgba(32,232,112,0.08));
+  pointer-events: none;
+  z-index: 0;
+}
+.series-video {
+  position: relative; z-index: 1;
+  display: block;
+  width: 100%;
+  max-height: 520px;
+  border-radius: calc(var(--radius) - 1px) calc(var(--radius) - 1px) 0 0;
+  background: #000;
+  outline: none;
+}
+/* Style the native controls bar area */
+.series-video::-webkit-media-controls-panel {
+  background: linear-gradient(to top, rgba(14,16,24,0.95), transparent);
+}
+.video-caption {
+  position: relative; z-index: 1;
+  padding: 16px 24px;
+  display: flex; align-items: flex-start; gap: 10px;
+  border-top: 1px solid var(--border);
+  background: var(--surface);
+  font-size: 0.84rem;
+  color: var(--muted2);
+  line-height: 1.65;
+}
+.video-caption-icon {
+  font-size: 0.6rem;
+  color: var(--c-pre);
+  background: rgba(112,144,255,0.15);
+  border: 1px solid rgba(112,144,255,0.3);
+  border-radius: 50%;
+  width: 20px; height: 20px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+
 @media(max-width:900px) {
   nav { padding:0 24px; }
   .hero, .updates-banner, .section-shell { padding-left:24px; padding-right:24px; }
@@ -729,6 +782,28 @@ footer {
     </div>
   </div>
 </div>
+
+<!-- ── VIDEO OVERVIEW ────────────────────────────────────────────────────── -->
+<section class="section-shell" id="video-overview">
+  <div class="section-heading">
+    <h2>Video Overview</h2>
+    <span class="section-heading-sub">Series introduction</span>
+  </div>
+  <div class="video-wrap">
+    <div class="video-glow"></div>
+    <video
+      class="series-video"
+      src="./NLM-Video.mp4"
+      controls
+      preload="metadata"
+      poster=""
+    ></video>
+    <div class="video-caption">
+      <span class="video-caption-icon">▶</span>
+      A brief walkthrough of the TechReady Series — what it covers, how to use it, and what to expect before your AI coursework begins.
+    </div>
+  </div>
+</section>
 
 <!-- ── ENTRY POINTS ──────────────────────────────────────────────────────── -->
 <section class="section-shell">

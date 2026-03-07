@@ -126,13 +126,67 @@
   .btn-ghost { background: transparent; color: var(--text); border: 1px solid var(--border); padding: 11px 26px; border-radius: 8px; font-family: 'Syne', sans-serif; font-weight: 600; cursor: pointer; transition: all 0.2s; }
   .btn-ghost:hover { border-color: var(--accent); }
   @media(max-width:600px) { .main{padding:28px 18px;} header{padding:14px 18px;} .answers{grid-template-columns:1fr;} .path-line{font-size:0.75rem;} }
+
+  /* ── AGSM branding ───────────────────────────────────── */
+  .nav-logo-img {
+    height: 36px; width: 36px;
+    object-fit: contain;
+    background: #fff;
+    border-radius: 6px;
+    padding: 3px;
+    flex-shrink: 0;
+  }
+  .nav-divider {
+    width: 1px; height: 28px;
+    background: var(--border, #2a2f3a);
+    flex-shrink: 0;
+  }
+  .nav-wordmark {
+    display: flex; flex-direction: column; gap: 1px;
+  }
+  .nav-wordmark-top {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.58rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted, #7a8090);
+    line-height: 1;
+  }
+  .nav-wordmark-bottom {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.78rem;
+    letter-spacing: -0.01em;
+    color: var(--text, #e8eaf0);
+    line-height: 1;
+  }
+  .nav-home-link {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted, #7a8090);
+    text-decoration: none;
+    padding: 5px 12px;
+    border: 1px solid var(--border, #2a2f3a);
+    border-radius: 20px;
+    transition: all 0.2s;
+  }
+  .nav-home-link:hover {
+    color: var(--text, #e8eaf0);
+    border-color: var(--muted, #7a8090);
+  }
+
 </style>
 </head>
 <body>
 <div class="app">
 <header>
-  <div class="logo"><div class="logo-chip">MOD 03</div>Files &amp; Folders</div>
-  <div class="module-tag">TechReady Series</div>
+  <a href="./index.html" style="display:flex;align-items:center;gap:12px;text-decoration:none"><img class="nav-logo-img" src="./AGSMlogo.jpeg" alt="Atkinson Graduate School of Management"><div class="nav-divider"></div><div class="nav-wordmark"><span class="nav-wordmark-top">TechReady Series</span><span class="nav-wordmark-bottom">Files &amp; Folders</span></div></a>
+  <div style="display:flex;align-items:center;gap:10px">
+    <div style="font-family:'DM Mono',monospace;font-size:0.62rem;letter-spacing:0.1em;padding:4px 11px;border-radius:5px;background:var(--accent);color:#000;font-weight:700">MOD 03</div>
+    <a class="nav-home-link" href="./index.html">← Home</a>
+  </div>
 </header>
 <div class="main">
   <div class="hero fade-up">

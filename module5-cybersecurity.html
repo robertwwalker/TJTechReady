@@ -132,13 +132,67 @@
   .btn-ghost { background: transparent; color: var(--text); border: 1px solid var(--border); padding: 11px 26px; border-radius: 8px; font-family: 'Syne', sans-serif; font-weight: 600; cursor: pointer; transition: all 0.2s; }
   .btn-ghost:hover { border-color: var(--accent); }
   @media(max-width:600px) { .main{padding:28px 18px;} header{padding:14px 18px;} .threat-grid{grid-template-columns:1fr;} .answers{grid-template-columns:1fr;} }
+
+  /* ── AGSM branding ───────────────────────────────────── */
+  .nav-logo-img {
+    height: 36px; width: 36px;
+    object-fit: contain;
+    background: #fff;
+    border-radius: 6px;
+    padding: 3px;
+    flex-shrink: 0;
+  }
+  .nav-divider {
+    width: 1px; height: 28px;
+    background: var(--border, #2a2f3a);
+    flex-shrink: 0;
+  }
+  .nav-wordmark {
+    display: flex; flex-direction: column; gap: 1px;
+  }
+  .nav-wordmark-top {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.58rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted, #7a8090);
+    line-height: 1;
+  }
+  .nav-wordmark-bottom {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.78rem;
+    letter-spacing: -0.01em;
+    color: var(--text, #e8eaf0);
+    line-height: 1;
+  }
+  .nav-home-link {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted, #7a8090);
+    text-decoration: none;
+    padding: 5px 12px;
+    border: 1px solid var(--border, #2a2f3a);
+    border-radius: 20px;
+    transition: all 0.2s;
+  }
+  .nav-home-link:hover {
+    color: var(--text, #e8eaf0);
+    border-color: var(--muted, #7a8090);
+  }
+
 </style>
 </head>
 <body>
 <div class="app">
 <header>
-  <div class="logo"><div class="logo-chip">MOD 05</div>Privacy &amp; Security</div>
-  <div class="module-tag">TechReady Series</div>
+  <a href="./index.html" style="display:flex;align-items:center;gap:12px;text-decoration:none"><img class="nav-logo-img" src="./AGSMlogo.jpeg" alt="Atkinson Graduate School of Management"><div class="nav-divider"></div><div class="nav-wordmark"><span class="nav-wordmark-top">TechReady Series</span><span class="nav-wordmark-bottom">Privacy &amp; Security</span></div></a>
+  <div style="display:flex;align-items:center;gap:10px">
+    <div style="font-family:'DM Mono',monospace;font-size:0.62rem;letter-spacing:0.1em;padding:4px 11px;border-radius:5px;background:var(--accent);color:#000;font-weight:700">MOD 05</div>
+    <a class="nav-home-link" href="./index.html">← Home</a>
+  </div>
 </header>
 <div class="main">
   <div class="hero fade-up">
@@ -229,7 +283,7 @@
       <div class="tab" data-tab="p4">What to do</div>
     </div>
     <div class="tab-pane active" id="p1">
-      <div class="alert-strip alert-danger"><div class="alert-icon">🚩</div><div class="alert-text"><strong>Sender address mismatch:</strong> The display name says "Microsoft Support" but the actual email address is "support@m1crosoft-help.net". Always hover over or click the sender name to see the real address.</div></div>
+      <div class="alert-strip alert-danger"><div class="alert-icon">🚩</div><div class="alert-text"><strong>Sender address mismatch:</strong> The display name says "Microsoft Support" but the actual email address is "<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="a3d0d6d3d3ccd1d7e3ce92c0d1ccd0ccc5d78ecbc6cfd38dcdc6d7">[email&#160;protected]</a>". Always hover over or click the sender name to see the real address.</div></div>
       <div class="alert-strip alert-danger"><div class="alert-icon">🚩</div><div class="alert-text"><strong>Generic greetings:</strong> "Dear Customer" or "Dear User" instead of your actual name suggests a mass phishing campaign that doesn't know who you are.</div></div>
       <div class="alert-strip alert-warn"><div class="alert-icon">⚠️</div><div class="alert-text"><strong>Unexpected attachments:</strong> An invoice from a company you don't recognize, or a file you weren't expecting. .exe, .zip, .docm (macro-enabled) files are particularly risky.</div></div>
       <div class="alert-strip alert-warn"><div class="alert-icon">⚠️</div><div class="alert-text"><strong>Poor grammar/spelling:</strong> While sophisticated attacks are well-written, many phishing emails still contain errors. Awkward phrasing or odd word choices are warning signs.</div></div>
@@ -402,7 +456,7 @@
 </div>
 </div>
 
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 const threats = {
   phishing: { title: '🎣 Phishing', text: 'Phishing is the most common cyberattack. Attackers send emails (or texts — "smishing," or calls — "vishing") impersonating trusted entities (your bank, Microsoft, your CEO) to trick you into clicking a malicious link, downloading malware, or entering credentials on a fake website. "Spear phishing" targets specific individuals with personalized details scraped from LinkedIn or social media. Defenses: verify sender addresses, hover over links before clicking, be suspicious of urgency, confirm unusual requests via a separate channel (call the person directly).' },
   ransomware: { title: '🔒 Ransomware', text: 'Ransomware is malicious software that encrypts all files on your computer and network drives, then demands payment (usually cryptocurrency) for the decryption key. It typically arrives via phishing email attachments or compromised websites. Famous attacks: WannaCry (2017, $4B+ damage), Colonial Pipeline (2021, shut down US fuel supply). Defenses: regular backups (offline/air-gapped), keep OS updated, don\'t open unexpected attachments, use endpoint protection software. If hit: isolate the infected machine immediately and call IT — do NOT pay the ransom (no guarantee of recovery).' },
@@ -517,10 +571,4 @@ function showScore(){
   const pct=Math.round(score/quizData.length*100);
   const msgs=[[90,'🏆 Security Expert!','Outstanding cybersecurity awareness.'],[70,'⭐ Strong Foundation','Good knowledge — review missed items.'],[50,'📚 Getting There','Important material — review and retry.'],[0,'🔄 Please Review','This content is critical — re-read and retry.']];
   const[,t,s]=msgs.find(([th])=>pct>=th);
-  document.getElementById('quizInner').innerHTML=`<div class="score-screen"><div class="score-ring">${pct}%</div><div class="score-headline">${t}</div><p class="score-sub">${score}/${quizData.length} correct — ${s}</p><div class="score-btns"><button class="btn-primary" id="retryBtn">Try Again</button><button class="btn-ghost" onclick="window.scrollTo({top:0,behavior:'smooth'})">Review Lesson ↑</button></div></div>`;
-  document.getElementById('retryBtn').addEventListener('click',()=>{cur=0;score=0;renderQuiz();});
-}
-renderQuiz();
-</script>
-</body>
-</html>
+  document.getElementById('quizInner').innerHTML=`<div class="score-screen"><div class="score-ring">${pct}%</div><div class="score-headline">${t}</div><p class="score-sub">${score}/${quizData.length} correct — ${s}</p><div class="score-btns"><button class="btn-primary" id="retryBtn">Try Again</button><button class="btn-ghost
